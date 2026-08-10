@@ -1,0 +1,35 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: architecture, database, ui-general
+
+LLM BUILD: Block 1 · Foundational [block-1]
+  stories: Define the Flask application boundary and module ownership. [architecture], Define local SQLite persistence for books. [database], Define shared interaction patterns for the reading-list interface. [ui-general]
+  call: 1 of up to 4 · initial build · codex/gpt-5.6-luna
+  tokens: cached=395,264 (91% hit) · uncached=38,553 · out=6,068
+acceptance: call 1 · 0/0 AC passed
+built: architecture — closed/verified · execution 20260810.215639.267Z-d006af83
+
+LLM BUILD: Block 2 · Service [block-2]
+  stories: Store a submitted book with its title and author. [add-book], Remove a selected book from the reading list. [remove-book], Retrieve books in insertion order. [list-books], Reject book submissions with an empty title or author. [validate-book]
+  call: 1 of up to 4 · initial build · codex/gpt-5.6-luna
+  tokens: cached=295,168 (91% hit) · uncached=29,552 · out=3,877
+acceptance: call 1 · 0/0 AC passed
+built: add-book — closed/verified · execution 20260810.215934.742Z-b9ec3e6b
+
+LLM BUILD: Block 3 · Service [block-3]
+  stories: Present the reading-list entry point and available book actions. [reading-list-screen]
+  call: 1 of up to 4 · initial build · codex/gpt-5.6-luna
+  tokens: cached=132,608 (85% hit) · uncached=22,801 · out=2,781
+acceptance: call 1 · 0/0 AC passed
+built: reading-list-screen — closed/verified · execution 20260810.220149.657Z-5901d6a0
+
+LLM BUILD: Block 4 · Service [block-4]
+  stories: Provide the complete POSIX automated test runner. [verification]
+  call: 1 of up to 4 · initial build · codex/gpt-5.6-luna
+  tokens: cached=260,352 (91% hit) · uncached=24,707 · out=2,838
+acceptance: call 1 · 0/0 AC passed
+built: verification — closed/verified · execution 20260810.220314.394Z-0f058337
+
+result: 9 built, 0 failed, 0 unchanged
+elapsed: 8 minutes 6 seconds

@@ -1,0 +1,13 @@
+RESULT: SUCCESS
+
+FILES CHANGED:
+- persistence.py
+- routes.py
+- templates/books.html
+- tests/test_acceptance.py
+
+SUMMARY:
+Implemented persisted read state, legacy migration, mark-read route, UI controls, and automated coverage. `sh bin/test.sh` passes all 29 tests; Ruff passes.
+
+BLOCKERS:
+- None

@@ -1,0 +1,15 @@
+{
+  "id": "discovery-gaps",
+  "title": "Discovery: Deployment Target",
+  "purpose": "Confirm where the web application is expected to run.",
+  "questions": [
+    {
+      "id": "deployment_target",
+      "label": "Deployment Target",
+      "prompt": "Where should the ReadingList web application run for delivery and acceptance?",
+      "input": "textarea",
+      "required_before_plan": false,
+      "answer": ""
+    }
+  ]
+}

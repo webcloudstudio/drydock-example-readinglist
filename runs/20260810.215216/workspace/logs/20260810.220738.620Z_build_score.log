@@ -1,0 +1,20 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+
+Build report: ReadingList
+  evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260810.215216/workspace/targets/ReadingList/evidence
+  usage:    /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260810.215216/workspace/logs/llm.jsonl
+
+  Block                      AC  Calls     Cached  Uncached    Hit  Output    Time
+  ────────────────────────────────────────────────────────────────────────────────
+  ✓ Block 1 · Foundational  0/0      1    395,264    38,553  91.1%   6,068  2m 23s
+  ✓ Block 2 · Service       0/0      1    295,168    29,552  90.9%   3,877  1m 37s
+  ✓ Block 3 · Service       0/0      1    132,608    22,801  85.3%   2,781  1m 03s
+  ✓ Block 4 · Service       0/0      1    260,352    24,707  91.3%   2,838  1m 19s
+  ✓ Block 5 · Feature       0/0      1    282,880    28,490  90.9%   5,966  2m 04s
+  ────────────────────────────────────────────────────────────────────────────────
+  TOTAL                     0/0      5  1,366,272   144,103  90.5%  21,530  8m 29s
+
+  Blocks: 5/5 verified · 5 on first call · 0 repaired
+  Model:  gpt-5.6-luna
+  Tokens: 1,366,272 cached · 144,103 uncached · 21,530 out
+

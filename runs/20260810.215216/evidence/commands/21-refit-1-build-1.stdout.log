@@ -1,0 +1,13 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: mark-read-route, mark-read-schema, mark-read-verification, mark-read-view
+
+LLM BUILD: Block 5 · Feature [block-5]
+  stories: Add the route and application behavior for marking a selected book as read. [mark-read-route], Add persisted read state per book, the corresponding BookStore operations, and migration handling for existing rows. [mark-read-schema], Add automated coverage for persisted read state, marking books read, and rendering read and unread states. [mark-read-verification], Display each book's unread or read state and provide the mark-read control. [mark-read-view]
+  call: 1 of up to 4 · initial build · codex/gpt-5.6-luna
+  tokens: cached=282,880 (91% hit) · uncached=28,490 · out=5,966
+built: mark-read-route — closed/verified · execution 20260810.220510.310Z-6c3c46aa
+
+result: 4 built, 0 failed, 0 unchanged
+elapsed: 2 minutes 24 seconds

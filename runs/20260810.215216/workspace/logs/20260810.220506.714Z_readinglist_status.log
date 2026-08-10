@@ -1,0 +1,17 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — ReadingList / ReadingList
+
+  Target          /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260810.215216/workspace/targets/ReadingList
+  Phase           Implement
+  State           9/13 verified  ·  4 pending
+  Metadata        built · complete
+  Sources         1 imported · 13 authored blueprint files
+  Analysis        Questions               6 stories · 2 questions · 0 blockers
+  Review          BLOCKERS.md none · 2 questionnaires
+  Blueprint       ✓  0 errors · 0 warnings
+  Plan            approved · 9/13 verified  pending 4 · implemented 0 · failed 0
+  Frontier        mark-read-route: Add the route and application behavior for marking a selected book as read.
+                  mark-read-schema: Add persisted read state per book, the corresponding BookStore operations, and migration handling for existing rows.
+                  mark-read-verification: Add automated coverage for persisted read state, marking books read, and rendering read and unread states.
+                  mark-read-view: Display each book's unread or read state and provide the mark-read control.
+  Next step       drydock build ReadingList  (frontier: Add the route and application behavior for marking a selected book as read., Add persisted read state per book, the corresponding BookStore operations, and migration handling for existing rows.)

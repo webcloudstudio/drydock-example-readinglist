@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Reading List{% endblock %}
+{% block content %}
+<h1>Reading List</h1>
+<form method="post" action="{{ url_for('add_book') }}">
+  <label for="title">Title</label>
+  <input id="title" name="title" value="{{ form.title|default('', true) }}" required>
+  {% if errors.title %}<p role="alert">{{ errors.title }}</p>{% endif %}
+  <label for="author">Author</label>
+  <input id="author" name="author" value="{{ form.author|default('', true) }}" required>
+  {% if errors.author %}<p role="alert">{{ errors.author }}</p>{% endif %}
+  <button type="submit">Add book</button>
+</form>
+<section aria-label="Books">
+  {% if books %}
+  <ol>
+    {% for book in books %}
+    <li>
+      <span>{{ book.title }}</span> by <span>{{ book.author }}</span>
+      <form method="post" action="{{ url_for('remove_book', book_id=book.id) }}">
+        <button type="submit" aria-label="Remove {{ book.title }}">Remove</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p>Your reading list is empty. Add a book to get started.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+<reusable-compact filename="ARCHITECTURE.md">
+Flask factory via `app.create_app(config)`. Routes: `GET /`, `GET /books`, `POST /books`, `POST /books/{id}/remove`. Persistence belongs in `persistence.py`; validation in `validation.py`; rendering in `templates/`; tests in `tests/`. Local-only execution; no third-party transmission.
+</reusable-compact>
+
+<reusable-compact filename="DATABASE.md">
+`BookStore` exposes `add(title, author)`, `list()`, and `remove(book_id)`. SQLite database defaults to `instance-reading-list.sqlite3`, with configurable test paths. `books(id INTEGER PRIMARY KEY, title TEXT NOT NULL, author TEXT NOT NULL)`. Listing orders by ascending `id`; startup creates the table.
+</reusable-compact>
+
+<reusable-compact filename="UI-GENERAL.md">
+Reading-list page includes heading, labeled title/author form, submit control, ordered book list, per-book remove controls, and an empty-state message. Validation errors appear near the form and submitted values are retained.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app.py
+- persistence.py
+- validation.py
+- routes.py
+- templates/base.html
+- templates/books.html
+- tests/conftest.py
+- tests/test_acceptance.py
+- bin/test.sh
+- run.py
+- pyproject.toml
+- pytest.ini
+
+SUMMARY:
+Implemented the Flask application factory, local SQLite `BookStore`, validated add/list/remove workflows, shared reading-list UI, and automated acceptance tests. `sh bin/test.sh` passes all 8 tests; Ruff checks and formatting pass.
+
+BLOCKERS:
+- None

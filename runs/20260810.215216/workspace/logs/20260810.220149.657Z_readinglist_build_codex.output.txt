@@ -1,0 +1,14 @@
+RESULT: SUCCESS
+
+FILES CHANGED:
+- routes.py
+- tests/test_acceptance.py
+
+SUMMARY:
+- Wired `POST /` to add books through the existing workflow.
+- Added screen acceptance tests for rendering, adding, removing, and validation.
+- Full suite: 21 passed.
+- Ruff checks passed.
+
+BLOCKERS:
+- None

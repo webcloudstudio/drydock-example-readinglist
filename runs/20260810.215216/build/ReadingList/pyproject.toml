@@ -1,0 +1,8 @@
+[project]
+name = "reading-list"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["flask>=3.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.4"]

@@ -1,0 +1,17 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — workspace
+
+Target: ReadingList
+   Phase:     Loop
+   State:     All 9 blocks verified — ready for Refit
+   Detail:    1 imported · 9 authored · metadata built
+   Analysis:  Questions · 6 stories · 2 questions · 0 blockers
+   Plan:      approved · 9/9 verified · 0 pending
+   Review:    BLOCKERS.md none · 2 questionnaires
+   Next Step: drydock refit ReadingList BOTH <Scope> <Change>
+   8-10:      ✅  drydock build status ReadingList
+   8-10:      ✅  drydock build ReadingList --override
+   8-10:      ✅  drydock build status ReadingList
+   8-10:      ✅  drydock plan ReadingList --override
+   8-10:      ✅  drydock analyze ReadingList
+

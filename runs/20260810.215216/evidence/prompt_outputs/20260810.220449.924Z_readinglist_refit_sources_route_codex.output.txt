@@ -1,0 +1,19 @@
+<requirement name="mark-book-read">
+The reader can mark a book as read and view whether each book is unread or read.
+</requirement>
+
+<story id="mark-read-schema" implements="DATABASE.md" scope="amending" sections="Persistence Interfaces, Schema, Migrations" requirement="mark-book-read" contract="changed">
+Add persisted read state per book, the corresponding BookStore operations, and migration handling for existing rows.
+</story>
+
+<story id="mark-read-route" implements="ARCHITECTURE.md" scope="amending" sections="Application Boundary, Programmatic Acceptance" requirement="mark-book-read" contract="changed" depends="mark-read-schema">
+Add the route and application behavior for marking a selected book as read.
+</story>
+
+<story id="mark-read-view" implements="SCREEN-Reading-List.md" scope="amending" sections="Layout and Interactions, Programmatic Acceptance" requirement="mark-book-read" depends="mark-read-route">
+Display each book's unread or read state and provide the mark-read control.
+</story>
+
+<story id="mark-read-verification" implements="FEATURE-Verification.md" scope="amending" sections="Verification Workflow, Programmatic Acceptance" requirement="mark-book-read" depends="mark-read-schema, mark-read-route, mark-read-view">
+Add automated coverage for persisted read state, marking books read, and rendering read and unread states.
+</story>

@@ -1,0 +1,20 @@
+<requirement name="keep-reading-list" stories="database">
+Build a web application that keeps a list of books to read.
+</requirement>
+<requirement name="manage-books" stories="add-book,list-books,remove-book,reading-list-screen">
+The reader can add a book with a title and author, view the books in the order added,
+and remove a book.
+</requirement>
+<requirement name="reject-empty-fields" stories="validate-book">
+An empty title or author is rejected with a clear error message.
+</requirement>
+<requirement name="automated-verification" stories="verification">
+The application includes automated tests for each behavior.
+
+The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete
+automated test suite from the application root. `sh bin/test.sh` exits zero only when every test
+passes. The final build story runs this command after every implementation story and preserves its
+command, exit code, standard output, and standard error as evidence.
+</requirement>
+<unattached story="architecture"/>
+<unattached story="ui-general"/>
