@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-3.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-3.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-3.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 3 · Service (block-3)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-14</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5398</li><li>execution id: 20260814.140438.053Z-34e9e9d3</li></ul>
+<h2>Stories built</h2>
+<ul><li>Add valid books to the reading list. (reading-list-add) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 729)</li><li>implements: FEATURE-AddBook.md (SP 809)</li><li>context: ARCHITECTURE_compact.md (SP 156)</li><li>context: DATABASE_compact.md (SP 154)</li><li>stack: flask_compact.md (SP 1083)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: sqlite_compact.md (SP 876)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app/routes.py</li><li>app/templates/reading_list.html</li><li>tests/test_routes.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>UNVERIFIED: add-route-reachable (FEATURE-AddBook.md)</li></ul>
+<p>intent: The book creation route accepts a valid submission. error: unverified acceptance: acceptance environment unavailable: Target Python project has no .venv</p>
+<ul><li>UNVERIFIED: add-persists-book (FEATURE-AddBook.md)</li></ul>
+<p>intent: A valid route submission is stored and readable through the persistence interface. error: unverified acceptance: acceptance environment unavailable: Target Python project has no .venv</p>
+<ul><li>UNVERIFIED: add-preserves-existing-order (FEATURE-AddBook.md)</li></ul>
+<p>intent: Adding a book leaves existing books first and appends the new book. error: unverified acceptance: acceptance environment unavailable: Target Python project has no .venv</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>UNVERIFIED: add-route-reachable (FEATURE-AddBook.md)</li></ul>
+<p>intent: The book creation route accepts a valid submission. provisioning: not required error: unverified acceptance: acceptance environment unavailable: Target Python project has no .venv</p>
+<ul><li>UNVERIFIED: add-persists-book (FEATURE-AddBook.md)</li></ul>
+<p>intent: A valid route submission is stored and readable through the persistence interface. provisioning: not required error: unverified acceptance: acceptance environment unavailable: Target Python project has no .venv</p>
+<ul><li>UNVERIFIED: add-preserves-existing-order (FEATURE-AddBook.md)</li></ul>
+<p>intent: Adding a book leaves existing books first and appends the new book. provisioning: not required error: unverified acceptance: acceptance environment unavailable: Target Python project has no .venv</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app/routes.py</li><li>app/templates/reading_list.html</li><li>tests/test_routes.py</li></ul>
+<p>SUMMARY: Implemented <code>POST /books</code> with validation, persistence, redirect, ordered display, and form UI. Full suite: 18 passed. All 3 acceptance checks passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

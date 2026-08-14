@@ -1,0 +1,14 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — ReadingList / ReadingList
+
+  Target          /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList
+  Phase           Implement
+  State           0/10 verified  ·  10 pending
+  Metadata        planned · approved
+  Sources         1 imported · 10 authored blueprint files
+  Analysis        Questions · 8 stories · 2 questions · 0 blockers
+  Review          No blockers · 2 questionnaires
+  Blueprint       ✓  0 errors · 0 warnings
+  Plan            approved · 0/10 verified  pending 10 · implemented 0 · failed 0
+  Frontier        architecture: Establish the ReadingList application architecture and web entry point.
+  Next step       drydock build ReadingList  (frontier: Establish the ReadingList application architecture and web entry point.)

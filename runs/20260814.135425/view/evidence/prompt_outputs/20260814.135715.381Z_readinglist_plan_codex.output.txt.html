@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20260814.135715.381Z_readinglist_plan_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20260814.135715.381Z_readinglist_plan_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20260814.135715.381Z_readinglist_plan_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT ARCHITECTURE.md ===
+# ARCHITECTURE: ReadingList
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260814 V1 |
+| Description | Defines the Flask application structure, boundaries, and runtime entry point for ReadingList. |
+| Depends On  | — |
+| Provides    | application factory |
+| Consumes    | — |
+
+## Questions
+
+- None.
+
+## Purpose
+
+ReadingList is a small Flask web application for maintaining an ordered list of books and tracking read status.
+
+## Application Structure
+
+- `app/__init__.py` owns the application factory.
+- `app/routes.py` owns HTTP route registration and request handling.
+- `app/database.py` owns the persistence boundary.
+- `templates/` owns server-rendered HTML.
+- `static/` owns browser styling and assets.
+- `tests/` owns automated behavior coverage.
+- `bin/test.sh` is the root-level test command.
+
+The application factory must accept optional test configuration and return an isolated Flask application instance. Runtime configuration must identify the SQLite database location. Route code may use the persistence interface but must not access SQLite connections or SQL statements directly.
+
+## Route Ownership
+
+Feature specifications own the following workflows:
+
+- `POST /books` — create a valid book.
+- `POST /books/{id}/read` — mark one book as read.
+- `POST /books/{id}/delete` — remove one book.
+
+The reading-list screen owns `GET /` and renders the current collection.
+
+## Technology Stack
+
+- Python provides the implementation language and test tooling.
+- Flask provides the web application and test client.
+- SQLite provides local persistence.
+- pytest provides automated tests.
+- HTML/CSS provides the browser interface.
+
+## Module Ownership
+
+| Boundary | Owner | Allowed low-level access |
+|---|---|---|
+| Application configuration | `app` | Flask configuration APIs |
+| HTTP routing | `app.routes` | Flask request/response APIs and persistence interfaces |
+| Persistence | `app.database` | SQLite APIs |
+| Presentation | templates and static assets | HTML/CSS only |
+| Verification | `tests` | Public application and persistence interfaces |
+
+## Programmatic Acceptance
+
+Requires: python-package=flask; scope=runtime
+
+=== AC architecture-factory ===
+Intent: The application exposes an isolated Flask application factory and a usable test client.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+assert app is not None
+client = app.test_client()
+assert client is not None
+assert app.config[&quot;TESTING&quot;] is True
+=== END AC architecture-factory ===
+
+=== AC architecture-isolation ===
+Intent: Separate factory calls produce independently configurable application instances.
+from app import create_app
+
+first = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;})
+second = create_app({&quot;TESTING&quot;: False, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;})
+
+assert first is not second
+assert first.config[&quot;TESTING&quot;] is True
+assert second.config[&quot;TESTING&quot;] is False
+=== END AC architecture-isolation ===
+
+=== AC architecture-entry-point ===
+Intent: The factory-created application has a registered root entry point.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+routes = {rule.rule for rule in app.url_map.iter_rules()}
+assert &quot;/&quot; in routes
+=== END AC architecture-entry-point ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Route handlers must not access raw SQLite details.
+- The application must be runnable from the project root.
+- Application instances must not depend on mutable global runtime state.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT DATABASE.md ===
+# DATABASE: ReadingList Persistence
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260814 V1 |
+| Description | Defines the SQLite persistence interface and schema for ordered books and read status. |
+| Depends On  | ARCHITECTURE.md |
+| Provides    | books persistence interface |
+| Consumes    | application factory |
+
+## Questions
+
+- None.
+
+## Access Patterns
+
+| Caller | Operation | Store | Interface |
+|---|---|---|---|
+| Book creation workflow | Create a book | SQLite `books` table | `Database.create_book` |
+| Reading-list screen and status workflow | List books | SQLite `books` table | `Database.list_books` |
+| Removal workflow | Delete a book | SQLite `books` table | `Database.delete_book` |
+| Mark-read workflow | Update status | SQLite `books` table | `Database.mark_book_read` |
+
+## Persistence Interfaces
+
+### `Database`
+
+Location: `app.database`
+
+Allowed callers: application routes and tests.
+
+Public methods:
+
+- `Database(path)`
+- `create_book(title, author) -&gt; Book`
+- `list_books() -&gt; list[Book]`
+- `delete_book(book_id) -&gt; bool`
+- `mark_book_read(book_id) -&gt; bool`
+
+`Book` exposes `id`, `title`, `author`, and `is_read`.
+
+The constructor creates the database schema when needed. Each operation manages its own connection and returns state through the typed interface. Callers never receive raw connections or cursors.
+
+## Schema
+
+The `books` table contains:
+
+- `id` — integer primary key; its ascending value defines insertion order.
+- `title` — non-empty text.
+- `author` — non-empty text.
+- `is_read` — boolean-compatible integer, defaulting to unread.
+
+No timestamp is required for ordering.
+
+## Migrations and Initialization
+
+Schema creation is idempotent. A fresh configured SQLite path is sufficient to start the application. Existing rows remain available across application instances using the same path.
+
+## Programmatic Acceptance
+
+Requires: python-package=pytest; scope=test
+
+=== AC database-create-read ===
+Intent: A created book is persisted and can be read back through a separate database operation.
+from app.database import Database
+
+database_path = &quot;acceptance-create-read.sqlite&quot;
+title = &quot;The Left Hand of Darkness&quot;
+author = &quot;Ursula K. Le Guin&quot;
+database = Database(database_path)
+
+created = database.create_book(title, author)
+books = database.list_books()
+
+assert len(books) == 1
+book = books[0]
+assert book.id == created.id
+assert book.title == title
+assert book.author == author
+assert book.is_read is False
+=== END AC database-create-read ===
+
+=== AC database-order ===
+Intent: Listing returns books in insertion order.
+from app.database import Database
+
+database = Database(&quot;acceptance-order.sqlite&quot;)
+first_title = &quot;First Book&quot;
+first_author = &quot;First Author&quot;
+second_title = &quot;Second Book&quot;
+second_author = &quot;Second Author&quot;
+
+database.create_book(first_title, first_author)
+database.create_book(second_title, second_author)
+books = database.list_books()
+
+assert [book.title for book in books] == [first_title, second_title]
+assert [book.author for book in books] == [first_author, second_author]
+=== END AC database-order ===
+
+=== AC database-update-delete ===
+Intent: Read-status updates and deletion persist through subsequent reads.
+from app.database import Database
+
+database = Database(&quot;acceptance-update-delete.sqlite&quot;)
+title = &quot;A Book&quot;
+author = &quot;An Author&quot;
+created = database.create_book(title, author)
+
+updated = database.mark_book_read(created.id)
+assert updated is True
+read_back = database.list_books()
+assert read_back[0].is_read is True
+
+deleted = database.delete_book(created.id)
+assert deleted is True
+assert database.list_books() == []
+=== END AC database-update-delete ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- All book persistence is encapsulated by `Database`.
+- Empty titles and authors must never be stored.
+- Listing must always use ascending insertion order.
+- Read status must be preserved across reads and application instances.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT SCREEN-ReadingList.md ===
+# SCREEN: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260814 V1 |
+| Description | Defines the browser screen for viewing and managing the ordered reading list. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md, FEATURE-ValidateBook.md, FEATURE-OrderAndStatus.md, FEATURE-RemoveBook.md, FEATURE-MarkRead.md |
+| Provides    | GET / |
+| Consumes     | GET /, POST /books, POST /books/{id}/read, POST /books/{id}/delete |
+| Route       | / |
+| Parent      | — |
+| Main Menu   | Reading List (1) |
+| Sub Menu    | — |
+| Tab Order   | 1 |
+
+## Questions
+
+- None.
+
+## Layout and Interactions
+
+The screen contains:
+
+- a page heading identifying the reading list;
+- an add-book form with title and author fields;
+- the current books in insertion order;
+- each book&#x27;s title, author, and unread/read state;
+- a mark-read control for unread books;
+- a remove control for each book;
+- a useful empty state when no books exist.
+
+The screen submits the form to `POST /books`, marks books read through `POST /books/{id}/read`, and removes books through `POST /books/{id}/delete`. After each operation, the screen displays the resulting collection.
+
+While a request is loading, the interface presents a loading state appropriate to the rendered interaction.
+
+## Programmatic Acceptance
+
+Requires: python-package=flask; scope=runtime
+
+=== AC screen-root ===
+Intent: The reading-list screen is reachable and returns a successful response.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;})
+client = app.test_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+=== END AC screen-root ===
+
+=== AC screen-empty-state ===
+Intent: An empty collection can be rendered successfully.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;})
+client = app.test_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+assert response.data is not None
+=== END AC screen-empty-state ===
+
+=== AC screen-workflow-routes ===
+Intent: The screen can invoke each declared book workflow route.
+from app import create_app
+from app.database import Database
+
+database_path = &quot;acceptance-screen.sqlite&quot;
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path})
+client = app.test_client()
+title = &quot;Screen Book&quot;
+author = &quot;Screen Author&quot;
+
+created_response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert created_response.status_code in (200, 302, 303)
+
+book = Database(database_path).list_books()[0]
+read_response = client.post(f&quot;/books/{book.id}/read&quot;)
+assert read_response.status_code in (200, 302, 303)
+
+delete_response = client.post(f&quot;/books/{book.id}/delete&quot;)
+assert delete_response.status_code in (200, 302, 303)
+
+final_response = client.get(&quot;/&quot;)
+assert final_response.status_code == 200
+=== END AC screen-workflow-routes ===
+
+## User Acceptance
+
+- A reader can identify the reading-list screen, add-book form, current books, status controls, and removal controls.
+- While an interaction is loading, the interface presents a recognizable loading state.
+
+## Guardrails
+
+- Books remain in addition order.
+- Every displayed book shows unread or read status.
+- Invalid submissions are not displayed.
+- The screen must not expose raw database details.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-AddBook.md ===
+# FEATURE: Add Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260814 V1 |
+| Description | Defines the workflow for creating and displaying a valid book. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md |
+| Provides    | POST /books |
+| Consumes     | books persistence interface |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader submits a title and author through the reading-list form. The application validates the submission before persistence, creates the book through `Database.create_book`, and returns a response that makes the new book available to the reading-list view.
+
+## Route
+
+`POST /books`
+
+Input fields:
+
+- `title`
+- `author`
+
+A valid submission is persisted and returns HTTP `303`, redirecting to `/`.
+
+## Reads and Writes
+
+- Reads submitted title and author.
+- Writes one row through the books persistence interface.
+- Does not reorder existing books.
+- Does not alter the read status of existing books.
+
+## Programmatic Acceptance
+
+Requires: python-package=flask; scope=runtime
+
+=== AC add-route-reachable ===
+Intent: The book creation route accepts a valid submission.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;})
+client = app.test_client()
+title = &quot;A Valid Book&quot;
+author = &quot;A Valid Author&quot;
+
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code == 303
+=== END AC add-route-reachable ===
+
+=== AC add-persists-book ===
+Intent: A valid route submission is stored and readable through the persistence interface.
+from app import create_app
+from app.database import Database
+
+database_path = &quot;acceptance-add.sqlite&quot;
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path})
+client = app.test_client()
+title = &quot;Stored Title&quot;
+author = &quot;Stored Author&quot;
+
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code == 303
+
+books = Database(database_path).list_books()
+assert len(books) == 1
+assert books[0].title == title
+assert books[0].author == author
+assert books[0].is_read is False
+=== END AC add-persists-book ===
+
+=== AC add-preserves-existing-order ===
+Intent: Adding a book leaves existing books first and appends the new book.
+from app import create_app
+from app.database import Database
+
+database_path = &quot;acceptance-add-order.sqlite&quot;
+database = Database(database_path)
+first_title = &quot;Existing Title&quot;
+first_author = &quot;Existing Author&quot;
+second_title = &quot;Added Title&quot;
+second_author = &quot;Added Author&quot;
+database.create_book(first_title, first_author)
+
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path})
+response = app.test_client().post(
+    &quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}
+)
+assert response.status_code == 303
+
+books = Database(database_path).list_books()
+assert [book.title for book in books] == [first_title, second_title]
+assert [book.author for book in books] == [first_author, second_author]
+=== END AC add-preserves-existing-order ===
+
+## User Acceptance
+
+- A reader can submit a title and author and see the new book in the reading list.
+
+## Guardrails
+
+- Only valid submissions reach `Database.create_book`.
+- A successful addition does not reorder existing books.
+- Newly added books are unread.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-ValidateBook.md ===
+# FEATURE: Validate Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260814 V1 |
+| Description | Defines validation and error handling for incomplete book submissions. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md |
+| Provides    | book submission validation |
+| Consumes     | POST /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The application rejects a submission when its title or author is empty, including when the value contains only surrounding whitespace. Rejected submissions return HTTP `400`, preserve the form context, and do not create a database row. The response includes a clear reason for the rejection for the reader.
+
+## Validation Rules
+
+- Reject an empty title.
+- Reject an empty author.
+- Reject a title or author that becomes empty after surrounding whitespace is removed.
+- Never persist or display a rejected book.
+
+## Programmatic Acceptance
+
+Requires: python-package=flask; scope=runtime
+
+=== AC validation-route-reachable ===
+Intent: The creation route exposes a contractually defined failure response for an incomplete submission.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;})
+client = app.test_client()
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Author&quot;})
+assert response.status_code == 400
+=== END AC validation-route-reachable ===
+
+=== AC validation-empty-title ===
+Intent: An empty title is rejected without persistence.
+from app import create_app
+from app.database import Database
+
+database_path = &quot;acceptance-empty-title.sqlite&quot;
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path})
+client = app.test_client()
+author = &quot;Known Author&quot;
+
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: author})
+assert response.status_code == 400
+assert Database(database_path).list_books() == []
+=== END AC validation-empty-title ===
+
+=== AC validation-empty-author ===
+Intent: An empty author is rejected without persistence.
+from app import create_app
+from app.database import Database
+
+database_path = &quot;acceptance-empty-author.sqlite&quot;
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path})
+client = app.test_client()
+title = &quot;Known Title&quot;
+
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;})
+assert response.status_code == 400
+assert Database(database_path).list_books() == []
+=== END AC validation-empty-author ===
+
+=== AC validation-whitespace ===
+Intent: Whitespace-only title and author values are rejected without persistence.
+from app import create_app
+from app.database import Database
+
+database_path = &quot;acceptance-whitespace.sqlite&quot;
+app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path})
+client = app.test_client()
+whitespace = &quot;   &quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: whitespace, &quot;author&quot;: whitespace})
+
+assert response.status_code == 400
+assert Database(database_path).list_books() == []
+=== END AC validation-whitespace ===
+
+## User Acceptance
+
+- A reader receives a clear reason when a title or author is missing.
+
+## Guardrails
+
+- Empty titles and authors are never stored.
+- Empty titles and authors are never displayed as books.
+- Validation occurs before persistence.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

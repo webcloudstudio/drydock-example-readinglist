@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/README.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/README.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/README.md">Raw file</a></div></header>
+<article class="doc"><h1>ReadingList</h1>
+<p>A web application for maintaining an ordered reading list of books and tracking which books have been read.</p>
+<h2>Intent</h2>
+<p>ReadingList is a small web application for readers who want to maintain an ordered list of books to read. A reader can add books with a title and author, inspect their reading status, mark books as read, and remove books. The application exists to make this workflow simple and verifiable.</p>
+<h2>What It Does</h2>
+<p>A reader submits a title and author through the reading-list form. The application validates the submission before persistence, creates the book through <code>Database.create_book</code>, and returns a response that makes the new book available to the reading-list view.</p>
+<p>The project test suite verifies the public reading-list workflows, including creation, validation, ordering, removal, marking books read, and displaying status.</p>
+<p>The application root provides an executable <code>bin/test.sh</code> command. Running <code>sh bin/test.sh</code> invokes the complete automated suite and returns success only when the suite succeeds.</p>
+<p>A reader can mark a book as read. The selected book&#x27;s persisted status changes from unread to read and is shown as read on the next list view.</p>
+<p>Books are retrieved in their addition order. Each book exposes a durable read-status value of unread or read, and later reads preserve that status.</p>
+<p>A reader can remove a selected book, after which the book is absent from the next reading-list view while other books remain available.</p>
+<p>The application rejects a submission when its title or author is empty, including when the value contains only surrounding whitespace. Rejected submissions return HTTP <code>400</code>, preserve the form context, and do not create a database row. The response includes a clear reason for the rejection for the reader.</p>
+<p>Defines the browser screen for viewing and managing the ordered reading list.</p>
+<h2>Setup and Running</h2>
+<p><strong>Before first run:</strong></p>
+<ul><li>Confirm the repository has the expected remote with <code>git remote -v</code>; add <code>origin</code> if the startup guard requires it.</li><li>Run <code>git status --short</code> and commit or intentionally stash local changes before deployment-oriented runs.</li></ul>
+<p><strong>Install dependencies:</strong></p>
+<pre><code>pip install -e .</code></pre>
+<p><strong>Start the application:</strong></p>
+<pre><code>python run.py</code></pre>
+<h2>Verification</h2>
+<pre><code>bash bin/test.sh</code></pre>
+<h2>Next Steps</h2>
+<ul><li>Complete the first-run checks above.</li><li>Start the application with <code>python run.py</code>.</li><li>Run <code>bash bin/test.sh</code> before making release or deployment changes.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20260814.135433.082Z_readinglist_analyze_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20260814.135433.082Z_readinglist_analyze_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20260814.135433.082Z_readinglist_analyze_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT ANALYSIS.md ===
+# Blueprint Analysis: ReadingList
+
+## Commander Expectations
+
+- assert the product provides a web application for maintaining a reading list of books.
+- assert readers can add, view, remove, and mark books as read.
+- assert the complete automated test suite passes through `sh bin/test.sh`.
+
+## Crew
+
+| Crew | Charge |
+|---|---|
+| Commander | Defines intent and decides what done means. |
+| Team Lead | Confirms epic completeness and stakeholder expectations. |
+| Planning Crew | Authors atomic specifications and the ordered Manifest. |
+| Shipyard Crew | Builds the tickets without synchronous Commander access. |
+
+## Story List
+
+### Feature: Reading List Management
+
+| ID | Story | High-level AC |
+|---|---|---|
+| READING-LIST-001 | View the reading-list entry screen | A reader can open the web application and see the reading-list interface and current books. |
+| READING-LIST-002 | Add a book | Submitting a title and author stores the book and displays it in the list. |
+| READING-LIST-003 | Reject incomplete book submissions | An empty title or author is rejected with a clear reason. |
+| READING-LIST-004 | Preserve book order and reading status | Books appear in addition order, and each book displays whether it is unread or read. |
+| READING-LIST-005 | Remove a book | Removing a book omits it from the next list view. |
+| READING-LIST-006 | Mark a book as read | Marking a book as read stores the change and displays it as read on the next view. |
+
+### Feature: Automated Verification
+
+| ID | Story | High-level AC |
+|---|---|---|
+| AUTOMATED-VERIFICATION-001 | Cover reading-list behaviors with automated tests | Automated tests cover adding, ordering, removal, validation, marking read, and read-status display. |
+| AUTOMATED-VERIFICATION-002 | Provide the complete test command | POSIX-compatible `bin/test.sh` runs the complete suite and exits zero only when every test passes. |
+
+## Surfaced Acceptance Criteria
+
+| ID | Story ID | Criterion |
+|---|---|---|
+| AC-001 | READING-LIST-001 | The primary web entry point shall present the reading-list interface without requiring undocumented setup steps. |
+| AC-002 | READING-LIST-001 | When the list contains no books, the interface shall present a useful empty state. |
+| AC-003 | READING-LIST-001 | While the list is being loaded, the interface shall present a loading state. |
+| AC-004 | READING-LIST-003 | If a book operation fails, then the interface shall show a clear error message. |
+
+## Relationship Model
+
+| Source or group | Relationship type | Related source or group | Evidence | Delivery implication |
+|---|---|---|---|---|
+| `sources/reading-list.md` | instruction-to-test | Automated Verification | Source explicitly requires automated tests for each behavior. | Build focused tests alongside each behavior and retain a terminal full-suite story. |
+| `sources/reading-list.md` | dependency | Reading List Management | Adding, ordering, removing, and validation are the stated product behaviors. | Implement the persistent book model and list workflow before terminal verification. |
+| `sources/reading-list.md` | dependency | `bin/test.sh` | Source requires a POSIX-compatible command from the application root. | The test command must be executable from the repository root and run the complete suite. |
+
+## Source Roles
+
+| Path | Role | Plan disposition | Build disposition |
+|---|---|---|---|
+| `sources/reading-list.md` | author intent | compass | prompt-only |
+
+## Planning Instructions
+
+### Delivery Shape
+
+A small stateful web application accepts book title and author input, persists books and read status, and renders the collection in insertion order. The primary flow is: open the reading-list screen, add a valid book, view its status and position, optionally mark it read, and remove it. Automated tests provide scoped behavior coverage, with `bin/test.sh` as the terminal full-suite gate.
+
+### Story Realization Map
+
+| Story ID | Blueprint scope | Evidence | Related files | Delivery type |
+|---|---|---|---|---|
+| READING-LIST-001 | Web entry point and list screen | `sources/reading-list.md` | Application templates and static assets | capability |
+| READING-LIST-002 | Book creation workflow | `sources/reading-list.md` | Book model/store and create route | capability, persistence |
+| READING-LIST-003 | Submission validation and error display | `sources/reading-list.md` | Validation logic and form rendering | capability |
+| READING-LIST-004 | Ordered list and read-status presentation | `sources/reading-list.md`, `SEA_TRIALS.md` | List query and view template | capability, persistence |
+| READING-LIST-005 | Book removal workflow | `sources/reading-list.md` | Delete route and store operation | capability, persistence |
+| READING-LIST-006 | Mark-read workflow | `SEA_TRIALS.md` | Read-status update route and store operation | capability, persistence |
+| AUTOMATED-VERIFICATION-001 | Behavior-focused automated coverage | `sources/reading-list.md`, `SEA_TRIALS.md` | Test modules and fixtures | test harness |
+| AUTOMATED-VERIFICATION-002 | Root-level complete test command | `sources/reading-list.md`, `SEA_TRIALS.md` | `bin/test.sh` | acceptance contract |
+
+### Test and Acceptance Strategy
+
+Each behavior story owns focused tests for its acceptance slice. The automated coverage story verifies all required behaviors. The terminal verification story runs the complete suite through `sh bin/test.sh`; its assertion is the full-suite proof gate. Final Sea Trials preserve the supplied stable acceptance IDs and verify the complete suite without a numeric threshold.
+
+### Sequencing and Dependencies
+
+Select and establish the runtime and persistence boundary first, then implement the book model/store, web entry point, creation and validation flows, list/status behavior, removal, and mark-read behavior. Add focused tests with each capability. Finish with the root-level test command and complete-suite verification. The test command depends on every implementation and test story.
+
+### Source Conflicts and Gaps
+
+No conflicting source definitions were supplied. Deployment target and help/support expectations are not stated and remain non-gating Commander questions. The source does not name a stack; a conventional local stack is proposed in `TECHNOLOGY_STACK.md`.
+
+## Analysis Notes
+
+generated: 2026-08-14T00:00:00-04:00
+blueprint: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList/blueprint
+
+Quality: Questions
+  blockers: 0
+  questions: 4
+  features: 2
+  stories: 8
+  stack: proposed Python/Flask/SQLite/pytest/POSIX shell
+  display_name: ReadingList
+  short_description: A web application for maintaining an ordered reading list of books and tracking which books have been read.
+
+None.
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT SEA_TRIALS.md ===
+# Sea Trials: ReadingList
+
+## st-001: Test suite passes
+
+Type: technical
+Required: yes
+Criterion: The application shall provide a POSIX-compatible `bin/test.sh` that exits zero when every automated test passes.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: ubiquitous
+
+## st-002: A book can be added
+
+Type: behavioral
+Required: yes
+Criterion: When a reader submits a title and an author, the application shall store the book and show it in the list.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: event
+
+## st-003: Books appear in the order added
+
+Type: behavioral
+Required: yes
+Criterion: The application shall present books in the order they were added.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: ubiquitous
+
+## st-004: A book can be removed
+
+Type: behavioral
+Required: yes
+Criterion: When a reader removes a book, the application shall omit it from the list on the next read.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: event
+
+## st-005: Empty fields are rejected
+
+Type: behavioral
+Required: yes
+Criterion: If a submission carries an empty title or an empty author, then the application shall reject it and report the reason.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: unwanted
+
+## st-006: Every behavior is covered by a test
+
+Type: technical
+Required: yes
+Criterion: The application shall carry automated tests for adding a book, listing books in the order added, removing a book, rejecting an empty title or author, marking a book as read, and displaying whether each book is unread or read.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: ubiquitous
+
+## st-007: A book can be marked as read
+
+Type: behavioral
+Required: yes
+Criterion: When a reader marks a book as read, the application shall store the change and show that book as read instead of unread on the next view.
+Testability: deterministic
+Consequence: blocks
+Verification: proof
+Pattern: event
+
+## Questions
+
+- None.
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT TECHNOLOGY_STACK.md ===
+# Technology Stack
+
+| Technology | Rigging | Notes |
+|---|---|---|
+| Python | `python.md` | Conventional language choice because the source names no runtime. |
+| Flask | `flask.md` | Conventional lightweight web framework because the source requires a web application but names no framework. |
+| SQLite | `sqlite.md` | Conventional local persistence for the stated single reading-list workflow. |
+| pytest | — | Conventional Python test runner for the required automated suite. |
+| POSIX shell (`sh`) | `common.md` | Required for the portable `bin/test.sh` command. |
+| HTML/CSS | — | Conventional browser presentation layer. |
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT COMPASS.md ===
+# COMPASS: ReadingList
+
+## Compass
+ReadingList is a small web application for readers who want to maintain an ordered list of books to read. A reader can add books with a title and author, inspect their reading status, mark books as read, and remove books. The application exists to make this workflow simple and verifiable.
+
+## Constraints
+- Provide a web application entry point.
+- Preserve books in the order they were added.
+- Provide a POSIX-compatible `bin/test.sh` runnable from the application root.
+- The complete automated suite must pass through that command.
+- Reject empty titles and authors with a clear reason.
+
+## Guardrails
+- Never store or display a book submission with an empty title or author.
+- Never reorder books independently of their addition order.
+- Never claim the full test suite passes unless every automated test passes.
+- Preserve and display the unread/read state for each book.
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT discovery-identity.json ===
+{
+  &quot;id&quot;: &quot;discovery-identity&quot;,
+  &quot;title&quot;: &quot;Discovery: Project Identity&quot;,
+  &quot;purpose&quot;: &quot;Confirm the proposed display name and short description before planning.&quot;,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;display_name&quot;,
+      &quot;label&quot;: &quot;Display Name&quot;,
+      &quot;prompt&quot;: &quot;The display name Drydock will use for this project. Edit to override the proposal.&quot;,
+      &quot;input&quot;: &quot;text&quot;,
+      &quot;proposed&quot;: &quot;ReadingList&quot;,
+      &quot;answer&quot;: &quot;ReadingList&quot;
+    },
+    {
+      &quot;id&quot;: &quot;short_description&quot;,
+      &quot;label&quot;: &quot;Short Description&quot;,
+      &quot;prompt&quot;: &quot;One-sentence description of what this project does. Edit to override the proposal.&quot;,
+      &quot;input&quot;: &quot;textarea&quot;,
+      &quot;proposed&quot;: &quot;A web application for maintaining an ordered reading list of books and tracking which books have been read.&quot;,
+      &quot;answer&quot;: &quot;A web application for maintaining an ordered reading list of books and tracking which books have been read.&quot;
+    }
+  ]
+}
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT discovery-gaps.json ===
+{
+  &quot;id&quot;: &quot;discovery-gaps&quot;,
+  &quot;title&quot;: &quot;Discovery: Product Context Gaps&quot;,
+  &quot;purpose&quot;: &quot;Capture the remaining human-owned decisions about operating context that are not specified by the source.&quot;,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;deployment_target&quot;,
+      &quot;label&quot;: &quot;Deployment Target&quot;,
+      &quot;prompt&quot;: &quot;Where should the ReadingList web application run for release: local/self-hosted only, an internal environment, or a public hosted environment?&quot;,
+      &quot;input&quot;: &quot;textarea&quot;,
+      &quot;required_before_plan&quot;: false,
+      &quot;answer&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;help_support&quot;,
+      &quot;label&quot;: &quot;Help and Support&quot;,
+      &quot;prompt&quot;: &quot;Should the web application provide a dedicated help or support entry reachable from navigation, or is the simple reading-list screen sufficient?&quot;,
+      &quot;input&quot;: &quot;textarea&quot;,
+      &quot;required_before_plan&quot;: false,
+      &quot;answer&quot;: &quot;&quot;
+    }
+  ]
+}
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

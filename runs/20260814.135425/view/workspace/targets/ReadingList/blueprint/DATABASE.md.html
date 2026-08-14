@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE.md">Raw file</a></div></header>
+<article class="doc"><h1>DATABASE: ReadingList Persistence</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260814 V1</td></tr><tr><td>Description</td><td>Defines the SQLite persistence interface and schema for ordered books and read status.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>books persistence interface</td></tr><tr><td>Consumes</td><td>application factory</td></tr></tbody></table></div>
+<h2>Access Patterns</h2>
+<div class="scroll"><table><thead><tr><th>Caller</th><th>Operation</th><th>Store</th><th>Interface</th></tr></thead><tbody><tr><td>Book creation workflow</td><td>Create a book</td><td>SQLite <code>books</code> table</td><td><code>Database.create_book</code></td></tr><tr><td>Reading-list screen and status workflow</td><td>List books</td><td>SQLite <code>books</code> table</td><td><code>Database.list_books</code></td></tr><tr><td>Removal workflow</td><td>Delete a book</td><td>SQLite <code>books</code> table</td><td><code>Database.delete_book</code></td></tr><tr><td>Mark-read workflow</td><td>Update status</td><td>SQLite <code>books</code> table</td><td><code>Database.mark_book_read</code></td></tr></tbody></table></div>
+<h2>Persistence Interfaces</h2>
+<h3><code>Database</code></h3>
+<p>Location: <code>app.database</code></p>
+<p>Allowed callers: application routes and tests.</p>
+<p>Public methods:</p>
+<ul><li><code>Database(path)</code></li><li><code>create_book(title, author) -&gt; Book</code></li><li><code>list_books() -&gt; list[Book]</code></li><li><code>delete_book(book_id) -&gt; bool</code></li><li><code>mark_book_read(book_id) -&gt; bool</code></li></ul>
+<p><code>Book</code> exposes <code>id</code>, <code>title</code>, <code>author</code>, and <code>is_read</code>.</p>
+<p>The constructor creates the database schema when needed. Each operation manages its own connection and returns state through the typed interface. Callers never receive raw connections or cursors.</p>
+<h2>Schema</h2>
+<p>The <code>books</code> table contains:</p>
+<ul><li><code>id</code> — integer primary key; its ascending value defines insertion order.</li><li><code>title</code> — non-empty text.</li><li><code>author</code> — non-empty text.</li><li><code>is_read</code> — boolean-compatible integer, defaulting to unread.</li></ul>
+<p>No timestamp is required for ordering.</p>
+<h2>Migrations and Initialization</h2>
+<p>Schema creation is idempotent. A fresh configured SQLite path is sufficient to start the application. Existing rows remain available across application instances using the same path.</p>
+<h2>Programmatic Acceptance</h2>
+<p>Requires: python-package=pytest; scope=test</p>
+<p>=== AC database-create-read ===<br>Intent: A created book is persisted and can be read back through a separate database operation. from app.database import Database</p>
+<p>database_path = &quot;acceptance-create-read.sqlite&quot; title = &quot;The Left Hand of Darkness&quot; author = &quot;Ursula K. Le Guin&quot; database = Database(database_path)</p>
+<p>created = database.create_book(title, author) books = database.list_books()</p>
+<p>assert len(books) == 1 book = books[0] assert book.id == created.id assert book.title == title assert book.author == author assert book.is_read is False === END AC database-create-read ===</p>
+<p>=== AC database-order ===<br>Intent: Listing returns books in insertion order. from app.database import Database</p>
+<p>database = Database(&quot;acceptance-order.sqlite&quot;) first_title = &quot;First Book&quot; first_author = &quot;First Author&quot; second_title = &quot;Second Book&quot; second_author = &quot;Second Author&quot;</p>
+<p>database.create_book(first_title, first_author) database.create_book(second_title, second_author) books = database.list_books()</p>
+<p>assert [book.title for book in books] == [first_title, second_title] assert [book.author for book in books] == [first_author, second_author] === END AC database-order ===</p>
+<p>=== AC database-update-delete ===<br>Intent: Read-status updates and deletion persist through subsequent reads. from app.database import Database</p>
+<p>database = Database(&quot;acceptance-update-delete.sqlite&quot;) title = &quot;A Book&quot; author = &quot;An Author&quot; created = database.create_book(title, author)</p>
+<p>updated = database.mark_book_read(created.id) assert updated is True read_back = database.list_books() assert read_back[0].is_read is True</p>
+<p>deleted = database.delete_book(created.id) assert deleted is True assert database.list_books() == [] === END AC database-update-delete ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>All book persistence is encapsulated by <code>Database</code>.</li><li>Empty titles and authors must never be stored.</li><li>Listing must always use ascending insertion order.</li><li>Read status must be preserved across reads and application instances.</li></ul></article>
+</main>
+</body>
+</html>

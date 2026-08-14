@@ -1,0 +1,27 @@
+<reusable-compact filename="ARCHITECTURE.md">
+- `create_app(test_config: dict[str, Any] | None) -> Flask` returns an isolated Flask app; optional config must support `TESTING` and `READING_LIST_DATABASE`.
+- `app.routes` owns HTTP routes; `app.database` owns SQLite access. Routes must not access SQLite directly.
+- Root route: `GET /`, rendering the current reading-list collection.
+- Persistence uses SQLite; application is runnable from the project root via `run.py`.
+- `bin/test.sh` runs the complete pytest suite.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/__init__.py
+- app/database.py
+- app/routes.py
+- app/templates/reading_list.html
+- app/static/style.css
+- tests/conftest.py
+- tests/test_architecture.py
+- bin/test.sh
+- run.py
+- pyproject.toml
+
+SUMMARY:
+Implemented the isolated Flask application factory, SQLite persistence boundary, root web entry point, template, test suite, and POSIX test command. All 4 tests and declared acceptance assertions pass.
+
+BLOCKERS:
+- None

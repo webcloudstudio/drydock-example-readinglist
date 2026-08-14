@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/COMPASS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/COMPASS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/COMPASS.md">Raw file</a></div></header>
+<article class="doc"><h1>COMPASS: ReadingList</h1>
+<h2>Compass</h2>
+<p>ReadingList is a small web application for readers who want to maintain an ordered list of books to read. A reader can add books with a title and author, inspect their reading status, mark books as read, and remove books. The application exists to make this workflow simple and verifiable.</p>
+<h2>Constraints</h2>
+<ul><li>Provide a web application entry point.</li><li>Preserve books in the order they were added.</li><li>Provide a POSIX-compatible <code>bin/test.sh</code> runnable from the application root.</li><li>The complete automated suite must pass through that command.</li><li>Reject empty titles and authors with a clear reason.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never store or display a book submission with an empty title or author.</li><li>Never reorder books independently of their addition order.</li><li>Never claim the full test suite passes unless every automated test passes.</li><li>Preserve and display the unread/read state for each book.</li></ul>
+<p>&lt;!-- drydock:build-write-guardrail:start --&gt;</p>
+<h2>Build Write Guardrail</h2>
+<ul><li>Authorized build directory: <code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/build/ReadingList</code></li><li>Authorized Target directory: <code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList</code></li><li>Build agents have permission to create, modify, and remove files required by the active build block inside these authorized directories.</li><li>No path outside these authorized directories may be modified.</li><li>Protected Drydock artifacts:<ul><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList/blueprint/</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList/MANIFEST.md</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList/COMPASS.md</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList/QuarterDeck/</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList/evidence/</code></li></ul></li></ul>
+<p>&lt;!-- drydock:build-write-guardrail:end --&gt;</p>
+<p>&lt;!-- Drydock author intent sha256=c86a1a56f7d25ca5548192dbe12c57989f5b1ddd34835753e64e7deb83845e3a source=reading-list.md --&gt;</p>
+<h1>Reading List</h1>
+<p>Build a web application that keeps a list of books to read.</p>
+<p>The reader can add a book with a title and author, view the books in the order added, and remove a book. An empty title or author is rejected with a clear error message.</p>
+<p>The application includes automated tests for each behavior.</p>
+<p>The completed application provides a POSIX-compatible <code>bin/test.sh</code> that runs the complete automated test suite from the application root. <code>sh bin/test.sh</code> exits zero only when every test passes. The final build story runs this command after every implementation story and preserves its command, exit code, standard output, and standard error as evidence.</p></article>
+</main>
+</body>
+</html>

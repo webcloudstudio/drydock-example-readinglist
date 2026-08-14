@@ -1,0 +1,14 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — ReadingList / ReadingList
+
+  Target          /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/workspace/targets/ReadingList
+  Phase           Loop
+  State           All 10 blocks verified — ready for Refit
+  Metadata        built · complete
+  Sources         1 imported · 10 authored blueprint files
+  Analysis        Questions · 8 stories · 2 questions · 0 blockers
+  Review          No blockers · 2 questionnaires
+  Blueprint       ✓  0 errors · 0 warnings
+  Plan            approved · 10/10 verified  pending 0 · implemented 0 · failed 0
+  Frontier        (none)
+  Next step       drydock refit ReadingList BOTH <Scope> <Change>

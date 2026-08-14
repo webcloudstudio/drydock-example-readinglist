@@ -1,0 +1,17 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — workspace
+
+Target: ReadingList
+   Phase:     Implement
+   State:     0/10 verified  ·  10 pending
+   Detail:    1 imported · 10 authored · metadata planned
+   Analysis:  Questions · 8 stories · 2 questions · 0 blockers
+   Plan:      approved · 0/10 verified · 10 pending
+   Review:    BLOCKERS.md none · 2 questionnaires
+   Next Step: drydock build ReadingList  (frontier: Establish the ReadingList application architecture and web entry point.)
+   8-14:      ✅  drydock build status ReadingList
+   8-14:      ✅  drydock plan ReadingList --override
+   8-14:      ✅  drydock analyze ReadingList
+   8-14:      ✅  drydock import ReadingList /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/sources --format markdown
+   8-14:      ✅  drydock init ReadingList
+

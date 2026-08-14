@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/books.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/books.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app/books.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Application-facing helpers for reading-list book records.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from flask import Flask
+
+from app.database import Database
+
+
+def _database(app: Flask) -&gt; Database:
+    return app.extensions[&quot;reading_list_database&quot;]
+
+
+def list_books(app: Flask) -&gt; list[dict[str, int | str | bool]]:
+    &quot;&quot;&quot;Return persisted books in insertion order as application records.&quot;&quot;&quot;
+    return [
+        {
+            &quot;id&quot;: book.id,
+            &quot;title&quot;: book.title,
+            &quot;author&quot;: book.author,
+            &quot;is_read&quot;: book.is_read,
+        }
+        for book in _database(app).list_books()
+    ]
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/database.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/database.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app/database.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;SQLite persistence boundary for ReadingList.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import sqlite3
+import threading
+from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class Book:
+    &quot;&quot;&quot;A book persisted in the reading list.&quot;&quot;&quot;
+
+    id: int
+    title: str
+    author: str
+    is_read: bool
+
+
+class Database:
+    &quot;&quot;&quot;Owns SQLite setup and persistence operations.&quot;&quot;&quot;
+
+    def __init__(self, path: str) -&gt; None:
+        self.path = path
+        self._connections = threading.local()
+        self.initialize()
+
+    def _connect(self) -&gt; sqlite3.Connection:
+        connection = getattr(self._connections, &quot;connection&quot;, None)
+        if connection is not None:
+            return connection
+        if self.path != &quot;:memory:&quot;:
+            Path(self.path).parent.mkdir(parents=True, exist_ok=True)
+        connection = sqlite3.connect(self.path)
+        connection.row_factory = sqlite3.Row
+        connection.execute(&quot;PRAGMA foreign_keys = ON&quot;)
+        connection.execute(&quot;PRAGMA journal_mode = WAL&quot;)
+        self._connections.connection = connection
+        return connection
+
+    def initialize(self) -&gt; None:
+        &quot;&quot;&quot;Create the schema if it does not already exist.&quot;&quot;&quot;
+        connection = self._connect()
+        connection.execute(
+            &quot;&quot;&quot;
+            CREATE TABLE IF NOT EXISTS books (
+                id INTEGER PRIMARY KEY,
+                title TEXT NOT NULL,
+                author TEXT NOT NULL,
+                is_read INTEGER NOT NULL DEFAULT 0
+            )
+            &quot;&quot;&quot;
+        )
+        connection.commit()
+
+    def list_books(self) -&gt; list[Book]:
+        &quot;&quot;&quot;Return books in insertion order.&quot;&quot;&quot;
+        connection = self._connect()
+        rows = connection.execute(
+            &quot;SELECT id, title, author, is_read FROM books ORDER BY id&quot;
+        ).fetchall()
+        return [
+            Book(
+                id=row[&quot;id&quot;],
+                title=row[&quot;title&quot;],
+                author=row[&quot;author&quot;],
+                is_read=bool(row[&quot;is_read&quot;]),
+            )
+            for row in rows
+        ]
+
+    def create_book(self, title: str, author: str) -&gt; Book:
+        &quot;&quot;&quot;Persist and return an unread book.&quot;&quot;&quot;
+        self._validate_book_fields(title, author)
+        connection = self._connect()
+        cursor = connection.execute(
+            &quot;INSERT INTO books (title, author) VALUES (?, ?)&quot;, (title, author)
+        )
+        connection.commit()
+        return Book(id=cursor.lastrowid, title=title, author=author, is_read=False)
+
+    def delete_book(self, book_id: int) -&gt; bool:
+        &quot;&quot;&quot;Delete a book and report whether a row was removed.&quot;&quot;&quot;
+        connection = self._connect()
+        cursor = connection.execute(&quot;DELETE FROM books WHERE id = ?&quot;, (book_id,))
+        connection.commit()
+        return cursor.rowcount == 1
+
+    def mark_book_read(self, book_id: int) -&gt; bool:
+        &quot;&quot;&quot;Mark a book as read and report whether a row was updated.&quot;&quot;&quot;
+        connection = self._connect()
+        cursor = connection.execute(
+            &quot;UPDATE books SET is_read = 1 WHERE id = ?&quot;, (book_id,)
+        )
+        connection.commit()
+        return cursor.rowcount == 1
+
+    @staticmethod
+    def _validate_book_fields(title: str, author: str) -&gt; None:
+        if not isinstance(title, str) or not title.strip():
+            raise ValueError(&quot;Book title must not be empty.&quot;)
+        if not isinstance(author, str) or not author.strip():
+            raise ValueError(&quot;Book author must not be empty.&quot;)
+</pre></article>
+</main>
+</body>
+</html>

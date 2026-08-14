@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from DATABASE.md sha256=1dbbc93666122e47c9a62c301c194e8e4b561e71903fb0eace5677b80cc7cc3a on 2026-08-14 by drydock build agent --&gt;</p>
+<p>Database persistence uses <code>app.database.Database</code> and typed <code>Book</code> records exposing <code>id</code>, <code>title</code>, <code>author</code>, and <code>is_read</code>. Public operations: <code>create_book</code>, <code>list_books</code>, <code>delete_book</code>, and <code>mark_book_read</code>. SQLite stores ordered books by ascending integer primary key, with non-empty title/author and unread-by-default read status. Persistence is idempotently initialized and survives reopening the same database path. All access is encapsulated and parameterized.</p></article>
+</main>
+</body>
+</html>

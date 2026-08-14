@@ -1,0 +1,15 @@
+<reusable-compact filename="DATABASE.md">
+Database persistence uses `app.database.Database` and typed `Book` records exposing `id`, `title`, `author`, and `is_read`. Public operations: `create_book`, `list_books`, `delete_book`, and `mark_book_read`. SQLite stores ordered books by ascending integer primary key, with non-empty title/author and unread-by-default read status. Persistence is idempotently initialized and survives reopening the same database path. All access is encapsulated and parameterized.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/database.py
+- tests/test_database.py
+
+SUMMARY:
+Implemented SQLite persistence for books, ordered listing, read-status updates, deletion, validation, and idempotent initialization. All 13 tests and declared acceptance assertions pass.
+
+BLOCKERS:
+- None

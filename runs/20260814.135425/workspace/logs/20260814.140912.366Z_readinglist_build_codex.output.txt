@@ -1,0 +1,16 @@
+Implemented book removal at `POST /books/{id}/delete`, including rendered Remove controls and repository helper support.
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/__init__.py
+- app/books.py
+- app/routes.py
+- app/templates/reading_list.html
+- tests/test_routes.py
+
+SUMMARY:
+27 tests passed. Declared removal acceptance flows passed, including preserving remaining books and order.
+
+BLOCKERS:
+- None

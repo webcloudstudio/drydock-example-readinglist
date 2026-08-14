@@ -1,0 +1,3 @@
+2026-08-14 10:17:56 EDT  Calling CODEX/gpt-5.6-luna (refit_sources_route)...
+2026-08-14 10:18:12 EDT  Completed CODEX/gpt-5.6-luna (refit_sources_route)  rc=0  elapsed=15.3s  cached=8,960 (45% hit) · uncached=11,152 · out=553  tps=36.0  id=20260814.141756.752Z-968fd45d
+error: Source routing produced no stories

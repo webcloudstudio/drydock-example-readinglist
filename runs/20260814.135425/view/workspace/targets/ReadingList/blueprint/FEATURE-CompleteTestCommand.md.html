@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-CompleteTestCommand.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-CompleteTestCommand.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-CompleteTestCommand.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Complete Test Command</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260814 V1</td></tr><tr><td>Description</td><td>Provide a POSIX-compatible command that runs the complete automated test suite.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>sh bin/test.sh</td></tr><tr><td>Consumes</td><td>focused automated test suite</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The application root provides an executable <code>bin/test.sh</code> command. Running <code>sh bin/test.sh</code> invokes the complete automated suite and returns success only when the suite succeeds.</p>
+<h2>Command Contract</h2>
+<ul><li>Path: <code>bin/test.sh</code></li><li>Invocation: <code>sh bin/test.sh</code></li><li>Shell compatibility: POSIX.</li><li>Working directory: application root.</li><li>Output and error streams: preserve the test runner&#x27;s normal output and error behavior.</li><li>Exit status: zero only when every automated test passes.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>Requires: executable=sh; scope=test<br>Requires: executable=python3; scope=test</p>
+<p>=== AC test-command-executable ===<br>Intent: The application root contains the declared test command and it can be invoked with sh.</p>
+<p>from pathlib import Path import os import stat</p>
+<p>script = Path(&quot;bin/test.sh&quot;) assert script.is_file() mode = script.stat().st_mode assert mode &amp; stat.S_IXUSR or mode &amp; stat.S_IXGRP or mode &amp; stat.S_IXOTH === END AC test-command-executable ===</p>
+<p>=== AC test-command-success ===<br>Intent: The declared test command exits zero when the complete automated suite passes.</p>
+<p>import os import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, env={**os.environ}, ) print(result.stdout) print(result.stderr, file=<strong>import</strong>(&quot;sys&quot;).stderr) assert result.returncode == 0 === END AC test-command-success ===</p>
+<p>=== AC suite-full ===<br>Intent: The terminal test command runs the complete automated suite successfully.<br>Suite: full</p>
+<p>import os import subprocess import sys</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, env={**os.environ}, ) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC suite-full ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A developer can run <code>sh bin/test.sh</code> from the application root to verify the project.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The command must be POSIX-compatible.</li><li>The command must not report success when any automated test fails.</li><li>The command must preserve the test runner&#x27;s standard output and standard error.</li></ul></article>
+</main>
+</body>
+</html>

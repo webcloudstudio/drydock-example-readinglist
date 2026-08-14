@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_database.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_database.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_database.py">Raw file</a></div></header>
+<article class="doc"><pre>from __future__ import annotations
+
+import pytest
+
+from app.database import Book, Database
+
+
+def test_create_book_persists_an_unread_book(tmp_path):
+    database = Database(str(tmp_path / &quot;reading-list.sqlite&quot;))
+
+    created = database.create_book(&quot;The Left Hand of Darkness&quot;, &quot;Ursula K. Le Guin&quot;)
+
+    assert created == Book(
+        id=created.id,
+        title=&quot;The Left Hand of Darkness&quot;,
+        author=&quot;Ursula K. Le Guin&quot;,
+        is_read=False,
+    )
+    assert database.list_books() == [created]
+
+
+def test_list_books_uses_insertion_order(tmp_path):
+    database = Database(str(tmp_path / &quot;reading-list.sqlite&quot;))
+    first = database.create_book(&quot;First Book&quot;, &quot;First Author&quot;)
+    second = database.create_book(&quot;Second Book&quot;, &quot;Second Author&quot;)
+
+    assert database.list_books() == [first, second]
+
+
+def test_read_status_and_deletion_persist_across_database_instances(tmp_path):
+    path = str(tmp_path / &quot;reading-list.sqlite&quot;)
+    database = Database(path)
+    created = database.create_book(&quot;A Book&quot;, &quot;An Author&quot;)
+
+    assert database.mark_book_read(created.id) is True
+    reopened = Database(path)
+    assert reopened.list_books()[0].is_read is True
+    assert reopened.delete_book(created.id) is True
+
+    assert Database(path).list_books() == []
+
+
+@pytest.mark.parametrize(
+    (&quot;title&quot;, &quot;author&quot;),
+    [(&quot;&quot;, &quot;An Author&quot;), (&quot;   &quot;, &quot;An Author&quot;), (&quot;A Book&quot;, &quot;&quot;), (&quot;A Book&quot;, &quot;   &quot;)],
+)
+def test_create_book_rejects_blank_title_or_author(tmp_path, title, author):
+    database = Database(str(tmp_path / &quot;reading-list.sqlite&quot;))
+
+    with pytest.raises(ValueError):
+        database.create_book(title, author)
+
+    assert database.list_books() == []
+
+
+def test_mutations_report_false_for_missing_books(tmp_path):
+    database = Database(str(tmp_path / &quot;reading-list.sqlite&quot;))
+
+    assert database.mark_book_read(999) is False
+    assert database.delete_book(999) is False
+
+
+def test_schema_initialization_is_idempotent(tmp_path):
+    path = str(tmp_path / &quot;reading-list.sqlite&quot;)
+
+    Database(path)
+    Database(path)
+
+    assert Database(path).list_books() == []
+</pre></article>
+</main>
+</body>
+</html>

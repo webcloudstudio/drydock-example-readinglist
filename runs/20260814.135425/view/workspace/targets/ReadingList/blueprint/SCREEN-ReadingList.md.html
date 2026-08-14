@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md">Raw file</a></div></header>
+<article class="doc"><h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260814 V1</td></tr><tr><td>Description</td><td>Defines the browser screen for viewing and managing the ordered reading list.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md, FEATURE-ValidateBook.md, FEATURE-OrderAndStatus.md, FEATURE-RemoveBook.md, FEATURE-MarkRead.md</td></tr><tr><td>Provides</td><td>GET /</td></tr><tr><td>Consumes</td><td>GET /, POST /books, POST /books/{id}/read, POST /books/{id}/delete</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>—</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Sub Menu</td><td>—</td></tr><tr><td>Tab Order</td><td>1</td></tr></tbody></table></div>
+<h2>Layout and Interactions</h2>
+<p>The screen contains:</p>
+<ul><li>a page heading identifying the reading list;</li><li>an add-book form with title and author fields;</li><li>the current books in insertion order;</li><li>each book&#x27;s title, author, and unread/read state;</li><li>a mark-read control for unread books;</li><li>a remove control for each book;</li><li>a useful empty state when no books exist.</li></ul>
+<p>The screen submits the form to <code>POST /books</code>, marks books read through <code>POST /books/{id}/read</code>, and removes books through <code>POST /books/{id}/delete</code>. After each operation, the screen displays the resulting collection.</p>
+<p>While a request is loading, the interface presents a loading state appropriate to the rendered interaction.</p>
+<h2>Programmatic Acceptance</h2>
+<p>Requires: python-package=flask; scope=runtime</p>
+<p>=== AC screen-root ===<br>Intent: The reading-list screen is reachable and returns a successful response. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;}) client = app.test_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 === END AC screen-root ===</p>
+<p>=== AC screen-empty-state ===<br>Intent: An empty collection can be rendered successfully. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;}) client = app.test_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 assert response.data is not None === END AC screen-empty-state ===</p>
+<p>=== AC screen-workflow-routes ===<br>Intent: The screen can invoke each declared book workflow route. from app import create_app from app.database import Database</p>
+<p>database_path = &quot;acceptance-screen.sqlite&quot; app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path}) client = app.test_client() title = &quot;Screen Book&quot; author = &quot;Screen Author&quot;</p>
+<p>created_response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert created_response.status_code in (200, 302, 303)</p>
+<p>book = Database(database_path).list_books()[0] read_response = client.post(f&quot;/books/{book.id}/read&quot;) assert read_response.status_code in (200, 302, 303)</p>
+<p>delete_response = client.post(f&quot;/books/{book.id}/delete&quot;) assert delete_response.status_code in (200, 302, 303)</p>
+<p>final_response = client.get(&quot;/&quot;) assert final_response.status_code == 200 === END AC screen-workflow-routes ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A reader can identify the reading-list screen, add-book form, current books, status controls, and removal controls.</li><li>While an interaction is loading, the interface presents a recognizable loading state.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books remain in addition order.</li><li>Every displayed book shows unread or read status.</li><li>Invalid submissions are not displayed.</li><li>The screen must not expose raw database details.</li></ul></article>
+</main>
+</body>
+</html>

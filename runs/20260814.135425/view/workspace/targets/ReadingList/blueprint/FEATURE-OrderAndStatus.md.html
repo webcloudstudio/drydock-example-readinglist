@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-OrderAndStatus.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-OrderAndStatus.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-OrderAndStatus.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Ordered Books and Read Status</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260814 V1</td></tr><tr><td>Description</td><td>Preserve book insertion order and expose each book&#x27;s unread or read status.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>ordered book listing, read-status display</td></tr><tr><td>Consumes</td><td>books persistence interface</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Books are retrieved in their addition order. Each book exposes a durable read-status value of unread or read, and later reads preserve that status.</p>
+<h2>Workflow</h2>
+<ol><li>Retrieve all persisted books through the books persistence interface.</li><li>Order them by their insertion identifier ascending.</li><li>Present every book with its title, author, and current unread/read status.</li><li>Preserve the status value across subsequent reads.</li></ol>
+<h2>Reads</h2>
+<ul><li>Ordered book records from the books persistence interface.</li></ul>
+<h2>Writes</h2>
+<ul><li>None. Status mutation is owned by <code>FEATURE-MarkRead.md</code>.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>Requires: python-package=flask; scope=test</p>
+<p>=== AC ordered-books ===<br>Intent: The reading-list view presents books in the order supplied by separate additions.</p>
+<p>from app import create_app</p>
+<p>first_title = &quot;First Book&quot; first_author = &quot;First Author&quot; second_title = &quot;Second Book&quot; second_author = &quot;Second Author&quot;</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = app.test_client() client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}) client.post(&quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}) response = client.get(&quot;/&quot;)</p>
+<p>assert response.status_code == 200 body = response.get_data(as_text=True) assert body.index(first_title) &lt; body.index(second_title) === END AC ordered-books ===</p>
+<p>=== AC unread-status ===<br>Intent: A newly added book is displayed as unread.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Unread Book&quot; author = &quot;Unread Author&quot;</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = app.test_client() client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) response = client.get(&quot;/&quot;)</p>
+<p>assert response.status_code == 200 body = response.get_data(as_text=True) status = &quot;Unread&quot; assert status in body assert title in body === END AC unread-status ===</p>
+<p>=== AC status-persistence ===<br>Intent: A subsequent reading-list request preserves the status value stored for a book.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Persistent Status Book&quot; author = &quot;Persistent Status Author&quot;</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = app.test_client() client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) first_response = client.get(&quot;/&quot;) second_response = client.get(&quot;/&quot;)</p>
+<p>assert first_response.status_code == 200 assert second_response.status_code == 200 status = &quot;Unread&quot; assert status in first_response.get_data(as_text=True) assert status in second_response.get_data(as_text=True) === END AC status-persistence ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The list clearly distinguishes unread books from read books.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books must remain in addition order.</li><li>Every displayed book must show its current unread/read state.</li><li>This feature must not independently reorder books.</li></ul></article>
+</main>
+</body>
+</html>

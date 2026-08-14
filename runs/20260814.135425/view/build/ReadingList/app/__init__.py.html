@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/__init__.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/__init__.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app/__init__.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Application factory for ReadingList.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+from flask import Flask
+
+from app.database import Database
+from app.routes import main_blueprint
+
+
+def create_app(test_config: dict[str, Any] | None = None) -&gt; Flask:
+    &quot;&quot;&quot;Create an isolated Flask application instance.&quot;&quot;&quot;
+    app = Flask(__name__, template_folder=&quot;templates&quot;, static_folder=&quot;static&quot;)
+    default_database = Path(app.instance_path) / &quot;reading_list.sqlite3&quot;
+    app.config.from_mapping(
+        TESTING=False,
+        SECRET_KEY=&quot;reading-list-development-key&quot;,
+        READING_LIST_DATABASE=str(default_database),
+    )
+    if test_config is not None:
+        app.config.update(test_config)
+        if &quot;DATABASE&quot; in test_config and &quot;READING_LIST_DATABASE&quot; not in test_config:
+            app.config[&quot;READING_LIST_DATABASE&quot;] = test_config[&quot;DATABASE&quot;]
+
+    database = Database(app.config[&quot;READING_LIST_DATABASE&quot;])
+    database.initialize()
+    app.extensions[&quot;reading_list_database&quot;] = database
+
+    app.register_blueprint(main_blueprint)
+    return app
+</pre></article>
+</main>
+</body>
+</html>

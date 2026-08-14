@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20260814.135548.473Z_readinglist_plan_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20260814.135548.473Z_readinglist_plan_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20260814.135548.473Z_readinglist_plan_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT TOPOLOGY.md ===
+planning_feedback: |
+  analyze-display_name applied ARCHITECTURE.md
+  analyze-short_description applied ARCHITECTURE.md
+
+## story architecture
+summary:      Establish the ReadingList application architecture and web entry point.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   ARCHITECTURE.md
+stack:        python.md, flask.md, sqlite.md
+provides:     application factory
+acceptance:   yes
+scope:        blueprint
+feedback:     analyze-display_name, analyze-short_description
+instructions: |
+  Establish the Python/Flask application structure, application factory, configuration boundary,
+  route ownership, and test-client entry point for the ReadingList web application. Keep persistence
+  behind the database boundary and make the application runnable from the project root.
+
+## story database
+summary:      Provide SQLite persistence for books and read status.
+type:         foundational
+kind:         migration
+phase:        1
+implements:   DATABASE.md
+context:      ARCHITECTURE.md
+stack:        persistence.md, sqlite.md, python.md
+provides:     books persistence interface
+consumes:     application factory
+depends:      architecture
+acceptance:   yes
+scope:        blueprint
+instructions: |
+  Implement the SQLite-backed persistence boundary for books. Store title, author, insertion order,
+  and read status. Expose typed operations for creation, ordered listing, deletion, and read-status
+  updates without allowing route code to access raw database details.
+
+## story reading-list-screen
+summary:      Present the reading-list entry screen and current books.
+type:         service
+kind:         capability
+phase:        2
+implements:   SCREEN-ReadingList.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        flask.md, python.md
+provides:     GET /
+consumes:     GET /, POST /books, POST /books/{id}/read, POST /books/{id}/delete
+depends:      reading-list-add, reading-list-validation, reading-list-order-status, reading-list-remove, reading-list-read
+acceptance:   yes
+scope:        blueprint
+instructions: |
+  Build the user-facing reading-list screen at GET /. Render the add-book form, current books in
+  insertion order, each book&#x27;s unread/read state, and controls for marking a book read or removing
+  it. Include a useful empty state and a loading state appropriate to the rendered interface.
+
+## story reading-list-add
+summary:      Add valid books to the reading list.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-AddBook.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        flask.md, python.md, sqlite.md
+provides:     POST /books
+consumes:     books persistence interface
+depends:      database
+covers:       READING-LIST-002
+accepts:       st-002
+acceptance:   yes
+scope:        target
+instructions: |
+  Implement POST /books for creating a book from a title and author. Persist valid submissions
+  through the books persistence interface and redirect or render the list so the newly added book
+  is visible. Preserve insertion order.
+
+## story reading-list-validation
+summary:      Reject incomplete book submissions with a clear error.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-ValidateBook.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        flask.md, python.md
+provides:     book submission validation
+consumes:     POST /books
+depends:      reading-list-add
+covers:       READING-LIST-003
+accepts:       st-005
+acceptance:   yes
+scope:        target
+instructions: |
+  Validate title and author before persistence. Reject an empty title, an empty author, and
+  submissions empty after surrounding whitespace is removed. Return the form with a clear error
+  reason and never create or display an invalid book.
+
+## story reading-list-order-status
+summary:      Preserve addition order and display unread/read status.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-OrderAndStatus.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        flask.md, python.md, sqlite.md
+provides:     ordered book listing, read-status display
+consumes:     books persistence interface
+depends:      database
+covers:       READING-LIST-004
+accepts:       st-003
+acceptance:   yes
+scope:        target
+instructions: |
+  Implement ordered retrieval and status presentation for books. The list must use insertion order,
+  and every book must expose whether it is unread or read. Preserve status across subsequent reads.
+
+## story reading-list-remove
+summary:      Remove a book from the reading list.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-RemoveBook.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        flask.md, python.md, sqlite.md
+provides:     POST /books/{id}/delete
+consumes:     books persistence interface
+depends:      database
+covers:       READING-LIST-005
+accepts:       st-004
+acceptance:   yes
+scope:        target
+instructions: |
+  Implement the book-removal workflow at POST /books/{id}/delete. Delete the selected persisted
+  book through the persistence interface and ensure the next list view omits it. Keep remaining
+  books and their order intact.
+
+## story reading-list-read
+summary:      Mark a book as read and persist its status.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-MarkRead.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        flask.md, python.md, sqlite.md
+provides:     POST /books/{id}/read
+consumes:     books persistence interface
+depends:      database
+covers:       READING-LIST-006
+accepts:       st-007
+acceptance:   yes
+scope:        target
+instructions: |
+  Implement the mark-read workflow at POST /books/{id}/read. Update only the selected book&#x27;s
+  persisted read status and show it as read on the next list view.
+
+## story automated-verification
+summary:      Provide focused automated coverage for reading-list behaviors.
+type:         service
+kind:         test harness
+phase:        3
+implements:   FEATURE-AutomatedVerification.md
+context:      ARCHITECTURE.md, DATABASE.md
+stack:        python.md
+provides:     focused automated test suite
+consumes:     GET /, POST /books, POST /books/{id}/read, POST /books/{id}/delete
+depends:      reading-list-screen, reading-list-add, reading-list-validation, reading-list-order-status, reading-list-remove, reading-list-read
+covers:       AUTOMATED-VERIFICATION-001
+accepts:       st-006
+acceptance:   yes
+scope:        target
+instructions: |
+  Add isolated pytest coverage for adding books, preserving order, removing books, rejecting empty
+  title or author, marking books read, and displaying unread/read status. Tests must exercise the
+  public web behavior and use fresh application state per test.
+
+## story complete-test-command
+summary:      Run the complete automated suite from the application root.
+type:         service
+kind:         test harness
+phase:        3
+implements:   FEATURE-CompleteTestCommand.md
+context:      ARCHITECTURE.md
+stack:        python.md
+provides:     sh bin/test.sh
+consumes:     focused automated test suite
+depends:      architecture, database, reading-list-screen, reading-list-add, reading-list-validation, reading-list-order-status, reading-list-remove, reading-list-read, automated-verification
+covers:       AUTOMATED-VERIFICATION-002
+accepts:       st-001
+acceptance:   yes
+scope:        target
+instructions: |
+  Provide an executable POSIX-compatible bin/test.sh runnable from the application root. It must
+  invoke the complete automated suite, preserve the command&#x27;s normal output and error behavior,
+  and exit zero only when every test passes. The terminal acceptance for this story runs the full
+  suite after all implementation stories are complete.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT DECISIONS.json ===
+[
+  {
+    &quot;id&quot;: &quot;Q-001&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;blueprint&quot;: &quot;ARCHITECTURE.md&quot;,
+    &quot;story&quot;: &quot;architecture&quot;,
+    &quot;title&quot;: &quot;Application startup shape&quot;,
+    &quot;description&quot;: &quot;Use a Flask application factory so the web app and isolated test clients can share configuration without global runtime state.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;factory&quot;,
+        &quot;label&quot;: &quot;Application factory&quot;
+      },
+      {
+        &quot;value&quot;: &quot;global&quot;,
+        &quot;label&quot;: &quot;Global app instance&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;factory&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-002&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;blueprint&quot;: &quot;DATABASE.md&quot;,
+    &quot;story&quot;: &quot;database&quot;,
+    &quot;title&quot;: &quot;Book insertion ordering&quot;,
+    &quot;description&quot;: &quot;Represent addition order with the database-created integer identifier and retrieve books ascending by that identifier.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;integer-id&quot;,
+        &quot;label&quot;: &quot;Integer identifier&quot;
+      },
+      {
+        &quot;value&quot;: &quot;timestamp&quot;,
+        &quot;label&quot;: &quot;Creation timestamp&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;integer-id&quot;
+  }
+]
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

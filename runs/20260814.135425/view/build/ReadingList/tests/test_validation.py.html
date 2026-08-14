@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_validation.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_validation.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_validation.py">Raw file</a></div></header>
+<article class="doc"><pre>from __future__ import annotations
+
+from html.parser import HTMLParser
+
+from app import create_app
+from app.database import Database
+
+
+class _FormAndAlertParser(HTMLParser):
+    &quot;&quot;&quot;Read the validation response through its rendered HTML structure.&quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.input_values: dict[str, str] = {}
+        self.alert_seen = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -&gt; None:
+        attributes = dict(attrs)
+        if tag == &quot;input&quot; and attributes.get(&quot;name&quot;) in {&quot;title&quot;, &quot;author&quot;}:
+            self.input_values[attributes[&quot;name&quot;]] = attributes.get(&quot;value&quot;, &quot;&quot;) or &quot;&quot;
+        if tag == &quot;p&quot; and attributes.get(&quot;role&quot;) == &quot;alert&quot;:
+            self.alert_seen = True
+
+
+def test_books_route_rejects_empty_title_with_bad_request(tmp_path):
+    path = str(tmp_path / &quot;empty-title.sqlite&quot;)
+    app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: path})
+
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Known Author&quot;}
+    )
+
+    assert response.status_code == 400
+    assert Database(path).list_books() == []
+
+
+def test_books_route_rejects_empty_author_with_bad_request(tmp_path):
+    path = str(tmp_path / &quot;empty-author.sqlite&quot;)
+    app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: path})
+
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Known Title&quot;, &quot;author&quot;: &quot;&quot;}
+    )
+
+    assert response.status_code == 400
+    assert Database(path).list_books() == []
+
+
+def test_books_route_rejects_whitespace_only_fields_without_persistence(tmp_path):
+    path = str(tmp_path / &quot;whitespace.sqlite&quot;)
+    app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: path})
+
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: &quot;   &quot;}
+    )
+
+    assert response.status_code == 400
+    assert Database(path).list_books() == []
+
+
+def test_validation_response_preserves_form_context_and_exposes_error(tmp_path):
+    app = create_app(
+        {&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: str(tmp_path / &quot;context.sqlite&quot;)}
+    )
+
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;  Keep this  &quot;, &quot;author&quot;: &quot;   &quot;}
+    )
+    parser = _FormAndAlertParser()
+    parser.feed(response.get_data(as_text=True))
+
+    assert response.status_code == 400
+    assert parser.input_values == {&quot;title&quot;: &quot;  Keep this  &quot;, &quot;author&quot;: &quot;   &quot;}
+    assert parser.alert_seen is True
+</pre></article>
+</main>
+</body>
+</html>

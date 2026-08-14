@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/routes.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/routes.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app/routes.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;HTTP routes for the ReadingList entry point.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from flask import Blueprint, Response, current_app, redirect, render_template, request, url_for
+
+from app.database import Book, Database
+
+main_blueprint = Blueprint(&quot;main&quot;, __name__)
+
+
+def _database() -&gt; Database:
+    return current_app.extensions[&quot;reading_list_database&quot;]
+
+
+@main_blueprint.get(&quot;/&quot;)
+def reading_list() -&gt; str:
+    &quot;&quot;&quot;Render the current reading list.&quot;&quot;&quot;
+    books: list[Book] = _database().list_books()
+    return render_template(&quot;reading_list.html&quot;, books=books)
+
+
+@main_blueprint.post(&quot;/books&quot;)
+def add_book() -&gt; Response | tuple[str, int]:
+    &quot;&quot;&quot;Validate and add a book, then return to the ordered reading list.&quot;&quot;&quot;
+    title = request.form.get(&quot;title&quot;, &quot;&quot;)
+    author = request.form.get(&quot;author&quot;, &quot;&quot;)
+
+    if not isinstance(title, str) or not title.strip():
+        return _invalid_book_response(&quot;A book title is required.&quot;)
+    if not isinstance(author, str) or not author.strip():
+        return _invalid_book_response(&quot;A book author is required.&quot;)
+
+    _database().create_book(title, author)
+    return redirect(url_for(&quot;main.reading_list&quot;), code=303)
+
+
+@main_blueprint.post(&quot;/books/&lt;int:book_id&gt;/delete&quot;)
+def delete_book(book_id: int) -&gt; Response:
+    &quot;&quot;&quot;Delete the selected book, then return to the ordered reading list.&quot;&quot;&quot;
+    _database().delete_book(book_id)
+    return redirect(url_for(&quot;main.reading_list&quot;), code=303)
+
+
+@main_blueprint.post(&quot;/books/&lt;int:book_id&gt;/read&quot;)
+def mark_book_read(book_id: int) -&gt; Response:
+    &quot;&quot;&quot;Mark the selected book as read, then return to the reading list.&quot;&quot;&quot;
+    _database().mark_book_read(book_id)
+    return redirect(url_for(&quot;main.reading_list&quot;), code=303)
+
+
+def _invalid_book_response(error: str) -&gt; tuple[str, int]:
+    &quot;&quot;&quot;Render the list with a validation error without writing a book.&quot;&quot;&quot;
+    books: list[Book] = _database().list_books()
+    return render_template(
+        &quot;reading_list.html&quot;,
+        books=books,
+        error=error,
+        title=request.form.get(&quot;title&quot;, &quot;&quot;),
+        author=request.form.get(&quot;author&quot;, &quot;&quot;),
+    ), 400
+</pre></article>
+</main>
+</body>
+</html>

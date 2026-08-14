@@ -1,9 +1,0 @@
-Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
-  [ticket]          blueprint/changes/TICKET-001-Mark-Book-Read.md  (amending, ARCHITECTURE.md)  mark-read-route
-  [ticket]          blueprint/changes/TICKET-002-Mark-Book-Read.md  (amending, DATABASE.md)  mark-read-schema
-  [ticket]          blueprint/changes/TICKET-003-Mark-Book-Read.md  (amending, FEATURE-Verification.md)  mark-read-verification
-  [ticket]          blueprint/changes/TICKET-004-Mark-Book-Read.md  (amending, SCREEN-Reading-List.md)  mark-read-view
-  [downstream]      add-book (consumes: books persistence interface)
-  [downstream]      remove-book (consumes: books persistence interface)
-  [downstream]      list-books (consumes: books persistence interface)
-RESULT: 4 change ticket(s) authored

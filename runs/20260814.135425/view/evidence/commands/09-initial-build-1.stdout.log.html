@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/09-initial-build-1.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/09-initial-build-1.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/09-initial-build-1.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: architecture
+
+LLM BUILD: Block 1 · Foundational [block-1]
+  stories: Establish the ReadingList application architecture and web entry point. [architecture]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=304,384 (90% hit) · uncached=35,627 · out=5,662
+acceptance: call 1 · 0/3 AC passed · skipped: architecture-factory, architecture-isolation, architecture-entry-point
+built: architecture — closed/verified · execution 20260814.140029.546Z-0bfa5e02
+
+LLM BUILD: Block 2 · Foundational [block-2]
+  stories: Provide SQLite persistence for books and read status. [database]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=177,152 (87% hit) · uncached=27,589 · out=3,669
+acceptance: call 1 · 0/3 AC passed · skipped: database-create-read, database-order, database-update-delete
+built: database — closed/verified · execution 20260814.140303.436Z-7ed26ff9
+
+LLM BUILD: Block 3 · Service [block-3]
+  stories: Add valid books to the reading list. [reading-list-add]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=326,400 (90% hit) · uncached=37,268 · out=5,083
+acceptance: call 1 · 0/3 AC passed · skipped: add-route-reachable, add-persists-book, add-preserves-existing-order
+built: reading-list-add — closed/verified · execution 20260814.140438.053Z-34e9e9d3
+
+LLM BUILD: Block 4 · Service [block-4]
+  stories: Reject incomplete book submissions with a clear error. [reading-list-validation]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=257,536 (90% hit) · uncached=29,929 · out=3,573
+acceptance: call 1 · 0/4 AC passed · skipped: validation-route-reachable, validation-empty-title, validation-empty-author, validation-whitespace
+built: reading-list-validation — closed/verified · execution 20260814.140644.622Z-86b7984c
+
+LLM BUILD: Block 5 · Service [block-5]
+  stories: Preserve addition order and display unread/read status. [reading-list-order-status]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=166,912 (85% hit) · uncached=28,680 · out=2,146
+acceptance: call 1 · 0/3 AC passed · skipped: ordered-books, unread-status, status-persistence
+built: reading-list-order-status — closed/verified · execution 20260814.140810.746Z-680ad2ae
+
+LLM BUILD: Block 6 · Service [block-6]
+  stories: Remove a book from the reading list. [reading-list-remove]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=205,824 (87% hit) · uncached=30,073 · out=3,647
+acceptance: call 1 · 0/3 AC passed · skipped: remove-book, removed-book-absent, delete-route-reachable
+built: reading-list-remove — closed/verified · execution 20260814.140912.366Z-f1fb7176
+
+LLM BUILD: Block 7 · Service [block-7]
+  stories: Mark a book as read and persist its status. [reading-list-read]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=241,152 (88% hit) · uncached=32,214 · out=3,465
+acceptance: call 1 · 0/3 AC passed · skipped: mark-read-route, marked-book-status, mark-read-persists
+built: reading-list-read — closed/verified · execution 20260814.141046.660Z-e208a527
+
+LLM BUILD: Block 8 · Service [block-8]
+  stories: Present the reading-list entry screen and current books. [reading-list-screen]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=521,984 (91% hit) · uncached=52,849 · out=7,126
+acceptance: call 1 · 0/3 AC passed · skipped: screen-root, screen-empty-state, screen-workflow-routes
+built: reading-list-screen — closed/verified · execution 20260814.141209.778Z-a1d9711a
+
+LLM BUILD: Block 9 · Service [block-9]
+  stories: Provide focused automated coverage for reading-list behaviors. [automated-verification]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=166,912 (84% hit) · uncached=31,779 · out=3,019
+acceptance: call 1 · 0/4 AC passed · skipped: focused-suite-exists, public-add-route-covered, public-list-route-covered, public-mutation-routes-covered
+built: automated-verification — closed/verified · execution 20260814.141524.374Z-e2c73f07
+
+LLM BUILD: Block 10 · Service [block-10]
+  stories: Run the complete automated suite from the application root. [complete-test-command]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  tokens: cached=188,416 (88% hit) · uncached=25,792 · out=1,809
+acceptance: call 1 · 0/3 AC passed · skipped: test-command-executable, test-command-success, suite-full
+built: complete-test-command — closed/verified · execution 20260814.141642.738Z-2e4c55cf
+
+result: 10 built, 0 failed, 0 unchanged
+elapsed: 17 minutes 20 seconds
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_routes.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_routes.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_routes.py">Raw file</a></div></header>
+<article class="doc"><pre>from __future__ import annotations
+
+from app.books import list_books
+
+def test_post_books_redirects_after_adding_valid_book(client):
+    response = client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;A Valid Book&quot;, &quot;author&quot;: &quot;A Valid Author&quot;}
+    )
+
+    assert response.status_code == 303
+    assert response.headers[&quot;Location&quot;].endswith(&quot;/&quot;)
+
+
+def test_post_books_makes_new_book_visible_in_reading_list(client):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Visible Title&quot;, &quot;author&quot;: &quot;Visible Author&quot;})
+
+    response = client.get(&quot;/&quot;)
+
+    assert response.status_code == 200
+    assert b&quot;Visible Title by Visible Author&quot; in response.data
+
+
+def test_post_books_appends_after_existing_books(client):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;First Title&quot;, &quot;author&quot;: &quot;First Author&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Second Title&quot;, &quot;author&quot;: &quot;Second Author&quot;})
+
+    body = client.get(&quot;/&quot;).get_data(as_text=True)
+
+    assert body.index(&quot;First Title by First Author&quot;) &lt; body.index(
+        &quot;Second Title by Second Author&quot;
+    )
+
+
+def test_new_book_is_displayed_as_unread(client):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Unread Title&quot;, &quot;author&quot;: &quot;Unread Author&quot;})
+
+    body = client.get(&quot;/&quot;).get_data(as_text=True)
+
+    assert &quot;Unread Title by Unread Author&quot; in body
+    assert &#x27;data-status=&quot;unread&quot;&#x27; in body
+    assert &quot;Unread&quot; in body
+
+
+def test_read_status_is_displayed_after_persistence(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Read Title&quot;, &quot;author&quot;: &quot;Read Author&quot;})
+    book = app.extensions[&quot;reading_list_database&quot;].list_books()[0]
+    assert app.extensions[&quot;reading_list_database&quot;].mark_book_read(book.id) is True
+
+    body = client.get(&quot;/&quot;).get_data(as_text=True)
+
+    assert &quot;Read Title by Read Author&quot; in body
+    assert &#x27;data-status=&quot;read&quot;&#x27; in body
+    assert &quot;Read&quot; in body
+
+
+def test_mark_read_route_accepts_an_existing_book(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Readable Book&quot;, &quot;author&quot;: &quot;Readable Author&quot;})
+    book = list_books(app)[0]
+
+    response = client.post(f&quot;/books/{book[&#x27;id&#x27;]}/read&quot;)
+
+    assert response.status_code in (200, 302, 303)
+
+
+def test_mark_read_changes_status_on_the_next_list_view(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Finished Book&quot;, &quot;author&quot;: &quot;Finished Author&quot;})
+    book = list_books(app)[0]
+
+    before = client.get(&quot;/&quot;)
+    assert before.status_code == 200
+    assert &quot;Unread&quot; in before.get_data(as_text=True)
+
+    update_response = client.post(f&quot;/books/{book[&#x27;id&#x27;]}/read&quot;)
+    after = client.get(&quot;/&quot;)
+
+    assert update_response.status_code in (200, 302, 303)
+    assert after.status_code == 200
+    after_body = after.get_data(as_text=True)
+    assert &quot;Read&quot; in after_body
+    assert &quot;Finished Book&quot; in after_body
+
+
+def test_mark_read_persists_across_separate_list_requests(client, app):
+    client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Persisted Read Book&quot;, &quot;author&quot;: &quot;Persisted Read Author&quot;}
+    )
+    book = list_books(app)[0]
+    client.post(f&quot;/books/{book[&#x27;id&#x27;]}/read&quot;)
+
+    first = client.get(&quot;/&quot;)
+    second = client.get(&quot;/&quot;)
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert &quot;Read&quot; in first.get_data(as_text=True)
+    assert &quot;Read&quot; in second.get_data(as_text=True)
+
+
+def test_mark_read_changes_only_the_selected_book(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;First Book&quot;, &quot;author&quot;: &quot;First Author&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Second Book&quot;, &quot;author&quot;: &quot;Second Author&quot;})
+    books = list_books(app)
+
+    client.post(f&quot;/books/{books[0][&#x27;id&#x27;]}/read&quot;)
+
+    assert [book[&quot;is_read&quot;] for book in list_books(app)] == [True, False]
+
+
+def test_mark_read_is_idempotent_for_an_already_read_book(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Already Read&quot;, &quot;author&quot;: &quot;An Author&quot;})
+    book = list_books(app)[0]
+
+    first = client.post(f&quot;/books/{book[&#x27;id&#x27;]}/read&quot;)
+    second = client.post(f&quot;/books/{book[&#x27;id&#x27;]}/read&quot;)
+
+    assert first.status_code == 303
+    assert second.status_code == 303
+    assert list_books(app)[0][&quot;is_read&quot;] is True
+
+
+def test_post_books_rejects_blank_title_without_persisting(client):
+    response = client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: &quot;An Author&quot;}
+    )
+
+    assert response.status_code == 400
+    assert response.request.path == &quot;/books&quot;
+    assert client.get(&quot;/&quot;).get_data(as_text=True).count(&quot;An Author&quot;) == 0
+
+
+def test_post_books_rejects_blank_author_without_persisting(client):
+    response = client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;A Book&quot;, &quot;author&quot;: &quot;&quot;}
+    )
+
+    assert response.status_code == 400
+    assert response.request.path == &quot;/books&quot;
+    assert client.get(&quot;/&quot;).get_data(as_text=True).count(&quot;A Book by&quot;) == 0
+
+
+def test_delete_route_redirects_after_removing_selected_book(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Removable Book&quot;, &quot;author&quot;: &quot;Removable Author&quot;})
+    book = list_books(app)[0]
+
+    response = client.post(f&quot;/books/{book[&#x27;id&#x27;]}/delete&quot;)
+
+    assert response.status_code == 303
+    assert response.headers[&quot;Location&quot;].endswith(&quot;/&quot;)
+
+
+def test_delete_route_removes_selected_book_and_preserves_remaining_order(client, app):
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Removed Book&quot;, &quot;author&quot;: &quot;Removed Author&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Remaining Book&quot;, &quot;author&quot;: &quot;Remaining Author&quot;})
+    removed = list_books(app)[0]
+
+    response = client.post(f&quot;/books/{removed[&#x27;id&#x27;]}/delete&quot;)
+
+    assert response.status_code == 303
+    books = list_books(app)
+    assert [book[&quot;title&quot;] for book in books] == [&quot;Remaining Book&quot;]
+    body = client.get(&quot;/&quot;).get_data(as_text=True)
+    assert &quot;Removed Book&quot; not in body
+    assert &quot;Remaining Book by Remaining Author&quot; in body
+
+
+def test_delete_route_is_idempotent_for_missing_book(client):
+    response = client.post(&quot;/books/999999/delete&quot;)
+
+    assert response.status_code == 303
+</pre></article>
+</main>
+</body>
+</html>

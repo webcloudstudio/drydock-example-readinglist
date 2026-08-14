@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Add Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260814 V1</td></tr><tr><td>Description</td><td>Defines the workflow for creating and displaying a valid book.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>POST /books</td></tr><tr><td>Consumes</td><td>books persistence interface</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>A reader submits a title and author through the reading-list form. The application validates the submission before persistence, creates the book through <code>Database.create_book</code>, and returns a response that makes the new book available to the reading-list view.</p>
+<h2>Route</h2>
+<p><code>POST /books</code></p>
+<p>Input fields:</p>
+<ul><li><code>title</code></li><li><code>author</code></li></ul>
+<p>A valid submission is persisted and returns HTTP <code>303</code>, redirecting to <code>/</code>.</p>
+<h2>Reads and Writes</h2>
+<ul><li>Reads submitted title and author.</li><li>Writes one row through the books persistence interface.</li><li>Does not reorder existing books.</li><li>Does not alter the read status of existing books.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>Requires: python-package=flask; scope=runtime</p>
+<p>=== AC add-route-reachable ===<br>Intent: The book creation route accepts a valid submission. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: &quot;:memory:&quot;}) client = app.test_client() title = &quot;A Valid Book&quot; author = &quot;A Valid Author&quot;</p>
+<p>response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 303 === END AC add-route-reachable ===</p>
+<p>=== AC add-persists-book ===<br>Intent: A valid route submission is stored and readable through the persistence interface. from app import create_app from app.database import Database</p>
+<p>database_path = &quot;acceptance-add.sqlite&quot; app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path}) client = app.test_client() title = &quot;Stored Title&quot; author = &quot;Stored Author&quot;</p>
+<p>response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 303</p>
+<p>books = Database(database_path).list_books() assert len(books) == 1 assert books[0].title == title assert books[0].author == author assert books[0].is_read is False === END AC add-persists-book ===</p>
+<p>=== AC add-preserves-existing-order ===<br>Intent: Adding a book leaves existing books first and appends the new book. from app import create_app from app.database import Database</p>
+<p>database_path = &quot;acceptance-add-order.sqlite&quot; database = Database(database_path) first_title = &quot;Existing Title&quot; first_author = &quot;Existing Author&quot; second_title = &quot;Added Title&quot; second_author = &quot;Added Author&quot; database.create_book(first_title, first_author)</p>
+<p>app = create_app({&quot;TESTING&quot;: True, &quot;READING_LIST_DATABASE&quot;: database_path}) response = app.test_client().post( &quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author} ) assert response.status_code == 303</p>
+<p>books = Database(database_path).list_books() assert [book.title for book in books] == [first_title, second_title] assert [book.author for book in books] == [first_author, second_author] === END AC add-preserves-existing-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A reader can submit a title and author and see the new book in the reading list.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Only valid submissions reach <code>Database.create_book</code>.</li><li>A successful addition does not reorder existing books.</li><li>Newly added books are unread.</li></ul></article>
+</main>
+</body>
+</html>
