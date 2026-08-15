@@ -1,0 +1,23 @@
+{
+  "prepassed": [
+    "behavior-suite-command-exists",
+    "book-creation-preserves-existing-order",
+    "book-creation-readback",
+    "book-creation-route",
+    "complete-suite",
+    "launcher-runs-from-root",
+    "ordered-list-empty-state",
+    "ordered-list-order",
+    "ordered-list-route",
+    "removal-route-reachable",
+    "screen-accepts-book-submission",
+    "screen-loads",
+    "screen-supports-empty-state",
+    "screen-supports-removal",
+    "ui-patterns-empty-state",
+    "validation-does-not-persist-invalid-submission",
+    "validation-preserves-valid-submission",
+    "validation-rejects-empty-author",
+    "validation-rejects-empty-title"
+  ]
+}

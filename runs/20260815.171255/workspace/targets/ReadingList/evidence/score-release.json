@@ -1,0 +1,101 @@
+{
+  "schema_version": 5,
+  "recorded_at": "2026-08-15T17:40:21+00:00",
+  "target": "ReadingList",
+  "verdict": "PASSED",
+  "verdict_line": "ReadingList: PASSED \u2014 6 of 6",
+  "statement": "ReadingList: PASSED \u2014 6 of 6\n\n  st-001  MET       bin/test.sh; command: bash bin/test.sh exited 0 with 44 passed\n  st-002  MET       app/routes.py:19; app/persistence.py:52; probe: add submissions returned redirects and listed both books\n  st-003  MET       app/persistence.py:76; probe: body.index(\"First\") < body.index(\"Second\")\n  st-004  MET       app/routes.py:37; app/persistence.py:92; probe: removed First; Second remained and First was absent\n  st-005  MET       app/routes.py:23; app/templates/index.html:8; probe: both invalid submissions returned 400 with role=\"alert\"\n  st-006  MET       tests/test_persistence.py:5; tests/test_persistence.py:45; tests/test_persistence.py:66; tests/test_persistence.py:78; tests/test_routes.py:3; command: bash bin/test.sh reported 44 passed\n  reported: Build directory has uncommitted changes",
+  "complete": true,
+  "governed_gate": null,
+  "criteria": [
+    {
+      "criterion_id": "st-001",
+      "verdict": "MET",
+      "rationale": "The POSIX launcher ran successfully and all 44 automated tests passed.",
+      "evidence": [
+        "bin/test.sh",
+        "command: bash bin/test.sh exited 0 with 44 passed"
+      ]
+    },
+    {
+      "criterion_id": "st-002",
+      "verdict": "MET",
+      "rationale": "The probe submitted a title and author, then observed both in the rendered list and persistence store.",
+      "evidence": [
+        "app/routes.py:19",
+        "app/persistence.py:52",
+        "probe: add submissions returned redirects and listed both books"
+      ]
+    },
+    {
+      "criterion_id": "st-003",
+      "verdict": "MET",
+      "rationale": "The probe observed books rendered in the same order they were added.",
+      "evidence": [
+        "app/persistence.py:76",
+        "probe: body.index(\"First\") < body.index(\"Second\")"
+      ]
+    },
+    {
+      "criterion_id": "st-004",
+      "verdict": "MET",
+      "rationale": "The probe removed a selected book and observed it absent while the other remained listed.",
+      "evidence": [
+        "app/routes.py:37",
+        "app/persistence.py:92",
+        "probe: removed First; Second remained and First was absent"
+      ]
+    },
+    {
+      "criterion_id": "st-005",
+      "verdict": "MET",
+      "rationale": "The probe observed HTTP 400 responses with alert messages for empty title and empty author submissions.",
+      "evidence": [
+        "app/routes.py:23",
+        "app/templates/index.html:8",
+        "probe: both invalid submissions returned 400 with role=\"alert\""
+      ]
+    },
+    {
+      "criterion_id": "st-006",
+      "verdict": "MET",
+      "rationale": "The automated suite contains and passes tests covering adding, ordering, removal, and empty-field rejection.",
+      "evidence": [
+        "tests/test_persistence.py:5",
+        "tests/test_persistence.py:45",
+        "tests/test_persistence.py:66",
+        "tests/test_persistence.py:78",
+        "tests/test_routes.py:3",
+        "command: bash bin/test.sh reported 44 passed"
+      ]
+    }
+  ],
+  "guardrail_ids": [],
+  "observations": [],
+  "blockers": [],
+  "attestations": [],
+  "kit_faults": [],
+  "warnings": [
+    "Build directory has uncommitted changes"
+  ],
+  "improvements": [],
+  "identities": {
+    "code": "2f884934bb2267041cab4c34d4f2b3d3e743ad36",
+    "sea_trials": "0d1c05649d96f906f963f89c12ad5c9c510e8d13a03b81ebff4efd9b9d691e9f",
+    "blueprint": {
+      "ARCHITECTURE.md": "c42125d1c9a4d632e46f7b88523442ceb51348a2893aa1bb01dcd7b11bbd892b",
+      "ARCHITECTURE_compact.md": "c2f8604d6ead6b4043cf1560e2365be0c2cea0a441650051f06dc87e46267f9f",
+      "DATABASE.md": "78e782f3b44cbf8f06bf8af3062dfbc659139e71f0edda468bbe62514cb03467",
+      "DATABASE_compact.md": "90b6fbe98b22f968b82c16866294b215f4dde921aa5fb592edce96692d2d4fb2",
+      "FEATURE-Book-Creation.md": "2bdc2bd440ce66e5d39b75577beca1e647556e065db5085f0abf49d6182760e3",
+      "FEATURE-Book-Removal.md": "6f98c32605ce108d1e29e99d39bae49eb6823e5825b2d2f90319a3c8321a2939",
+      "FEATURE-Incomplete-Submission.md": "96d0d4fc945551d701d21669a4cf50e63b66697040e56b431746661def9e0485",
+      "FEATURE-Ordered-List.md": "364fa94d12e14acdc5a279ea32806a4f54999fa6a9f0edb769d7446c61e88fd3",
+      "FEATURE-Test-Suite.md": "8f200d65385c2e99573f6d51b74106337b22852b042bcaea23c5d9a6504bddae",
+      "SCREEN-Reading-List.md": "0003c6471f57751fb4bf2c8a3a359f5d20a6d6cfa66c38e6c57201c4328ae337",
+      "UI-GENERAL.md": "0b6f592e79f56bbddb07352ad5ce0b07084a40a38ed7969e14ac933aa8d25272",
+      "UI-GENERAL_compact.md": "686b3f9cd5d7f5bacebc84f6dc4d1049a09d61ae79a304a93419d2c97d7df380"
+    }
+  },
+  "execution_id": "20260815.173931.006Z-d5c26f60"
+}

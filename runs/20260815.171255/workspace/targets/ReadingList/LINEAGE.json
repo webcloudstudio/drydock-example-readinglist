@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "import": {
+    "root": "/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/sources",
+    "format": "markdown"
+  },
+  "sources": {
+    "reading-list.md": {
+      "state": "current",
+      "versions": [
+        {
+          "commit": "332361c",
+          "date": "2026-08-15",
+          "hash": "1b61badf71d1b0f24f23ba0873e4fed00b20b5ff927d05b4a4eede34aa515a58",
+          "release": "",
+          "state": "consumed",
+          "via": "plan",
+          "ticket": null,
+          "requirements": [
+            {
+              "name": "manage-reading-list",
+              "text": "The reader can add a book with a title and author, view the books in the order added,\nand remove a book.",
+              "stories": [
+                "database",
+                "book-creation",
+                "ordered-list",
+                "book-removal",
+                "reading-list-screen"
+              ]
+            },
+            {
+              "name": "reject-incomplete-books",
+              "text": "An empty title or author is rejected with a clear error message.",
+              "stories": [
+                "incomplete-submission"
+              ]
+            },
+            {
+              "name": "verify-application",
+              "text": "The application includes automated tests for each behavior.\n\nThe completed application provides a POSIX-compatible `bin/test.sh` that runs the complete\nautomated test suite from the application root. `sh bin/test.sh` exits zero only when every test\npasses. The final build story runs this command after every implementation story and preserves its\ncommand, exit code, standard output, and standard error as evidence.",
+              "stories": [
+                "verification-suite"
+              ]
+            }
+          ]
+        },
+        {
+          "commit": "02f4924",
+          "date": "2026-08-15",
+          "hash": "016c3dd066f43b20a7c46298aa7a68ff1e6378df7aa6205f996176778cc90e61",
+          "release": "0.01",
+          "state": "consumed",
+          "via": "refit",
+          "ticket": "TICKET-001-Mark-Book-Read.md",
+          "requirements": [
+            {
+              "name": "mark-book-read",
+              "text": "The reader can mark a book as read and view whether each book is unread or read.",
+              "stories": [
+                "mark-read-schema",
+                "mark-read-route",
+                "mark-read-view"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
