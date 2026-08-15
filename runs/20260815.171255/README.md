@@ -11,7 +11,7 @@
 | Target completion check passed | PASS | drydock status ReadingList --check exited 0. | [evidence/commands/23-refit-1-complete.stdout.log](evidence/commands/23-refit-1-complete.stdout.log) |
 | Acceptance score passed | PASS | drydock score acceptance exited 0. | [evidence/commands/28-score-acceptance.stdout.log](evidence/commands/28-score-acceptance.stdout.log) |
 | Release score passed | PASS | drydock score release exited 0. | [evidence/commands/30-score-release.stdout.log](evidence/commands/30-score-release.stdout.log) |
-| Integrity verification passed | PASS | 1,077 files digested; verify with sha256sum -c SHA256SUMS. | [SHA256SUMS](SHA256SUMS) |
+| Integrity verification passed | PASS | 949 files digested; verify with sha256sum -c SHA256SUMS. | [SHA256SUMS](SHA256SUMS) |
 
 ## Run facts
 
