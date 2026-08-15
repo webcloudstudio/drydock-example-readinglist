@@ -4,15 +4,18 @@
     "verdict": "PASSED"
   },
   "sources": [
-    "sources/reading-list.md"
+    "sources/reading-list.md",
+    "sources/full_test.sh"
   ],
   "updates": [
     "updates/reading-list.md"
   ],
   "sea_trials": "inputs/SEA_TRIALS.md",
   "technology_stack": "inputs/TECHNOLOGY_STACK.md",
-  "test_command": [
-    "sh",
-    "bin/test.sh"
-  ]
+  "acceptance": {
+    "full": [
+      "sh",
+      "sources/full_test.sh"
+    ]
+  }
 }
