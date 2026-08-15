@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/LINEAGE.json</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/LINEAGE.json</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/LINEAGE.json">Raw file</a></div></header>
+<article class="doc"><pre>{
+  &quot;version&quot;: 1,
+  &quot;import&quot;: {
+    &quot;root&quot;: &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/sources&quot;,
+    &quot;format&quot;: &quot;markdown&quot;
+  },
+  &quot;sources&quot;: {
+    &quot;reading-list.md&quot;: {
+      &quot;state&quot;: &quot;current&quot;,
+      &quot;versions&quot;: [
+        {
+          &quot;commit&quot;: &quot;332361c&quot;,
+          &quot;date&quot;: &quot;2026-08-15&quot;,
+          &quot;hash&quot;: &quot;1b61badf71d1b0f24f23ba0873e4fed00b20b5ff927d05b4a4eede34aa515a58&quot;,
+          &quot;release&quot;: &quot;&quot;,
+          &quot;state&quot;: &quot;consumed&quot;,
+          &quot;via&quot;: &quot;plan&quot;,
+          &quot;ticket&quot;: null,
+          &quot;requirements&quot;: [
+            {
+              &quot;name&quot;: &quot;manage-reading-list&quot;,
+              &quot;text&quot;: &quot;The reader can add a book with a title and author, view the books in the order added,\nand remove a book.&quot;,
+              &quot;stories&quot;: [
+                &quot;database&quot;,
+                &quot;book-creation&quot;,
+                &quot;ordered-list&quot;,
+                &quot;book-removal&quot;,
+                &quot;reading-list-screen&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;reject-incomplete-books&quot;,
+              &quot;text&quot;: &quot;An empty title or author is rejected with a clear error message.&quot;,
+              &quot;stories&quot;: [
+                &quot;incomplete-submission&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;verify-application&quot;,
+              &quot;text&quot;: &quot;The application includes automated tests for each behavior.\n\nThe completed application provides a POSIX-compatible `bin/test.sh` that runs the complete\nautomated test suite from the application root. `sh bin/test.sh` exits zero only when every test\npasses. The final build story runs this command after every implementation story and preserves its\ncommand, exit code, standard output, and standard error as evidence.&quot;,
+              &quot;stories&quot;: [
+                &quot;verification-suite&quot;
+              ]
+            }
+          ]
+        },
+        {
+          &quot;commit&quot;: &quot;02f4924&quot;,
+          &quot;date&quot;: &quot;2026-08-15&quot;,
+          &quot;hash&quot;: &quot;016c3dd066f43b20a7c46298aa7a68ff1e6378df7aa6205f996176778cc90e61&quot;,
+          &quot;release&quot;: &quot;0.01&quot;,
+          &quot;state&quot;: &quot;consumed&quot;,
+          &quot;via&quot;: &quot;refit&quot;,
+          &quot;ticket&quot;: &quot;TICKET-001-Mark-Book-Read.md&quot;,
+          &quot;requirements&quot;: [
+            {
+              &quot;name&quot;: &quot;mark-book-read&quot;,
+              &quot;text&quot;: &quot;The reader can mark a book as read and view whether each book is unread or read.&quot;,
+              &quot;stories&quot;: [
+                &quot;mark-read-schema&quot;,
+                &quot;mark-read-route&quot;,
+                &quot;mark-read-view&quot;
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+</pre></article>
+</main>
+</body>
+</html>

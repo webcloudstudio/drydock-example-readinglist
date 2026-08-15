@@ -1,0 +1,37 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Next: (no actionable steps — all done or blocked)
+
+Blueprint: ReadingList
+Target: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList
+Rows: <state> <type>  <Name>  [<id>]   — pass [<id>] to --step
+
+Block: Build Block 1 · Foundational  [block-1]   — 1/1 stories done
+  [done]    story  Establish the Flask application architecture and module boundaries.  [architecture]
+
+Block: Build Block 2 · Foundational  [block-2]   — 1/1 stories done
+  [done]    story  Establish SQLite persistence for ordered books.  [database]
+
+Block: Build Block 3 · Foundational  [block-3]   — 1/1 stories done
+  [done]    story  Define shared presentation patterns for the reading-list interface.  [ui-general]
+
+Block: Build Block 4 · Service  [block-4]   — 1/1 stories done
+  [done]    story  Add and persist a book submitted with a title and author.  [book-creation]
+
+Block: Build Block 5 · Service  [block-5]   — 1/1 stories done
+  [done]    story  Render books in their insertion order with an empty-list state.  [ordered-list]
+
+Block: Build Block 6 · Service  [block-6]   — 1/1 stories done
+  [done]    story  Remove a selected book from the reading list.  [book-removal]
+
+Block: Build Block 7 · Service  [block-7]   — 1/1 stories done
+  [done]    story  Reject submissions missing a title or author with a clear error.  [incomplete-submission]
+
+Block: Build Block 8 · Service  [block-8]   — 1/1 stories done
+  [done]    story  Assemble the reader-facing form, ordered list, empty state, and removal controls.  [reading-list-screen]
+
+Block: Build Block 9 · Service  [block-9]   — 1/1 stories done
+  [done]    story  Run and verify the complete automated test suite through bin/test.sh.  [verification-suite]
+
+Steps: 9 total — 9 done, 0 in review, 0 pending, 0 blocked by questions, 0 failed (100% complete)
+Buildable now: (none)
+Build score evidence: none

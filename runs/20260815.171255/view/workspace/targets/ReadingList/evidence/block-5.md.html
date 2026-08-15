@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-5.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-5.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-5.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 5 · Service (block-5)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5247</li><li>execution id: 20260815.172735.108Z-8cdefd54</li></ul>
+<h2>Stories built</h2>
+<ul><li>Render books in their insertion order with an empty-list state. (ordered-list) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: FEATURE-Ordered-List.md (SP 676)</li><li>context: ARCHITECTURE_compact.md (SP 133)</li><li>context: DATABASE_compact.md (SP 164)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: flask_compact.md (SP 1083)</li><li>stack: sqlite_compact.md (SP 876)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>tests/test_ordered_list.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): ordered-list-route (FEATURE-Ordered-List.md)</li></ul>
+<p>intent: The reading-list route is reachable and returns a successful response for an empty store. return code: 0</p>
+<ul><li>GREEN (prepassed): ordered-list-empty-state (FEATURE-Ordered-List.md)</li></ul>
+<p>intent: An empty store produces a reader-understandable empty-list state. return code: 0</p>
+<ul><li>GREEN (prepassed): ordered-list-order (FEATURE-Ordered-List.md)</li></ul>
+<p>intent: The list renders multiple books in their insertion order. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: ordered-list-route (FEATURE-Ordered-List.md)</li></ul>
+<p>intent: The reading-list route is reachable and returns a successful response for an empty store. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: ordered-list-empty-state (FEATURE-Ordered-List.md)</li></ul>
+<p>intent: An empty store produces a reader-understandable empty-list state. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: ordered-list-order (FEATURE-Ordered-List.md)</li></ul>
+<p>intent: The list renders multiple books in their insertion order. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li><a href="/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/tests/test_ordered_list.py">tests/test_ordered_list.py</a></li></ul>
+<p>SUMMARY: Added acceptance tests for successful empty state, clear empty-list messaging, and insertion-order rendering. Full suite passes: 23 tests.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

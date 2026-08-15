@@ -1,0 +1,24 @@
+<reusable-compact filename="DATABASE.md">
+SQLite `books` persistence via `app.persistence.get_book_store()`:
+- `BookStore.add(title, author) -> Book`
+- `BookStore.list_ordered() -> list[Book]`
+- `BookStore.remove(book_id) -> bool`
+- Schema: `id`, required `title`, required `author`, `created_at`; insertion order follows ascending SQLite primary key.
+- Initialization is idempotent and preserves rows.
+- SQLite access remains encapsulated; connections are scoped to Flask application contexts.
+- Empty titles/authors are rejected and never stored.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/__init__.py
+- app/persistence.py
+- app/routes.py
+- tests/test_persistence.py
+
+SUMMARY:
+Implemented SQLite book persistence with add, ordered listing, removal, validation, idempotent initialization, and context-scoped connections. Added coverage for all acceptance criteria and edge cases. `sh bin/test.sh`: 14 passed. Ruff checks passed.
+
+BLOCKERS:
+- None

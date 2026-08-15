@@ -1,0 +1,97 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+
+Acceptance verification: ReadingList  (2026-08-15T17:38:53+00:00)
+  PASS 11   FAIL 0   UNVERIFIED 0   PREPASSED 19   (30 AC)
+  19 criterion(s) were green before their block built. Either they do not exercise the story's work,
+  or the deliverable already existed. Not counted as proven; the build is not blocked on them.
+
+  ✓ PASS        architecture-factory                            architecture           ARCHITECTURE.md
+  ✓ PASS        architecture-isolation                          architecture           ARCHITECTURE.md
+  ✓ PASS        architecture-entrypoint                         architecture           ARCHITECTURE.md
+  ✓ PASS        database-add-readback                           database               DATABASE.md
+  ✓ PASS        database-order                                  database               DATABASE.md
+  ✓ PASS        database-remove                                 database               DATABASE.md
+  ✓ PASS        database-empty                                  database               DATABASE.md
+  ✓ PASS        ui-patterns-form                                ui-general             UI-GENERAL.md
+  ~ PREPASSED   ui-patterns-empty-state                         ui-general             UI-GENERAL.md
+        intent: The shared presentation provides a reader-visible empty-list state.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ✓ PASS        ui-patterns-removal-control                     ui-general             UI-GENERAL.md
+  ~ PREPASSED   book-creation-route                             book-creation          FEATURE-Book-Creation.md
+        intent: The book-creation route accepts a submitted title and author and returns a redirect response.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   book-creation-readback                          book-creation          FEATURE-Book-Creation.md
+        intent: A successfully submitted book is visible when the list is read again.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   book-creation-preserves-existing-order          book-creation          FEATURE-Book-Creation.md
+        intent: Adding a new book preserves the relative order of books already present.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   ordered-list-route                              ordered-list           FEATURE-Ordered-List.md
+        intent: The reading-list route is reachable and returns a successful response for an empty store.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   ordered-list-empty-state                        ordered-list           FEATURE-Ordered-List.md
+        intent: An empty store produces a reader-understandable empty-list state.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   ordered-list-order                              ordered-list           FEATURE-Ordered-List.md
+        intent: The list renders multiple books in their insertion order.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   removal-route-reachable                         book-removal           FEATURE-Book-Removal.md
+        intent: The removal route accepts a valid removal request.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ✓ PASS        removal-persists                                book-removal           FEATURE-Book-Removal.md
+  ✓ PASS        removal-preserves-remaining-order               book-removal           FEATURE-Book-Removal.md
+  ~ PREPASSED   validation-rejects-empty-title                  incomplete-submission  FEATURE-Incomplete-Submission.md
+        intent: A submission with an empty title is rejected with a client validation response.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   validation-rejects-empty-author                 incomplete-submission  FEATURE-Incomplete-Submission.md
+        intent: A submission with an empty author is rejected with a client validation response.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   validation-does-not-persist-invalid-submission  incomplete-submission  FEATURE-Incomplete-Submission.md
+        intent: Invalid submissions do not appear in the public list.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   validation-preserves-valid-submission           incomplete-submission  FEATURE-Incomplete-Submission.md
+        intent: A valid submission remains supported by the creation workflow.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   screen-loads                                    reading-list-screen    SCREEN-Reading-List.md
+        intent: The reading-list screen is reachable at its declared route.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   screen-accepts-book-submission                  reading-list-screen    SCREEN-Reading-List.md
+        intent: The screen supports submitting a title and author through the declared creation route.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   screen-supports-removal                         reading-list-screen    SCREEN-Reading-List.md
+        intent: The screen supports removing a listed book through the declared removal route.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   screen-supports-empty-state                     reading-list-screen    SCREEN-Reading-List.md
+        intent: The screen responds successfully when the reading list is empty.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   complete-suite                                  verification-suite     FEATURE-Test-Suite.md
+        intent: The required POSIX test launcher runs the complete automated suite successfully.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   launcher-runs-from-root                         verification-suite     FEATURE-Test-Suite.md
+        intent: The test launcher is runnable from the application root using the required command.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   behavior-suite-command-exists                   verification-suite     FEATURE-Test-Suite.md
+        intent: The complete launcher invocation is the executable project verification boundary.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+
+Soundings: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/SOUNDINGS.md
+Target - committed project workspace git store

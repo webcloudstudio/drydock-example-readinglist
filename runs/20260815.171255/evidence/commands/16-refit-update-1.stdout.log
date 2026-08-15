@@ -1,0 +1,13 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+2026-08-15 13:35:59 EDT  Calling CODEX/gpt-5.6-luna (refit_sources_route)...
+  Completed CODEX/gpt-5.6-luna (refit_sources_route)  rc=0
+  [ticket]          blueprint/changes/TICKET-001-Mark-Book-Read.md  (amending, DATABASE.md)  mark-read-schema
+  [ticket]          blueprint/changes/TICKET-002-Mark-Book-Read.md  (additive, SCREEN-Reading-List.md)  mark-read-route, mark-read-view
+  [downstream]      book-creation (consumes: book_store.add)
+  [downstream]      ordered-list (consumes: book_store.list_ordered)
+  [downstream]      book-removal (consumes: book_store.remove)
+  [downstream]      book-creation (consumes: books_table)
+  [downstream]      ordered-list (consumes: books_table)
+  [downstream]      verification-suite (consumes: reading_list_screen)
+Target - committed project workspace git store
+RESULT: 2 change ticket(s) authored

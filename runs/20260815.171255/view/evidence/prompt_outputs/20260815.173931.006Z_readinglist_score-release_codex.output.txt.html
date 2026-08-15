@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20260815.173931.006Z_readinglist_score-release_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20260815.173931.006Z_readinglist_score-release_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20260815.173931.006Z_readinglist_score-release_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>{&quot;criteria&quot;:[{&quot;id&quot;:&quot;st-001&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The POSIX launcher ran successfully and all 44 automated tests passed.&quot;,&quot;evidence&quot;:[&quot;bin/test.sh&quot;,&quot;command: bash bin/test.sh exited 0 with 44 passed&quot;]},{&quot;id&quot;:&quot;st-002&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The probe submitted a title and author, then observed both in the rendered list and persistence store.&quot;,&quot;evidence&quot;:[&quot;app/routes.py:19&quot;,&quot;app/persistence.py:52&quot;,&quot;probe: add submissions returned redirects and listed both books&quot;]},{&quot;id&quot;:&quot;st-003&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The probe observed books rendered in the same order they were added.&quot;,&quot;evidence&quot;:[&quot;app/persistence.py:76&quot;,&quot;probe: body.index(\&quot;First\&quot;) &lt; body.index(\&quot;Second\&quot;)&quot;]},{&quot;id&quot;:&quot;st-004&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The probe removed a selected book and observed it absent while the other remained listed.&quot;,&quot;evidence&quot;:[&quot;app/routes.py:37&quot;,&quot;app/persistence.py:92&quot;,&quot;probe: removed First; Second remained and First was absent&quot;]},{&quot;id&quot;:&quot;st-005&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The probe observed HTTP 400 responses with alert messages for empty title and empty author submissions.&quot;,&quot;evidence&quot;:[&quot;app/routes.py:23&quot;,&quot;app/templates/index.html:8&quot;,&quot;probe: both invalid submissions returned 400 with role=\&quot;alert\&quot;&quot;]},{&quot;id&quot;:&quot;st-006&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The automated suite contains and passes tests covering adding, ordering, removal, and empty-field rejection.&quot;,&quot;evidence&quot;:[&quot;tests/test_persistence.py:5&quot;,&quot;tests/test_persistence.py:45&quot;,&quot;tests/test_persistence.py:66&quot;,&quot;tests/test_persistence.py:78&quot;,&quot;tests/test_routes.py:3&quot;,&quot;command: bash bin/test.sh reported 44 passed&quot;]}],&quot;improvements&quot;:[]}</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_ordered_list.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_ordered_list.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_ordered_list.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Acceptance coverage for the ordered reading-list workflow.&quot;&quot;&quot;
+
+
+def test_root_is_successful_for_an_empty_store(client):
+    response = client.get(&quot;/&quot;)
+
+    assert response.status_code == 200
+
+
+def test_empty_store_has_an_understandable_empty_state(client):
+    body = client.get(&quot;/&quot;).get_data(as_text=True)
+
+    assert body
+    assert &quot;empty&quot; in body.lower() or &quot;no books&quot; in body.lower()
+
+
+def test_root_renders_books_in_insertion_order(client):
+    first_title = &quot;First Added&quot;
+    first_author = &quot;First Author&quot;
+    second_title = &quot;Second Added&quot;
+    second_author = &quot;Second Author&quot;
+
+    first_response = client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}
+    )
+    second_response = client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}
+    )
+
+    assert first_response.status_code in (302, 303)
+    assert second_response.status_code in (302, 303)
+
+    response = client.get(&quot;/&quot;)
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert body.index(first_title) &lt; body.index(second_title)
+    assert first_author in body
+    assert second_author in body
+</pre></article>
+</main>
+</body>
+</html>

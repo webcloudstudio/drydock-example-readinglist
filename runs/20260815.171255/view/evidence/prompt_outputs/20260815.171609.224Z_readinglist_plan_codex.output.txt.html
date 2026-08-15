@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20260815.171609.224Z_readinglist_plan_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20260815.171609.224Z_readinglist_plan_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20260815.171609.224Z_readinglist_plan_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT FEATURE-Book-Removal.md ===
+# FEATURE: Book Removal
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260815 V1 |
+| Description | Removes a selected book and preserves the relative order of remaining books. |
+| Depends On  | DATABASE.md, FEATURE-Ordered-List.md |
+| Provides    | POST /books/{id}/remove, book_removal |
+| Consumes    | book_store.remove, ordered_book_listing |
+
+## Questions
+
+- None.
+
+## Purpose
+
+Allow a reader to remove a selected book from the reading list.
+
+## Trigger and Sequence
+
+1. The reader submits the removal control for a listed book.
+2. The application removes that book through the persistence boundary.
+3. The application redirects or returns the reader to the ordered list.
+4. The removed book is absent and remaining books retain their relative order.
+
+## Reads and Writes
+
+- Reads the selected book identifier from the removal request.
+- Writes deletion through `book_store.remove`.
+- Reads the resulting list through `ordered_book_listing`.
+
+## Operational Behavior
+
+The removal route is `POST /books/&lt;int:book_id&gt;/remove`. Unknown identifiers do not remove any other book.
+
+## Programmatic Acceptance
+
+=== AC removal-route-reachable ===
+Intent: The removal route accepts a valid removal request.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Book to Remove&quot;
+author = &quot;Removal Author&quot;
+created = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert created.status_code in (200, 302, 303)
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+removed = client.post(&quot;/books/1/remove&quot;)
+assert removed.status_code in (200, 302, 303)
+=== END AC removal-route-reachable ===
+
+=== AC removal-persists ===
+Intent: Removing a book makes it absent on the next public list read.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Temporary Book&quot;
+author = &quot;Temporary Author&quot;
+client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+before = client.get(&quot;/&quot;)
+assert before.status_code == 200
+removed = client.post(&quot;/books/1/remove&quot;)
+assert removed.status_code in (200, 302, 303)
+after = client.get(&quot;/&quot;)
+assert after.status_code == 200
+assert title.encode() not in after.data
+assert author.encode() not in after.data
+=== END AC removal-persists ===
+
+=== AC removal-preserves-remaining-order ===
+Intent: Removing one book leaves the other books in their original relative order.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+first_title = &quot;First Remaining&quot;
+first_author = &quot;First Author&quot;
+removed_title = &quot;Middle Removed&quot;
+removed_author = &quot;Middle Author&quot;
+last_title = &quot;Last Remaining&quot;
+last_author = &quot;Last Author&quot;
+client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author})
+client.post(&quot;/books&quot;, data={&quot;title&quot;: removed_title, &quot;author&quot;: removed_author})
+client.post(&quot;/books&quot;, data={&quot;title&quot;: last_title, &quot;author&quot;: last_author})
+client.post(&quot;/books/2/remove&quot;)
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+first_position = response.data.index(first_title.encode())
+last_position = response.data.index(last_title.encode())
+assert first_position &lt; last_position
+assert removed_title.encode() not in response.data
+=== END AC removal-preserves-remaining-order ===
+
+## User Acceptance
+
+- A reader can remove a listed book and see the updated list.
+
+## Guardrails
+
+- Removal must go through the persistence boundary.
+- Removing one book must never reorder the remaining books.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-Incomplete-Submission.md ===
+# FEATURE: Incomplete Submission
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260815 V1 |
+| Description | Rejects book submissions that omit a title or author and reports the missing requirement. |
+| Depends On  | FEATURE-Book-Creation.md |
+| Provides    | validate_book_submission |
+| Consumes    | POST /books, book_creation |
+
+## Questions
+
+- None.
+
+## Purpose
+
+Validate book submissions at the submission boundary before persistence.
+
+## Workflow
+
+A submission is invalid when its title is empty, its author is empty, or both are empty. Invalid submissions are rejected, are not persisted, and return a clear user-facing indication that the required field is missing. Valid submissions continue through the existing creation workflow.
+
+## Programmatic Acceptance
+
+=== AC validation-rejects-empty-title ===
+Intent: A submission with an empty title is rejected with a client validation response.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+author = &quot;Known Author&quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: author})
+assert response.status_code == 400
+=== END AC validation-rejects-empty-title ===
+
+=== AC validation-rejects-empty-author ===
+Intent: A submission with an empty author is rejected with a client validation response.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Known Title&quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;})
+assert response.status_code == 400
+=== END AC validation-rejects-empty-author ===
+
+=== AC validation-does-not-persist-invalid-submission ===
+Intent: Invalid submissions do not appear in the public list.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Rejected Title&quot;
+author = &quot;Rejected Author&quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;})
+assert response.status_code == 400
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+assert title.encode() not in listed.data
+assert author.encode() not in listed.data
+=== END AC validation-does-not-persist-invalid-submission ===
+
+=== AC validation-preserves-valid-submission ===
+Intent: A valid submission remains supported by the creation workflow.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Valid Title&quot;
+author = &quot;Valid Author&quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code in (200, 302, 303)
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+assert title.encode() in listed.data
+assert author.encode() in listed.data
+=== END AC validation-preserves-valid-submission ===
+
+## User Acceptance
+
+- A reader receives a clear indication when title or author is required.
+
+## Guardrails
+
+- Never accept or store a submission with an empty title or author.
+- Validation must occur before persistence.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT SCREEN-Reading-List.md ===
+# SCREEN: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260815 V1 |
+| Description | Presents the reader-facing form, ordered book list, empty state, validation feedback, and removal controls. |
+| Depends On  | UI-GENERAL.md, FEATURE-Book-Creation.md, FEATURE-Ordered-List.md, FEATURE-Book-Removal.md, FEATURE-Incomplete-Submission.md |
+| Provides    | reading_list_screen |
+| Consumes    | GET /, POST /books, POST /books/{id}/remove, reading_list_ui_patterns |
+| Route       | / |
+| Parent      | — |
+| Main Menu   | Reading List (1) |
+| Sub Menu    | — |
+| Tab Order   | 1 |
+
+## Questions
+
+- None.
+
+## Layout and Interactions
+
+The single screen contains:
+
+- A title and author form with a direct submission action.
+- The current books rendered in insertion order.
+- A clear empty-list state when no books exist.
+- A removal control for each listed book.
+- Clear validation feedback when title or author is missing.
+
+The screen uses `GET /` for the initial and subsequent list reads, `POST /books` for creation, and `POST /books/&lt;int:book_id&gt;/remove` for removal.
+
+## Programmatic Acceptance
+
+=== AC screen-loads ===
+Intent: The reading-list screen is reachable at its declared route.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+=== END AC screen-loads ===
+
+=== AC screen-accepts-book-submission ===
+Intent: The screen supports submitting a title and author through the declared creation route.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Screen Book&quot;
+author = &quot;Screen Author&quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code in (200, 302, 303)
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+assert title.encode() in listed.data
+assert author.encode() in listed.data
+=== END AC screen-accepts-book-submission ===
+
+=== AC screen-supports-removal ===
+Intent: The screen supports removing a listed book through the declared removal route.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Screen Removal&quot;
+author = &quot;Screen Removal Author&quot;
+client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+response = client.post(&quot;/books/1/remove&quot;)
+assert response.status_code in (200, 302, 303)
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+assert title.encode() not in listed.data
+=== END AC screen-supports-removal ===
+
+=== AC screen-supports-empty-state ===
+Intent: The screen responds successfully when the reading list is empty.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+=== END AC screen-supports-empty-state ===
+
+## User Acceptance
+
+- A first-time reader can immediately find the title-and-author submission form.
+- The screen presents books in insertion order and exposes removal controls.
+- The empty-list and validation states are understandable.
+
+## Guardrails
+
+- The screen must not reorder books.
+- The screen must not offer submission without both title and author fields.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-Test-Suite.md ===
+# FEATURE: Test Suite
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260815 V1 |
+| Description | Provides automated coverage and a complete POSIX test launcher for the reading-list application. |
+| Depends On  | SCREEN-Reading-List.md |
+| Provides    | sh bin/test.sh |
+| Consumes    | reading_list_screen, book_creation, ordered_book_listing, book_removal, validate_book_submission |
+
+## Questions
+
+- None.
+
+## Purpose
+
+Provide automated tests for adding books, preserving insertion order, removing books, and rejecting empty titles or authors. The root-level `bin/test.sh` launcher is POSIX-compatible and runs the complete suite from the application root.
+
+## Test Coverage
+
+The project test suite covers:
+
+- Successful creation with title and author.
+- Ordered listing and the empty-list state.
+- Removal and preservation of remaining order.
+- Rejection of empty title, empty author, and both fields empty.
+- Non-persistence of rejected submissions.
+
+## Programmatic Acceptance
+
+=== AC complete-suite ===
+Intent: The required POSIX test launcher runs the complete automated suite successfully.
+Suite: full
+Requires: executable=sh; scope=test
+
+import subprocess
+
+result = subprocess.run(
+    [&quot;sh&quot;, &quot;bin/test.sh&quot;],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC complete-suite ===
+
+=== AC launcher-runs-from-root ===
+Intent: The test launcher is runnable from the application root using the required command.
+Requires: executable=sh; scope=test
+
+import subprocess
+
+result = subprocess.run(
+    [&quot;sh&quot;, &quot;bin/test.sh&quot;],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC launcher-runs-from-root ===
+
+=== AC behavior-suite-command-exists ===
+Intent: The complete launcher invocation is the executable project verification boundary.
+Requires: executable=sh; scope=test
+
+import subprocess
+
+result = subprocess.run(
+    [&quot;sh&quot;, &quot;bin/test.sh&quot;],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode in (0, 1)
+=== END AC behavior-suite-command-exists ===
+
+## User Acceptance
+
+- The complete suite can be run from the application root with `sh bin/test.sh`.
+
+## Guardrails
+
+- `bin/test.sh` must be POSIX-compatible.
+- The launcher must run the complete automated suite.
+- A nonzero test result must produce a nonzero launcher exit status.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

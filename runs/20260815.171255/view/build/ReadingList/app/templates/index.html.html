@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/templates/index.html</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/templates/index.html</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../build/ReadingList/app/templates/index.html">Raw file</a></div></header>
+<article class="doc"><pre>{% extends &quot;base.html&quot; %}
+{% block content %}
+&lt;div class=&quot;page-header&quot;&gt;
+  &lt;p class=&quot;eyebrow&quot;&gt;Personal reading queue&lt;/p&gt;
+  &lt;h1&gt;Reading list&lt;/h1&gt;
+  &lt;p&gt;Keep track of the books you want to read next.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;section class=&quot;panel&quot; aria-labelledby=&quot;add-book-heading&quot;&gt;
+  &lt;h2 id=&quot;add-book-heading&quot;&gt;Add a book&lt;/h2&gt;
+  {% if error %}
+  &lt;div id=&quot;form-error&quot; class=&quot;error&quot; role=&quot;alert&quot; aria-live=&quot;polite&quot;&gt;{{ error }}&lt;/div&gt;
+  {% endif %}
+  &lt;form action=&quot;{{ url_for(&#x27;reading_list.add_book&#x27;) }}&quot; method=&quot;post&quot;&gt;
+    &lt;div class=&quot;form-fields&quot;&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;label for=&quot;title&quot;&gt;Title &lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;&lt;/label&gt;
+        &lt;input id=&quot;title&quot; name=&quot;title&quot; type=&quot;text&quot; autocomplete=&quot;off&quot; required{% if error %} aria-describedby=&quot;form-error&quot;{% endif %} value=&quot;{{ request.form.get(&#x27;title&#x27;, &#x27;&#x27;) }}&quot;&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;field&quot;&gt;
+        &lt;label for=&quot;author&quot;&gt;Author &lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;&lt;/label&gt;
+        &lt;input id=&quot;author&quot; name=&quot;author&quot; type=&quot;text&quot; autocomplete=&quot;off&quot; required{% if error %} aria-describedby=&quot;form-error&quot;{% endif %} value=&quot;{{ request.form.get(&#x27;author&#x27;, &#x27;&#x27;) }}&quot;&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button type=&quot;submit&quot;&gt;Add to reading list&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;panel&quot; aria-labelledby=&quot;list-heading&quot;&gt;
+  &lt;h2 id=&quot;list-heading&quot;&gt;Books to read&lt;/h2&gt;
+  {% if books %}
+  &lt;ol class=&quot;book-list&quot;&gt;
+    {% for book in books %}
+    &lt;li class=&quot;book-item&quot;&gt;
+      &lt;div&gt;
+        &lt;strong&gt;{{ book.title }}&lt;/strong&gt;
+        &lt;span&gt;by {{ book.author }}&lt;/span&gt;
+        &lt;span class=&quot;read-status&quot;&gt;{{ &quot;Read&quot; if book.is_read else &quot;Unread&quot; }}&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;book-actions&quot;&gt;
+        {% if not book.is_read %}
+        &lt;form action=&quot;{{ url_for(&#x27;reading_list.mark_read&#x27;, book_id=book.id) }}&quot; method=&quot;post&quot;&gt;
+          &lt;button type=&quot;submit&quot; aria-label=&quot;Mark {{ book.title }} as read&quot;&gt;Mark as read&lt;/button&gt;
+        &lt;/form&gt;
+        {% endif %}
+        &lt;form action=&quot;{{ url_for(&#x27;reading_list.remove_book&#x27;, book_id=book.id) }}&quot; method=&quot;post&quot;&gt;
+          &lt;button class=&quot;remove-button&quot; type=&quot;submit&quot; aria-label=&quot;Remove {{ book.title }}&quot;&gt;Remove&lt;/button&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    {% endfor %}
+  &lt;/ol&gt;
+  {% else %}
+  &lt;p class=&quot;empty-state&quot;&gt;Your reading list is empty. Add a book to get started.&lt;/p&gt;
+  {% endif %}
+&lt;/section&gt;
+{% endblock %}
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-7.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-7.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-7.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 7 · Service (block-7)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 4439</li><li>execution id: 20260815.173115.893Z-f187318d</li></ul>
+<h2>Stories built</h2>
+<ul><li>Reject submissions missing a title or author with a clear error. (incomplete-submission) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: FEATURE-Incomplete-Submission.md (SP 731)</li><li>context: ARCHITECTURE_compact.md (SP 133)</li><li>context: DATABASE_compact.md (SP 164)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: flask_compact.md (SP 1083)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>tests/test_routes.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): validation-rejects-empty-title (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: A submission with an empty title is rejected with a client validation response. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-rejects-empty-author (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: A submission with an empty author is rejected with a client validation response. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-does-not-persist-invalid-submission (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: Invalid submissions do not appear in the public list. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-preserves-valid-submission (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: A valid submission remains supported by the creation workflow. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: validation-rejects-empty-title (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: A submission with an empty title is rejected with a client validation response. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-rejects-empty-author (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: A submission with an empty author is rejected with a client validation response. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-does-not-persist-invalid-submission (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: Invalid submissions do not appear in the public list. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-preserves-valid-submission (FEATURE-Incomplete-Submission.md)</li></ul>
+<p>intent: A valid submission remains supported by the creation workflow. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>tests/test_routes.py</li></ul>
+<p>SUMMARY: Added coverage for missing title, missing author, both missing, non-persistence, and valid submissions. Full suite: 32 passed. All declared acceptance checks passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

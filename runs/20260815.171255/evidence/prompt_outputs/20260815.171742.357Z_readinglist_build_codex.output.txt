@@ -1,0 +1,30 @@
+<reusable-compact filename="ARCHITECTURE.md">
+Flask app factory: `from app import create_app`; supports isolated overrides including `TESTING` and `DATABASE`. HTTP routes live in `app.routes`; SQLite access is confined to typed `app.persistence`; templates/static assets live under `app/`; tests use pytest; `bin/test.sh` runs the complete suite. Root `/` must return 200, and independent app instances must not share state.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- .env.example
+- .gitignore
+- app/__init__.py
+- app/persistence.py
+- app/routes.py
+- app/templates/base.html
+- app/templates/index.html
+- app/static/css/style.css
+- bin/test.sh
+- config.py
+- pyproject.toml
+- pytest.ini
+- run.py
+- tests/conftest.py
+- tests/test_architecture.py
+- tests/test_routes.py
+- uv.lock
+
+SUMMARY:
+Implemented the Flask application factory, isolated SQLite persistence boundary, route registration, templates, configuration, tests, and POSIX test launcher. `sh bin/test.sh` passes all 5 tests; Ruff also passes.
+
+BLOCKERS:
+- None

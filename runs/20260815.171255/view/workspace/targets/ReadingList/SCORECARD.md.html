@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/SCORECARD.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/SCORECARD.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/SCORECARD.md">Raw file</a></div></header>
+<article class="doc"><h1>Release Scorecard: ReadingList</h1>
+<ul><li>Verdict: PASSED</li><li>Code identity: 2f884934bb2267041cab4c34d4f2b3d3e743ad36</li></ul>
+<h2>Project acceptance</h2>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Type</th><th>Criterion</th><th>Verdict</th><th>Observed</th></tr></thead><tbody><tr><td>st-001</td><td>technical</td><td>The application shall provide a POSIX-compatible bin/test.sh that exits zero when every automated test passes.</td><td>MET</td><td>bin/test.sh; command: bash bin/test.sh exited 0 with 44 passed</td></tr><tr><td>st-002</td><td>behavioral</td><td>When a reader submits a title and an author, the application shall store the book and show it in the list.</td><td>MET</td><td>app/routes.py:19; app/persistence.py:52; probe: add submissions returned redirects and listed both books</td></tr><tr><td>st-003</td><td>behavioral</td><td>The application shall present books in the order they were added.</td><td>MET</td><td>app/persistence.py:76; probe: body.index(&quot;First&quot;) &lt; body.index(&quot;Second&quot;)</td></tr><tr><td>st-004</td><td>behavioral</td><td>When a reader removes a book, the application shall omit it from the list on the next read.</td><td>MET</td><td>app/routes.py:37; app/persistence.py:92; probe: removed First; Second remained and First was absent</td></tr><tr><td>st-005</td><td>behavioral</td><td>If a submission carries an empty title or an empty author, then the application shall reject it and report the reason.</td><td>MET</td><td>app/routes.py:23; app/templates/index.html:8; probe: both invalid submissions returned 400 with role=&quot;alert&quot;</td></tr><tr><td>st-006</td><td>technical</td><td>The application shall carry automated tests for adding a book, listing books in the order added, removing a book, rejecting an empty title or author</td><td>MET</td><td>tests/test_persistence.py:5; tests/test_persistence.py:45; tests/test_persistence.py:66; tests/test_persistence.py:78; tests/test_routes.py:3; command: bash bin/test.sh reported 44 passed</td></tr></tbody></table></div>
+<h2>Failures</h2>
+<ul><li>None.</li></ul>
+<h2>Manual verification required</h2>
+<ul><li>None.</li></ul>
+<h2>Could not judge</h2>
+<ul><li>None.</li></ul>
+<h2>Advisory warnings</h2>
+<ul><li>Build directory has uncommitted changes</li></ul>
+<h2>Ranked improvements</h2>
+<p>None.</p></article>
+</main>
+</body>
+</html>

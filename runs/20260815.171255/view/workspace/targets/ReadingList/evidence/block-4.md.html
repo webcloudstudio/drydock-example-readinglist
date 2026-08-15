@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-4.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-4.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-4.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 4 · Service (block-4)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5364</li><li>execution id: 20260815.172624.780Z-f89bc148</li></ul>
+<h2>Stories built</h2>
+<ul><li>Add and persist a book submitted with a title and author. (book-creation) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: FEATURE-Book-Creation.md (SP 780)</li><li>context: ARCHITECTURE_compact.md (SP 133)</li><li>context: DATABASE_compact.md (SP 164)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: flask_compact.md (SP 1083)</li><li>stack: sqlite_compact.md (SP 876)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>tests/test_routes.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): book-creation-route (FEATURE-Book-Creation.md)</li></ul>
+<p>intent: The book-creation route accepts a submitted title and author and returns a redirect response. return code: 0</p>
+<ul><li>GREEN (prepassed): book-creation-readback (FEATURE-Book-Creation.md)</li></ul>
+<p>intent: A successfully submitted book is visible when the list is read again. return code: 0</p>
+<ul><li>GREEN (prepassed): book-creation-preserves-existing-order (FEATURE-Book-Creation.md)</li></ul>
+<p>intent: Adding a new book preserves the relative order of books already present. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: book-creation-route (FEATURE-Book-Creation.md)</li></ul>
+<p>intent: The book-creation route accepts a submitted title and author and returns a redirect response. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: book-creation-readback (FEATURE-Book-Creation.md)</li></ul>
+<p>intent: A successfully submitted book is visible when the list is read again. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: book-creation-preserves-existing-order (FEATURE-Book-Creation.md)</li></ul>
+<p>intent: Adding a new book preserves the relative order of books already present. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>tests/test_routes.py</li></ul>
+<p>SUMMARY: Implemented explicit book-creation acceptance coverage for redirect behavior and insertion-order preservation. Existing <code>/books</code> persistence workflow passes all tests.</p>
+<p><code>sh bin/test.sh</code>: 20 passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from ARCHITECTURE.md sha256=c42125d1c9a4d632e46f7b88523442ceb51348a2893aa1bb01dcd7b11bbd892b on 2026-08-15 by drydock build agent --&gt;</p>
+<p>Flask app factory: <code>from app import create_app</code>; supports isolated overrides including <code>TESTING</code> and <code>DATABASE</code>. HTTP routes live in <code>app.routes</code>; SQLite access is confined to typed <code>app.persistence</code>; templates/static assets live under <code>app/</code>; tests use pytest; <code>bin/test.sh</code> runs the complete suite. Root <code>/</code> must return 200, and independent app instances must not share state.</p></article>
+</main>
+</body>
+</html>

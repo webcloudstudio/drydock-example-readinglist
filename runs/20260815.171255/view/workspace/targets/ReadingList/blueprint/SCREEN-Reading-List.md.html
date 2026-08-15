@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/SCREEN-Reading-List.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/SCREEN-Reading-List.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/SCREEN-Reading-List.md">Raw file</a></div></header>
+<article class="doc"><h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Presents the reader-facing form, ordered book list, empty state, validation feedback, and removal controls.</td></tr><tr><td>Depends On</td><td>UI-GENERAL.md, FEATURE-Book-Creation.md, FEATURE-Ordered-List.md, FEATURE-Book-Removal.md, FEATURE-Incomplete-Submission.md</td></tr><tr><td>Provides</td><td>reading_list_screen</td></tr><tr><td>Consumes</td><td>GET /, POST /books, POST /books/{id}/remove, reading_list_ui_patterns</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>—</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Sub Menu</td><td>—</td></tr><tr><td>Tab Order</td><td>1</td></tr></tbody></table></div>
+<h2>Layout and Interactions</h2>
+<p>The single screen contains:</p>
+<ul><li>A title and author form with a direct submission action.</li><li>The current books rendered in insertion order.</li><li>A clear empty-list state when no books exist.</li><li>A removal control for each listed book.</li><li>Clear validation feedback when title or author is missing.</li></ul>
+<p>The screen uses <code>GET /</code> for the initial and subsequent list reads, <code>POST /books</code> for creation, and <code>POST /books/&lt;int:book_id&gt;/remove</code> for removal.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC screen-loads ===<br>Intent: The reading-list screen is reachable at its declared route. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 === END AC screen-loads ===</p>
+<p>=== AC screen-accepts-book-submission ===<br>Intent: The screen supports submitting a title and author through the declared creation route. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Screen Book&quot; author = &quot;Screen Author&quot; response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code in (200, 302, 303) listed = client.get(&quot;/&quot;) assert listed.status_code == 200 assert title.encode() in listed.data assert author.encode() in listed.data === END AC screen-accepts-book-submission ===</p>
+<p>=== AC screen-supports-removal ===<br>Intent: The screen supports removing a listed book through the declared removal route. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Screen Removal&quot; author = &quot;Screen Removal Author&quot; client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) response = client.post(&quot;/books/1/remove&quot;) assert response.status_code in (200, 302, 303) listed = client.get(&quot;/&quot;) assert listed.status_code == 200 assert title.encode() not in listed.data === END AC screen-supports-removal ===</p>
+<p>=== AC screen-supports-empty-state ===<br>Intent: The screen responds successfully when the reading list is empty. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 === END AC screen-supports-empty-state ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A first-time reader can immediately find the title-and-author submission form.</li><li>The screen presents books in insertion order and exposes removal controls.</li><li>The empty-list and validation states are understandable.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The screen must not reorder books.</li><li>The screen must not offer submission without both title and author fields.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/ANALYSIS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/ANALYSIS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/ANALYSIS.md">Raw file</a></div></header>
+<article class="doc"><h1>Blueprint Analysis: ReadingList</h1>
+<h2>Commander Expectations</h2>
+<ul><li>assert readers can maintain an ordered list of books to read through a web application</li><li>assert empty titles and authors are rejected with clear reasons</li><li>assert the complete automated test suite is runnable through <code>sh bin/test.sh</code></li></ul>
+<h2>Crew</h2>
+<div class="scroll"><table><thead><tr><th>Crew</th><th>Charge</th></tr></thead><tbody><tr><td>Commander</td><td>Defines intent and decides what done means.</td></tr><tr><td>Team Lead</td><td>Confirms epic completeness and stakeholder expectations.</td></tr><tr><td>Planning Crew</td><td>Authors atomic specifications and the ordered Manifest.</td></tr><tr><td>Shipyard Crew</td><td>Builds the tickets without synchronous Commander access.</td></tr></tbody></table></div>
+<h2>Story List</h2>
+<h3>Feature: Book List Management</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>BOOKS-001</td><td>Add a book with title and author</td><td>A submitted title and author are stored and shown in the list.</td></tr><tr><td>BOOKS-002</td><td>View books in order added</td><td>The list displays books in the same order in which they were added, including an understandable empty-list state.</td></tr><tr><td>BOOKS-003</td><td>Remove a book</td><td>Removing a book causes it to be omitted on the next list read.</td></tr><tr><td>BOOKS-004</td><td>Reject incomplete book submissions</td><td>Empty titles or authors are rejected and the reason is clearly reported.</td></tr></tbody></table></div>
+<h3>Feature: Application Verification</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>VERIFY-001</td><td>Run the complete automated test suite</td><td><code>sh bin/test.sh</code> runs from the application root and exits zero only when every automated test passes.</td></tr><tr><td>VERIFY-002</td><td>Cover all book-list behaviors with automated tests</td><td>Automated tests cover adding, ordered listing, removal, and rejection of empty title or author.</td></tr></tbody></table></div>
+<h2>Surfaced Acceptance Criteria</h2>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story ID</th><th>Criterion</th></tr></thead><tbody><tr><td>AC-001</td><td>BOOKS-001</td><td>The primary web entry point provides a first-time reader with a direct path to submit a title and author.</td></tr><tr><td>AC-002</td><td>BOOKS-002</td><td>When no books exist, the application presents a clear empty-list state.</td></tr><tr><td>AC-003</td><td>BOOKS-004</td><td>Submission errors identify that the title or author is required.</td></tr><tr><td>AC-004</td><td>BOOKS-002</td><td>Interactive list operations provide a usable response while the request is in progress and a clear error state if the operation fails.</td></tr></tbody></table></div>
+<h2>Source Inventory</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Content kind</th><th>Disposition</th><th>Reason</th></tr></thead><tbody><tr><td><code>sources/reading-list.md</code></td><td>markdown</td><td>analyzed</td><td>readable UTF-8</td></tr></tbody></table></div>
+<h2>Relationship Model</h2>
+<div class="scroll"><table><thead><tr><th>Source or group</th><th>Relationship type</th><th>Related source or group</th><th>Evidence</th><th>Delivery implication</th></tr></thead><tbody><tr><td><code>sources/reading-list.md</code></td><td>instruction-to-test</td><td><code>BOOKS-001</code> through <code>BOOKS-004</code></td><td>The source defines add, ordered viewing, removal, and validation behaviors.</td><td>Implementation stories must preserve these user-visible behaviors.</td></tr><tr><td><code>sources/reading-list.md</code></td><td>instruction-to-test</td><td><code>VERIFY-002</code></td><td>The source explicitly requires automated tests for each behavior.</td><td>Tests must cover every listed book-list behavior.</td></tr><tr><td><code>sources/reading-list.md</code></td><td>instruction-to-test</td><td><code>VERIFY-001</code></td><td>The source requires a POSIX-compatible <code>bin/test.sh</code> and complete-suite execution.</td><td>The terminal verification story must provide and run the project test command.</td></tr></tbody></table></div>
+<h2>Source Roles</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Role</th><th>Plan disposition</th><th>Build disposition</th></tr></thead><tbody><tr><td><code>sources/reading-list.md</code></td><td>author intent</td><td>compass</td><td>prompt-only</td></tr></tbody></table></div>
+<h2>Planning Instructions</h2>
+<h3>Delivery Shape</h3>
+<p>A small web application accepts book title and author input, stores books, renders them in insertion order, and supports removal. The application includes automated behavior tests and a root-level POSIX test launcher. The primary flow is submit, view the ordered list, and remove an item.</p>
+<h3>Story Realization Map</h3>
+<div class="scroll"><table><thead><tr><th>Story ID</th><th>Blueprint scope</th><th>Evidence</th><th>Related files</th><th>Delivery kind</th></tr></thead><tbody><tr><td>BOOKS-001</td><td>Book creation flow and persistence</td><td><code>sources/reading-list.md</code></td><td>Web entry point, book model/store, add-book tests</td><td>capability, persistence, test</td></tr><tr><td>BOOKS-002</td><td>Ordered list rendering and empty state</td><td><code>sources/reading-list.md</code></td><td>List view, ordered query/read path, list tests</td><td>capability, test</td></tr><tr><td>BOOKS-003</td><td>Book removal flow</td><td><code>sources/reading-list.md</code></td><td>Remove route/action, persistence deletion, removal tests</td><td>capability, test</td></tr><tr><td>BOOKS-004</td><td>Input validation and error presentation</td><td><code>sources/reading-list.md</code></td><td>Validation boundary, form error display, rejection tests</td><td>capability, test</td></tr><tr><td>VERIFY-001</td><td>Complete test launcher</td><td><code>sources/reading-list.md</code></td><td><code>bin/test.sh</code>, test-runner configuration</td><td>acceptance contract, build gate</td></tr><tr><td>VERIFY-002</td><td>Behavior test coverage</td><td><code>sources/reading-list.md</code></td><td>Automated test modules for all book behaviors</td><td>test harness</td></tr></tbody></table></div>
+<h3>Test and Acceptance Strategy</h3>
+<p>Each book-management story owns focused tests for its behavior. <code>VERIFY-002</code> confirms coverage across adding, ordered listing, removal, and invalid submissions. <code>VERIFY-001</code> is the terminal verification story and runs the complete suite through <code>sh bin/test.sh</code>; its acceptance assertion uses <code>Suite: full</code>. The complete-suite requirement is a proof gate, not a numeric release threshold.</p>
+<h3>Sequencing and Dependencies</h3>
+<p>Establish the application foundation and persistence boundary before the book-management stories. Implement creation and ordered reads before removal and validation refinements. Keep focused story tests scoped to the owning behavior. Implement the test launcher and complete-suite verification after the behavior tests are available.</p>
+<h3>Source Conflicts and Gaps</h3>
+<p>No conflicting source definitions were found. The source does not name a framework, language, persistence engine, or deployment target; conventional implementation choices are proposed in <code>TECHNOLOGY_STACK.md</code>. No external service, authentication model, or sensitive-data requirement is stated.</p>
+<h2>Analysis Notes</h2>
+<p>generated: 2026-08-15 blueprint: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/blueprint</p>
+<p>Quality: Questions blockers: 0 questions: 1 features: 2 stories: 6 stack: proposed Python, Flask, SQLite, pytest, POSIX sh display_name: ReadingList short_description: A web application for maintaining an ordered list of books to read.</p>
+<p>None.</p></article>
+</main>
+</body>
+</html>

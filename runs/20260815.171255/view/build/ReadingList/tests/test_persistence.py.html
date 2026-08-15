@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_persistence.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_persistence.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_persistence.py">Raw file</a></div></header>
+<article class="doc"><pre>import sqlite3
+
+import pytest
+
+from app import create_app
+from app.persistence import get_book_store
+
+
+def test_add_reads_back_submitted_book():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        store = get_book_store()
+        created = store.add(&quot;The Dispossessed&quot;, &quot;Ursula K. Le Guin&quot;)
+        books = store.list_ordered()
+
+    assert len(books) == 1
+    assert books[0].id == created.id
+    assert books[0].title == &quot;The Dispossessed&quot;
+    assert books[0].author == &quot;Ursula K. Le Guin&quot;
+    assert books[0].is_read is False
+
+
+def test_initialize_migrates_existing_rows_to_unread(tmp_path):
+    database_path = str(tmp_path / &quot;legacy-books.db&quot;)
+    connection = sqlite3.connect(database_path)
+    connection.execute(
+        &quot;&quot;&quot;
+        CREATE TABLE books (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        &quot;&quot;&quot;
+    )
+    connection.execute(
+        &quot;INSERT INTO books (title, author) VALUES (?, ?)&quot;,
+        (&quot;Legacy Book&quot;, &quot;Legacy Author&quot;),
+    )
+    connection.commit()
+    connection.close()
+
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: database_path})
+    with application.app_context():
+        books = get_book_store().list_ordered()
+
+    assert [(book.title, book.is_read) for book in books] == [(&quot;Legacy Book&quot;, False)]
+
+
+def test_mark_read_persists_and_is_idempotent():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        store = get_book_store()
+        created = store.add(&quot;A Book&quot;, &quot;An Author&quot;)
+
+        assert store.mark_read(created.id) is True
+        assert store.list_ordered()[0].is_read is True
+        assert store.mark_read(created.id) is True
+        assert store.list_ordered()[0].is_read is True
+
+
+def test_mark_read_reports_missing_book():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        assert get_book_store().mark_read(999999) is False
+
+
+def test_list_ordered_preserves_addition_order():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        store = get_book_store()
+        store.add(&quot;A&quot;, &quot;Author A&quot;)
+        store.add(&quot;B&quot;, &quot;Author B&quot;)
+        books = store.list_ordered()
+
+    assert [book.title for book in books] == [&quot;A&quot;, &quot;B&quot;]
+    assert [book.author for book in books] == [&quot;Author A&quot;, &quot;Author B&quot;]
+
+
+def test_remove_existing_book_removes_it():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        store = get_book_store()
+        created = store.add(&quot;To Remove&quot;, &quot;Author&quot;)
+        removed = store.remove(created.id)
+
+        assert removed is True
+        assert store.list_ordered() == []
+
+
+def test_new_database_lists_no_books():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        assert get_book_store().list_ordered() == []
+
+
+@pytest.mark.parametrize(&quot;title, author&quot;, [(&quot;&quot;, &quot;Author&quot;), (&quot;Title&quot;, &quot;&quot;)])
+def test_add_rejects_empty_fields(title, author):
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        store = get_book_store()
+        with pytest.raises(ValueError):
+            store.add(title, author)
+        assert store.list_ordered() == []
+
+
+def test_remove_missing_book_reports_false():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+
+    with application.app_context():
+        assert get_book_store().remove(999999) is False
+
+
+def test_initialization_is_idempotent_and_keeps_rows(tmp_path):
+    database_path = str(tmp_path / &quot;books.db&quot;)
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: database_path})
+
+    with application.app_context():
+        store = get_book_store()
+        store.add(&quot;Persisted&quot;, &quot;Author&quot;)
+
+    from app.persistence import initialize
+
+    initialize(database_path)
+    second = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: database_path})
+    with second.app_context():
+        assert [book.title for book in get_book_store().list_ordered()] == [&quot;Persisted&quot;]
+
+
+def test_database_rejects_null_book_fields(tmp_path):
+    database_path = str(tmp_path / &quot;books.db&quot;)
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: database_path})
+
+    with application.app_context():
+        connection = get_book_store()._connect()
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                &quot;INSERT INTO books (title, author) VALUES (?, ?)&quot;,
+                (None, &quot;Author&quot;),
+            )
+</pre></article>
+</main>
+</body>
+</html>

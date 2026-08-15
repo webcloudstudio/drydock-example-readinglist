@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_screen.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_screen.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_screen.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Acceptance coverage for the reader-facing reading-list screen.&quot;&quot;&quot;
+
+
+def test_screen_loads_at_root(client):
+    response = client.get(&quot;/&quot;)
+
+    assert response.status_code == 200
+
+
+def test_screen_accepts_book_submission(client):
+    title = &quot;Screen Book&quot;
+    author = &quot;Screen Author&quot;
+
+    response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+
+    assert response.status_code in (200, 302, 303)
+    listed = client.get(&quot;/&quot;)
+    assert listed.status_code == 200
+    assert title in listed.get_data(as_text=True)
+    assert author in listed.get_data(as_text=True)
+
+
+def test_screen_removes_book_using_its_identity(client):
+    client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Screen Removal&quot;, &quot;author&quot;: &quot;Screen Removal Author&quot;}
+    )
+
+    response = client.post(&quot;/books/1/remove&quot;)
+
+    assert response.status_code in (200, 302, 303)
+    listed = client.get(&quot;/&quot;)
+    assert listed.status_code == 200
+    assert &quot;Screen Removal&quot; not in listed.get_data(as_text=True)
+
+
+def test_screen_supports_an_empty_list(client):
+    response = client.get(&quot;/&quot;)
+
+    assert response.status_code == 200
+</pre></article>
+</main>
+</body>
+</html>

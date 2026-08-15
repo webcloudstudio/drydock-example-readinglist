@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-3.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-3.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-3.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 3 · Foundational (block-3)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 4166</li><li>execution id: 20260815.172349.042Z-3e42d88f</li></ul>
+<h2>Stories built</h2>
+<ul><li>Define shared presentation patterns for the reading-list interface. (ui-general) [story]</li></ul>
+<h2>Reusable compacts</h2>
+<ul><li>UI-GENERAL_compact.md</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: UI-GENERAL.md (SP 759)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: flask_compact.md (SP 1083)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app/routes.py</li><li>app/static/css/style.css</li><li>app/templates/index.html</li><li>tests/test_routes.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: ui-patterns-form (UI-GENERAL.md)</li></ul>
+<p>intent: The shared presentation includes labeled title and author controls and a submission control. return code: 1 stderr: Traceback (most recent call last): File &quot;ui-patterns-form.py&quot;, line 8, in &lt;module&gt; assert &#x27;name=&quot;title&quot;&#x27; in body ^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>GREEN (prepassed): ui-patterns-empty-state (UI-GENERAL.md)</li></ul>
+<p>intent: The shared presentation provides a reader-visible empty-list state. return code: 0</p>
+<ul><li>RED: ui-patterns-removal-control (UI-GENERAL.md)</li></ul>
+<p>intent: The shared presentation provides a removal control for a listed book. return code: 1 stderr: Traceback (most recent call last): File &quot;ui-patterns-removal-control.py&quot;, line 8, in &lt;module&gt; assert response.status_code in (302, 303) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: ui-patterns-form (UI-GENERAL.md)</li></ul>
+<p>intent: The shared presentation includes labeled title and author controls and a submission control. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: ui-patterns-empty-state (UI-GENERAL.md)</li></ul>
+<p>intent: The shared presentation provides a reader-visible empty-list state. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: ui-patterns-removal-control (UI-GENERAL.md)</li></ul>
+<p>intent: The shared presentation provides a removal control for a listed book. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>&lt;reusable-compact filename=&quot;UI-GENERAL.md&quot;&gt;</p>
+<ul><li>Single responsive reading-list screen with heading, required title/author form, submit control, ordered book list, per-book removal controls, empty state, and visible validation errors.</li><li>Controls require labels and stable names; removal targets must use book identity, not position.</li><li>Preserve insertion order and display understandable missing-field errors.</li><li>CSS must provide readable typography, focus states, contrast, spacing, and responsive narrow-screen layout.</li><li>Acceptance: GET <code>/</code> includes <code>name=&quot;title&quot;</code>, <code>name=&quot;author&quot;</code>, and a form; empty state mentions reading plus empty/no books; POST <code>/books</code> then GET <code>/</code> shows title, author, and removal control.</li></ul>
+<p>&lt;/reusable-compact&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app/routes.py</li><li>app/templates/index.html</li><li>app/static/css/style.css</li><li>tests/test_routes.py</li></ul>
+<p>SUMMARY: Implemented the accessible reading-list presentation, add/remove routes, validation alert, empty state, responsive styling, and acceptance-focused tests. Full suite passes: 18 tests. Ruff checks pass.</p>
+<p>BLOCKERS:</p>
+<ul><li>None.</li></ul></article>
+</main>
+</body>
+</html>

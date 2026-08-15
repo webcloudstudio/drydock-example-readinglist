@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+  <p class="eyebrow">Personal reading queue</p>
+  <h1>Reading list</h1>
+  <p>Keep track of the books you want to read next.</p>
+</div>
+
+<section class="panel" aria-labelledby="add-book-heading">
+  <h2 id="add-book-heading">Add a book</h2>
+  {% if error %}
+  <div id="form-error" class="error" role="alert" aria-live="polite">{{ error }}</div>
+  {% endif %}
+  <form action="{{ url_for('reading_list.add_book') }}" method="post">
+    <div class="form-fields">
+      <div class="field">
+        <label for="title">Title <span aria-hidden="true">*</span></label>
+        <input id="title" name="title" type="text" autocomplete="off" required{% if error %} aria-describedby="form-error"{% endif %} value="{{ request.form.get('title', '') }}">
+      </div>
+      <div class="field">
+        <label for="author">Author <span aria-hidden="true">*</span></label>
+        <input id="author" name="author" type="text" autocomplete="off" required{% if error %} aria-describedby="form-error"{% endif %} value="{{ request.form.get('author', '') }}">
+      </div>
+    </div>
+    <button type="submit">Add to reading list</button>
+  </form>
+</section>
+
+<section class="panel" aria-labelledby="list-heading">
+  <h2 id="list-heading">Books to read</h2>
+  {% if books %}
+  <ol class="book-list">
+    {% for book in books %}
+    <li class="book-item">
+      <div>
+        <strong>{{ book.title }}</strong>
+        <span>by {{ book.author }}</span>
+        <span class="read-status">{{ "Read" if book.is_read else "Unread" }}</span>
+      </div>
+      <div class="book-actions">
+        {% if not book.is_read %}
+        <form action="{{ url_for('reading_list.mark_read', book_id=book.id) }}" method="post">
+          <button type="submit" aria-label="Mark {{ book.title }} as read">Mark as read</button>
+        </form>
+        {% endif %}
+        <form action="{{ url_for('reading_list.remove_book', book_id=book.id) }}" method="post">
+          <button class="remove-button" type="submit" aria-label="Remove {{ book.title }}">Remove</button>
+        </form>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="empty-state">Your reading list is empty. Add a book to get started.</p>
+  {% endif %}
+</section>
+{% endblock %}

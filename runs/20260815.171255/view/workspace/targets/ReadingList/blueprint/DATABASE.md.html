@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE.md">Raw file</a></div></header>
+<article class="doc"><h1>DATABASE: Book Persistence</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Defines the SQLite persistence contract for ordered reading-list books.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>book_store.add, book_store.list_ordered, book_store.remove, books_table</td></tr><tr><td>Consumes</td><td>application_factory</td></tr></tbody></table></div>
+<h2>Access Patterns</h2>
+<div class="scroll"><table><thead><tr><th>Caller</th><th>Operation</th><th>Store</th><th>Interface</th></tr></thead><tbody><tr><td>Book creation workflow</td><td>Add a submitted title and author</td><td><code>books</code></td><td><code>BookStore.add(title, author)</code></td></tr><tr><td>Ordered-list workflow</td><td>Read all books</td><td><code>books</code></td><td><code>BookStore.list_ordered()</code></td></tr><tr><td>Book-removal workflow</td><td>Delete a selected book</td><td><code>books</code></td><td><code>BookStore.remove(book_id)</code></td></tr></tbody></table></div>
+<h2>Persistence Interfaces</h2>
+<div class="scroll"><table><thead><tr><th>Store</th><th>Public interface</th><th>Module</th><th>Allowed callers</th><th>Notes</th></tr></thead><tbody><tr><td>SQLite <code>books</code> table</td><td><code>BookStore.add(title, author) -&gt; Book</code></td><td><code>app.persistence</code></td><td>Application workflows</td><td>Persists one book.</td></tr><tr><td>SQLite <code>books</code> table</td><td><code>BookStore.list_ordered() -&gt; list[Book]</code></td><td><code>app.persistence</code></td><td>Application workflows</td><td>Returns rows in insertion order.</td></tr><tr><td>SQLite <code>books</code> table</td><td><code>BookStore.remove(book_id) -&gt; bool</code></td><td><code>app.persistence</code></td><td>Application workflows</td><td>Removes the selected row and reports whether it existed.</td></tr></tbody></table></div>
+<h2>Schema</h2>
+<p>The <code>books</code> table contains:</p>
+<ul><li><code>id</code>: integer primary key.</li><li><code>title</code>: required text.</li><li><code>author</code>: required text.</li><li><code>created_at</code>: persisted timestamp or equivalent insertion marker.</li></ul>
+<p>The primary key is monotonically assigned by SQLite and is used to preserve insertion order. The database must reject null title or author values. Application validation additionally rejects empty submitted values.</p>
+<h2>Configuration</h2>
+<p>The application factory supplies the database location through Flask configuration. Tests may provide an isolated temporary path or an in-memory database. Connections are scoped to the application context and closed after use.</p>
+<h2>Migrations and Initialization</h2>
+<p>Application startup creates the <code>books</code> table when it does not exist. Initialization is idempotent and must not delete existing rows.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC database-add-readback ===<br>Intent: A book added through the persistence interface can be read back with the submitted fields.</p>
+<p>from app import create_app from app.persistence import get_book_store</p>
+<p>title = &quot;The Dispossessed&quot; author = &quot;Ursula K. Le Guin&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})</p>
+<p>with application.app_context(): store = get_book_store() created = store.add(title, author) books = store.list_ordered()</p>
+<p>assert len(books) == 1 assert books[0].id == created.id assert books[0].title == title assert books[0].author == author === END AC database-add-readback ===</p>
+<p>=== AC database-order ===<br>Intent: Ordered reads preserve the order in which books were added.</p>
+<p>from app import create_app from app.persistence import get_book_store</p>
+<p>first_title = &quot;A&quot; first_author = &quot;Author A&quot; second_title = &quot;B&quot; second_author = &quot;Author B&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})</p>
+<p>with application.app_context(): store = get_book_store() store.add(first_title, first_author) store.add(second_title, second_author) books = store.list_ordered()</p>
+<p>assert [book.title for book in books] == [first_title, second_title] assert [book.author for book in books] == [first_author, second_author] === END AC database-order ===</p>
+<p>=== AC database-remove ===<br>Intent: Removing an existing book makes it absent from a subsequent persistence read.</p>
+<p>from app import create_app from app.persistence import get_book_store</p>
+<p>title = &quot;To Remove&quot; author = &quot;Author&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})</p>
+<p>with application.app_context(): store = get_book_store() created = store.add(title, author) removed = store.remove(created.id) books = store.list_ordered()</p>
+<p>assert removed is True assert books == [] === END AC database-remove ===</p>
+<p>=== AC database-empty ===<br>Intent: A new database returns an empty ordered collection.</p>
+<p>from app import create_app from app.persistence import get_book_store</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})</p>
+<p>with application.app_context(): books = get_book_store().list_ordered()</p>
+<p>assert books == [] === END AC database-empty ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>All SQLite access is encapsulated by <code>app.persistence</code>.</li><li>Empty titles and authors must never be stored.</li><li>Ordered reads must preserve addition order.</li></ul></article>
+</main>
+</body>
+</html>

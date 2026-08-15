@@ -1,3 +1,0 @@
-<!-- Compacted from DATABASE.md sha256=1dbbc93666122e47c9a62c301c194e8e4b561e71903fb0eace5677b80cc7cc3a on 2026-08-14 by drydock build agent -->
-
-Database persistence uses `app.database.Database` and typed `Book` records exposing `id`, `title`, `author`, and `is_read`. Public operations: `create_book`, `list_books`, `delete_book`, and `mark_book_read`. SQLite stores ordered books by ascending integer primary key, with non-empty title/author and unread-by-default read status. Persistence is idempotently initialized and survives reopening the same database path. All access is encapsulated and parameterized.

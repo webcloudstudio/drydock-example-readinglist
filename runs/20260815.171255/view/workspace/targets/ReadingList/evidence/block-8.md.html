@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-8.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-8.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-8.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 8 · Service (block-8)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 4413</li><li>execution id: 20260815.173249.820Z-d90fee89</li></ul>
+<h2>Stories built</h2>
+<ul><li>Assemble the reader-facing form, ordered list, empty state, and removal controls. (reading-list-screen) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: SCREEN-Reading-List.md (SP 800)</li><li>context: UI-GENERAL_compact.md (SP 204)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: flask_compact.md (SP 1083)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app/templates/index.html</li><li>tests/test_screen.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): screen-loads (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The reading-list screen is reachable at its declared route. return code: 0</p>
+<ul><li>GREEN (prepassed): screen-accepts-book-submission (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The screen supports submitting a title and author through the declared creation route. return code: 0</p>
+<ul><li>GREEN (prepassed): screen-supports-removal (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The screen supports removing a listed book through the declared removal route. return code: 0</p>
+<ul><li>GREEN (prepassed): screen-supports-empty-state (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The screen responds successfully when the reading list is empty. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: screen-loads (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The reading-list screen is reachable at its declared route. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-accepts-book-submission (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The screen supports submitting a title and author through the declared creation route. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-supports-removal (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The screen supports removing a listed book through the declared removal route. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-supports-empty-state (SCREEN-Reading-List.md)</li></ul>
+<p>intent: The screen responds successfully when the reading list is empty. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app/templates/index.html</li><li>tests/test_screen.py</li></ul>
+<p>SUMMARY: Implemented the reader-facing screen accessibility refinement and explicit acceptance tests for loading, submission, removal, and empty state. Full suite: 36 passed. Ruff checks passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

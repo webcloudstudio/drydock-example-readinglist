@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/config.py</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/config.py</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/config.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Application configuration loaded from the environment.&quot;&quot;&quot;
+
+import os
+from dataclasses import dataclass
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+@dataclass(frozen=True)
+class Config:
+    &quot;&quot;&quot;Typed settings shared by every application entry point.&quot;&quot;&quot;
+
+    secret_key: str
+    database_path: str = &quot;data/reading_list.db&quot;
+
+    @classmethod
+    def load(cls, *, require_secret: bool = True) -&gt; &quot;Config&quot;:
+        secret_key = os.environ.get(&quot;SECRET_KEY&quot;)
+        if secret_key is None and require_secret:
+            raise RuntimeError(&quot;Missing required env var: &#x27;SECRET_KEY&#x27;&quot;)
+        if secret_key is None:
+            secret_key = &quot;testing-only&quot;
+        return cls(
+            secret_key=secret_key,
+            database_path=os.environ.get(&quot;DATABASE_PATH&quot;, &quot;data/reading_list.db&quot;),
+        )
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/score-release.json</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/score-release.json</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/score-release.json">Raw file</a></div></header>
+<article class="doc"><pre>{
+  &quot;schema_version&quot;: 5,
+  &quot;recorded_at&quot;: &quot;2026-08-15T17:40:21+00:00&quot;,
+  &quot;target&quot;: &quot;ReadingList&quot;,
+  &quot;verdict&quot;: &quot;PASSED&quot;,
+  &quot;verdict_line&quot;: &quot;ReadingList: PASSED \u2014 6 of 6&quot;,
+  &quot;statement&quot;: &quot;ReadingList: PASSED \u2014 6 of 6\n\n  st-001  MET       bin/test.sh; command: bash bin/test.sh exited 0 with 44 passed\n  st-002  MET       app/routes.py:19; app/persistence.py:52; probe: add submissions returned redirects and listed both books\n  st-003  MET       app/persistence.py:76; probe: body.index(\&quot;First\&quot;) &lt; body.index(\&quot;Second\&quot;)\n  st-004  MET       app/routes.py:37; app/persistence.py:92; probe: removed First; Second remained and First was absent\n  st-005  MET       app/routes.py:23; app/templates/index.html:8; probe: both invalid submissions returned 400 with role=\&quot;alert\&quot;\n  st-006  MET       tests/test_persistence.py:5; tests/test_persistence.py:45; tests/test_persistence.py:66; tests/test_persistence.py:78; tests/test_routes.py:3; command: bash bin/test.sh reported 44 passed\n  reported: Build directory has uncommitted changes&quot;,
+  &quot;complete&quot;: true,
+  &quot;governed_gate&quot;: null,
+  &quot;criteria&quot;: [
+    {
+      &quot;criterion_id&quot;: &quot;st-001&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The POSIX launcher ran successfully and all 44 automated tests passed.&quot;,
+      &quot;evidence&quot;: [
+        &quot;bin/test.sh&quot;,
+        &quot;command: bash bin/test.sh exited 0 with 44 passed&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-002&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The probe submitted a title and author, then observed both in the rendered list and persistence store.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app/routes.py:19&quot;,
+        &quot;app/persistence.py:52&quot;,
+        &quot;probe: add submissions returned redirects and listed both books&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-003&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The probe observed books rendered in the same order they were added.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app/persistence.py:76&quot;,
+        &quot;probe: body.index(\&quot;First\&quot;) &lt; body.index(\&quot;Second\&quot;)&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-004&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The probe removed a selected book and observed it absent while the other remained listed.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app/routes.py:37&quot;,
+        &quot;app/persistence.py:92&quot;,
+        &quot;probe: removed First; Second remained and First was absent&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-005&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The probe observed HTTP 400 responses with alert messages for empty title and empty author submissions.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app/routes.py:23&quot;,
+        &quot;app/templates/index.html:8&quot;,
+        &quot;probe: both invalid submissions returned 400 with role=\&quot;alert\&quot;&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-006&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The automated suite contains and passes tests covering adding, ordering, removal, and empty-field rejection.&quot;,
+      &quot;evidence&quot;: [
+        &quot;tests/test_persistence.py:5&quot;,
+        &quot;tests/test_persistence.py:45&quot;,
+        &quot;tests/test_persistence.py:66&quot;,
+        &quot;tests/test_persistence.py:78&quot;,
+        &quot;tests/test_routes.py:3&quot;,
+        &quot;command: bash bin/test.sh reported 44 passed&quot;
+      ]
+    }
+  ],
+  &quot;guardrail_ids&quot;: [],
+  &quot;observations&quot;: [],
+  &quot;blockers&quot;: [],
+  &quot;attestations&quot;: [],
+  &quot;kit_faults&quot;: [],
+  &quot;warnings&quot;: [
+    &quot;Build directory has uncommitted changes&quot;
+  ],
+  &quot;improvements&quot;: [],
+  &quot;identities&quot;: {
+    &quot;code&quot;: &quot;2f884934bb2267041cab4c34d4f2b3d3e743ad36&quot;,
+    &quot;sea_trials&quot;: &quot;0d1c05649d96f906f963f89c12ad5c9c510e8d13a03b81ebff4efd9b9d691e9f&quot;,
+    &quot;blueprint&quot;: {
+      &quot;ARCHITECTURE.md&quot;: &quot;c42125d1c9a4d632e46f7b88523442ceb51348a2893aa1bb01dcd7b11bbd892b&quot;,
+      &quot;ARCHITECTURE_compact.md&quot;: &quot;c2f8604d6ead6b4043cf1560e2365be0c2cea0a441650051f06dc87e46267f9f&quot;,
+      &quot;DATABASE.md&quot;: &quot;78e782f3b44cbf8f06bf8af3062dfbc659139e71f0edda468bbe62514cb03467&quot;,
+      &quot;DATABASE_compact.md&quot;: &quot;90b6fbe98b22f968b82c16866294b215f4dde921aa5fb592edce96692d2d4fb2&quot;,
+      &quot;FEATURE-Book-Creation.md&quot;: &quot;2bdc2bd440ce66e5d39b75577beca1e647556e065db5085f0abf49d6182760e3&quot;,
+      &quot;FEATURE-Book-Removal.md&quot;: &quot;6f98c32605ce108d1e29e99d39bae49eb6823e5825b2d2f90319a3c8321a2939&quot;,
+      &quot;FEATURE-Incomplete-Submission.md&quot;: &quot;96d0d4fc945551d701d21669a4cf50e63b66697040e56b431746661def9e0485&quot;,
+      &quot;FEATURE-Ordered-List.md&quot;: &quot;364fa94d12e14acdc5a279ea32806a4f54999fa6a9f0edb769d7446c61e88fd3&quot;,
+      &quot;FEATURE-Test-Suite.md&quot;: &quot;8f200d65385c2e99573f6d51b74106337b22852b042bcaea23c5d9a6504bddae&quot;,
+      &quot;SCREEN-Reading-List.md&quot;: &quot;0003c6471f57751fb4bf2c8a3a359f5d20a6d6cfa66c38e6c57201c4328ae337&quot;,
+      &quot;UI-GENERAL.md&quot;: &quot;0b6f592e79f56bbddb07352ad5ce0b07084a40a38ed7969e14ac933aa8d25272&quot;,
+      &quot;UI-GENERAL_compact.md&quot;: &quot;686b3f9cd5d7f5bacebc84f6dc4d1049a09d61ae79a304a93419d2c97d7df380&quot;
+    }
+  },
+  &quot;execution_id&quot;: &quot;20260815.173931.006Z-d5c26f60&quot;
+}
+</pre></article>
+</main>
+</body>
+</html>

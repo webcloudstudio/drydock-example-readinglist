@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_launcher.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_launcher.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_launcher.py">Raw file</a></div></header>
+<article class="doc"><pre>import subprocess
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+LAUNCHER = PROJECT_ROOT / &quot;bin&quot; / &quot;test.sh&quot;
+
+
+def test_test_launcher_has_valid_posix_syntax():
+    result = subprocess.run(
+        [&quot;sh&quot;, &quot;-n&quot;, str(LAUNCHER)],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+
+
+def test_test_launcher_runs_pytest_from_project_root():
+    launcher_text = LAUNCHER.read_text()
+
+    assert &#x27;cd &quot;$(dirname &quot;$0&quot;)/..&quot;&#x27; in launcher_text
+    assert &quot;pytest tests/&quot; in launcher_text
+</pre></article>
+</main>
+</body>
+</html>

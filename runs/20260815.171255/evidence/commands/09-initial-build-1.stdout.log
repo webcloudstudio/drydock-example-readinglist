@@ -1,0 +1,71 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: architecture
+
+LLM BUILD: Block 1 · Foundational [block-1]
+  stories: Establish the Flask application architecture and module boundaries. [architecture]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 3/3 AC passed
+built: architecture — closed/verified · execution 20260815.171742.357Z-0c435543
+
+LLM BUILD: Block 2 · Foundational [block-2]
+  stories: Establish SQLite persistence for ordered books. [database]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 4/4 AC passed
+built: database — closed/verified · execution 20260815.172122.438Z-4ffea838
+
+LLM BUILD: Block 3 · Foundational [block-3]
+  stories: Define shared presentation patterns for the reading-list interface. [ui-general]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 3/3 AC passed
+built: ui-general — closed/verified · execution 20260815.172349.042Z-3e42d88f
+
+LLM BUILD: Block 4 · Service [block-4]
+  stories: Add and persist a book submitted with a title and author. [book-creation]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 3/3 AC passed
+built: book-creation — closed/verified · execution 20260815.172624.780Z-f89bc148
+
+LLM BUILD: Block 5 · Service [block-5]
+  stories: Render books in their insertion order with an empty-list state. [ordered-list]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 3/3 AC passed
+built: ordered-list — closed/verified · execution 20260815.172735.108Z-8cdefd54
+
+LLM BUILD: Block 6 · Service [block-6]
+  stories: Remove a selected book from the reading list. [book-removal]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 3/3 AC passed
+built: book-removal — closed/verified · execution 20260815.172854.587Z-8535c0e7
+
+LLM BUILD: Block 7 · Service [block-7]
+  stories: Reject submissions missing a title or author with a clear error. [incomplete-submission]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 4/4 AC passed
+built: incomplete-submission — closed/verified · execution 20260815.173115.893Z-f187318d
+
+LLM BUILD: Block 8 · Service [block-8]
+  stories: Assemble the reader-facing form, ordered list, empty state, and removal controls. [reading-list-screen]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 4/4 AC passed
+built: reading-list-screen — closed/verified · execution 20260815.173249.820Z-d90fee89
+
+LLM BUILD: Block 9 · Service [block-9]
+  stories: Run and verify the complete automated test suite through bin/test.sh. [verification-suite]
+  call: 1 of up to 7 · initial build · codex/gpt-5.6-luna
+  Completed CODEX/gpt-5.6-luna (build)  rc=0
+acceptance: call 1 · 3/3 AC passed
+built: verification-suite — closed/verified · execution 20260815.173420.972Z-2fbc3425
+
+result: 9 built, 0 failed, 0 unchanged
+elapsed: 18 minutes 10 seconds
+Target - committed project workspace git store

@@ -1,9 +1,0 @@
-{"command": "drydock init ReadingList", "time": "2026-08-14 13:54", "target": "ReadingList", "return_code": 0}
-{"command": "drydock import ReadingList /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260814.135425/sources --format markdown", "time": "2026-08-14 13:54", "target": "ReadingList", "return_code": 0}
-{"command": "drydock analyze ReadingList", "time": "2026-08-14 13:55", "target": "ReadingList", "return_code": 0}
-{"command": "drydock plan ReadingList --override", "time": "2026-08-14 14:00", "target": "ReadingList", "return_code": 0}
-{"command": "drydock build status ReadingList", "time": "2026-08-14 14:00", "target": "ReadingList", "return_code": 0}
-{"command": "drydock build ReadingList --override --repair-attempts 6", "time": "2026-08-14 14:17", "target": "ReadingList", "return_code": 0}
-{"command": "drydock build status ReadingList", "time": "2026-08-14 14:17", "target": "ReadingList", "return_code": 0}
-{"command": "drydock import ReadingList --update", "time": "2026-08-14 14:17", "target": "ReadingList", "return_code": 0}
-{"command": "drydock refit ReadingList --sources", "time": "2026-08-14 14:18", "target": "ReadingList", "return_code": 1}

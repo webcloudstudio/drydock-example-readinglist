@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-Book-Creation.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-Book-Creation.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-Book-Creation.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Book Creation</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Defines the workflow for adding a titled and authored book to the reading list.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>POST /books, book_creation</td></tr><tr><td>Consumes</td><td>book_store.add, books_table</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Allow a reader to submit a non-empty title and author and have the book stored in the reading list.</p>
+<h2>Trigger</h2>
+<p>The reader submits the book form with <code>POST /books</code>.</p>
+<h2>Workflow</h2>
+<ol><li>Read the title and author form fields.</li><li>Pass the submitted values to the book-store boundary.</li><li>Redirect to <code>/</code> after persistence succeeds.</li><li>The subsequent list read displays the newly stored book.</li></ol>
+<p>Validation of empty fields is owned by <code>FEATURE-Incomplete-Submission.md</code>.</p>
+<h2>Operational Behavior</h2>
+<ul><li>Successful creation uses a redirect response to return the reader to the list.</li><li>The submitted title and author are preserved.</li><li>Existing books retain their relative order.</li><li>Persistence is performed only through <code>BookStore.add</code>.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC book-creation-route ===<br>Intent: The book-creation route accepts a submitted title and author and returns a redirect response.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Middlemarch&quot; author = &quot;George Eliot&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) response = application.test_client().post( &quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}, )</p>
+<p>assert response.status_code in (302, 303) === END AC book-creation-route ===</p>
+<p>=== AC book-creation-readback ===<br>Intent: A successfully submitted book is visible when the list is read again.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Kindred&quot; author = &quot;Octavia Butler&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client()</p>
+<p>created = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert created.status_code in (302, 303) response = client.get(&quot;/&quot;) body = response.get_data(as_text=True)</p>
+<p>assert response.status_code == 200 assert title in body assert author in body === END AC book-creation-readback ===</p>
+<p>=== AC book-creation-preserves-existing-order ===<br>Intent: Adding a new book preserves the relative order of books already present.</p>
+<p>from app import create_app</p>
+<p>first_title = &quot;First&quot; first_author = &quot;Author One&quot; second_title = &quot;Second&quot; second_author = &quot;Author Two&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client()</p>
+<p>assert client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}).status_code in (302, 303) assert client.post(&quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}).status_code in (302, 303) body = client.get(&quot;/&quot;).get_data(as_text=True)</p>
+<p>assert body.index(first_title) &lt; body.index(second_title) === END AC book-creation-preserves-existing-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>A book is stored only when both title and author are non-empty.</li><li>Successful submission must make the book visible on the next list read.</li><li>Existing books must not be reordered.</li></ul></article>
+</main>
+</body>
+</html>

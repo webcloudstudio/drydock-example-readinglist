@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from DATABASE.md sha256=78e782f3b44cbf8f06bf8af3062dfbc659139e71f0edda468bbe62514cb03467 on 2026-08-15 by drydock build agent --&gt;</p>
+<p>SQLite <code>books</code> persistence via <code>app.persistence.get_book_store()</code>:</p>
+<ul><li><code>BookStore.add(title, author) -&gt; Book</code></li><li><code>BookStore.list_ordered() -&gt; list[Book]</code></li><li><code>BookStore.remove(book_id) -&gt; bool</code></li><li>Schema: <code>id</code>, required <code>title</code>, required <code>author</code>, <code>created_at</code>; insertion order follows ascending SQLite primary key.</li><li>Initialization is idempotent and preserves rows.</li><li>SQLite access remains encapsulated; connections are scoped to Flask application contexts.</li><li>Empty titles/authors are rejected and never stored.</li></ul></article>
+</main>
+</body>
+</html>

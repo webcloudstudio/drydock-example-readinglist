@@ -1,3 +1,0 @@
-<requirement name="mark-book-read">
-The reader can mark a book as read and view whether each book is unread or read.
-</requirement>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/routes.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/routes.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app/routes.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;HTTP routes for the ReadingList application.&quot;&quot;&quot;
+
+from flask import Blueprint, jsonify, redirect, render_template, request, url_for
+
+from app.persistence import BookStore, get_book_store
+
+bp = Blueprint(&quot;reading_list&quot;, __name__)
+
+
+def _store() -&gt; BookStore:
+    return get_book_store()
+
+
+@bp.get(&quot;/&quot;)
+def index():
+    return render_template(&quot;index.html&quot;, books=_store().list_ordered(), error=None)
+
+
+@bp.post(&quot;/books&quot;)
+def add_book():
+    &quot;&quot;&quot;Add a book, returning to the list or showing the invalid fields.&quot;&quot;&quot;
+    title = request.form.get(&quot;title&quot;, &quot;&quot;)
+    author = request.form.get(&quot;author&quot;, &quot;&quot;)
+    missing = [
+        field
+        for field, value in ((&quot;title&quot;, title), (&quot;author&quot;, author))
+        if not value.strip()
+    ]
+    if missing:
+        fields = &quot; and &quot;.join(missing)
+        message = f&quot;Please provide a {fields}.&quot;
+        return (
+            render_template(
+                &quot;index.html&quot;, books=_store().list_ordered(), error=message
+            ),
+            400,
+        )
+
+    _store().add(title, author)
+    return redirect(url_for(&quot;reading_list.index&quot;))
+
+
+@bp.post(&quot;/books/&lt;int:book_id&gt;/remove&quot;)
+def remove_book(book_id: int):
+    &quot;&quot;&quot;Remove one book identified by its stable database id.&quot;&quot;&quot;
+    _store().remove(book_id)
+    return redirect(url_for(&quot;reading_list.index&quot;))
+
+
+@bp.post(&quot;/books/&lt;int:book_id&gt;/mark-read&quot;)
+@bp.post(&quot;/books/&lt;int:book_id&gt;/read&quot;)
+def mark_read(book_id: int):
+    &quot;&quot;&quot;Mark one book as read and return to the reading list.&quot;&quot;&quot;
+    _store().mark_read(book_id)
+    return redirect(url_for(&quot;reading_list.index&quot;))
+
+
+@bp.get(&quot;/health&quot;)
+def health():
+    _store().list_ordered()
+    return jsonify(status=&quot;ok&quot;)
+</pre></article>
+</main>
+</body>
+</html>

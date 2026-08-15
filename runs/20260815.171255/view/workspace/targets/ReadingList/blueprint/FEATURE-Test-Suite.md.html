@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-Test-Suite.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-Test-Suite.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-Test-Suite.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Test Suite</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Provides automated coverage and a complete POSIX test launcher for the reading-list application.</td></tr><tr><td>Depends On</td><td>SCREEN-Reading-List.md</td></tr><tr><td>Provides</td><td>sh bin/test.sh</td></tr><tr><td>Consumes</td><td>reading_list_screen, book_creation, ordered_book_listing, book_removal, validate_book_submission</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Provide automated tests for adding books, preserving insertion order, removing books, and rejecting empty titles or authors. The root-level <code>bin/test.sh</code> launcher is POSIX-compatible and runs the complete suite from the application root.</p>
+<h2>Test Coverage</h2>
+<p>The project test suite covers:</p>
+<ul><li>Successful creation with title and author.</li><li>Ordered listing and the empty-list state.</li><li>Removal and preservation of remaining order.</li><li>Rejection of empty title, empty author, and both fields empty.</li><li>Non-persistence of rejected submissions.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC complete-suite ===<br>Intent: The required POSIX test launcher runs the complete automated suite successfully.<br>Suite: full<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC complete-suite ===</p>
+<p>=== AC launcher-runs-from-root ===<br>Intent: The test launcher is runnable from the application root using the required command.<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC launcher-runs-from-root ===</p>
+<p>=== AC behavior-suite-command-exists ===<br>Intent: The complete launcher invocation is the executable project verification boundary.<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode in (0, 1) === END AC behavior-suite-command-exists ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The complete suite can be run from the application root with <code>sh bin/test.sh</code>.</li></ul>
+<h2>Guardrails</h2>
+<ul><li><code>bin/test.sh</code> must be POSIX-compatible.</li><li>The launcher must run the complete automated suite.</li><li>A nonzero test result must produce a nonzero launcher exit status.</li></ul></article>
+</main>
+</body>
+</html>

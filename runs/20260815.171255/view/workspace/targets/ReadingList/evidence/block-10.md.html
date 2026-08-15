@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-10.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-10.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-10.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 10 · Feature (block-10)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 2383</li><li>execution id: 20260815.173626.034Z-78cdc566</li></ul>
+<h2>Stories built</h2>
+<ul><li>Add persisted read state per book and migrate existing rows. (mark-read-schema) [story]</li><li>Add the mark-read action and route for a listed book. (mark-read-route) [story]</li><li>Render each book&#x27;s read or unread state and provide the mark-read control. (mark-read-view) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: changes/TICKET-001-Mark-Book-Read.md (SP 300)</li><li>context: DATABASE_compact.md (SP 164)</li><li>implements: changes/TICKET-002-Mark-Book-Read.md (SP 395)</li><li>context: SCREEN-Reading-List.md (SP 800)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app/persistence.py</li><li>app/routes.py</li><li>app/templates/index.html</li><li>tests/test_persistence.py</li><li>tests/test_routes.py</li></ul>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app/persistence.py</li><li>app/routes.py</li><li>app/templates/index.html</li><li>tests/test_persistence.py</li><li>tests/test_routes.py</li></ul>
+<p>SUMMARY: Added persisted read state with legacy migration, mark-read routes, UI status/control, and tests. <code>sh bin/test.sh</code>: 44 passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

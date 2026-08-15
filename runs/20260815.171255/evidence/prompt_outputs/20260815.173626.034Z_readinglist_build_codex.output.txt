@@ -1,0 +1,14 @@
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/persistence.py
+- app/routes.py
+- app/templates/index.html
+- tests/test_persistence.py
+- tests/test_routes.py
+
+SUMMARY:
+Added persisted read state with legacy migration, mark-read routes, UI status/control, and tests. `sh bin/test.sh`: 44 passed.
+
+BLOCKERS:
+- None

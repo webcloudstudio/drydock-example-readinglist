@@ -1,0 +1,218 @@
+=== BEGIN ARTIFACT TOPOLOGY.md ===
+planning_feedback: |
+  analyze-display_name applied ARCHITECTURE.md
+  analyze-short_description applied ARCHITECTURE.md
+
+## story architecture
+summary:      Establish the Flask application architecture and module boundaries.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   ARCHITECTURE.md
+acceptance:   yes
+accepts:
+context:
+stack:        python.md, flask.md, sqlite.md
+provides:     application_factory, web_entrypoint
+consumes:
+feedback:     analyze-display_name, analyze-short_description
+depends:
+instructions: |
+  Establish the Flask application structure, application factory, route registration boundary,
+  configuration boundary, and ownership rules for persistence and web concerns. Keep the design
+  suitable for a small runnable web application and preserve insertion order for books.
+
+## story database
+summary:      Establish SQLite persistence for ordered books.
+type:         foundational
+kind:         migration
+phase:        1
+implements:   DATABASE.md
+acceptance:   yes
+accepts:
+context:
+stack:        persistence.md, sqlite.md, python.md
+provides:     book_store.add, book_store.list_ordered, book_store.remove, books_table
+consumes:     application_factory
+depends:      architecture
+instructions: |
+  Implement the SQLite persistence boundary for books. Define the books table and the typed store
+  interface for adding, ordered listing, and removal. Ensure application code reaches SQLite only
+  through the persistence interface and that insertion order is preserved.
+
+## story ui-general
+summary:      Define shared presentation patterns for the reading-list interface.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   UI-GENERAL.md
+acceptance:   yes
+accepts:
+context:
+stack:        python.md, flask.md
+provides:     reading_list_ui_patterns
+consumes:     application_factory
+depends:      architecture
+instructions: |
+  Define the shared HTML and CSS presentation patterns for the reading-list page, including the
+  book form, ordered list, removal controls, empty state, and clear validation error treatment.
+  Keep the patterns small and accessible for the single-screen application.
+
+## story book-creation
+summary:      Add and persist a book submitted with a title and author.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-Book-Creation.md
+covers:       BOOKS-001
+accepts:       st-002
+context:
+stack:        python.md, flask.md, sqlite.md
+provides:     POST /books, book_creation
+consumes:     book_store.add, books_table
+depends:      database
+acceptance:   yes
+instructions: |
+  Implement the book-creation workflow and POST /books route. Accept a title and author from the
+  web form, persist the submitted book through the store, and return the reader to the list where
+  the new book is visible. Preserve the submitted values without reordering existing books.
+
+## story ordered-list
+summary:      Render books in their insertion order with an empty-list state.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-Ordered-List.md
+covers:       BOOKS-002
+accepts:       st-003
+context:
+stack:        python.md, flask.md, sqlite.md
+provides:     GET /, ordered_book_listing
+consumes:     book_store.list_ordered, books_table
+depends:      book-creation
+acceptance:   yes
+instructions: |
+  Implement the ordered book-list read workflow and GET / route. Read books through the persistence
+  interface in insertion order, render every book in that order, and present an understandable
+  empty-list state when no books exist.
+
+## story book-removal
+summary:      Remove a selected book from the reading list.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-Book-Removal.md
+covers:       BOOKS-003
+accepts:       st-004
+context:
+stack:        python.md, flask.md, sqlite.md
+provides:     POST /books/{id}/remove, book_removal
+consumes:     book_store.remove, ordered_book_listing
+depends:      ordered-list
+acceptance:   yes
+instructions: |
+  Implement the removal action for a selected book. Route the removal request through the
+  persistence boundary, then return the reader to the list so the removed book is absent on the
+  next read while all remaining books retain their relative order.
+
+## story incomplete-submission
+summary:      Reject submissions missing a title or author with a clear error.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-Incomplete-Submission.md
+covers:       BOOKS-004
+accepts:       st-005
+context:
+stack:        python.md, flask.md
+provides:     validate_book_submission
+consumes:     POST /books, book_creation
+depends:      book-creation
+acceptance:   yes
+instructions: |
+  Add validation at the book-submission boundary. Reject an empty title, an empty author, or both,
+  do not persist rejected submissions, and return a clear user-facing indication that the required
+  field is missing. Preserve valid submissions through the existing creation workflow.
+
+## story reading-list-screen
+summary:      Assemble the reader-facing form, ordered list, empty state, and removal controls.
+type:         service
+kind:         capability
+phase:        1
+implements:   SCREEN-Reading-List.md
+accepts:
+context:      UI-GENERAL.md
+stack:        python.md, flask.md
+provides:     reading_list_screen
+consumes:     GET /, POST /books, POST /books/{id}/remove, reading_list_ui_patterns
+depends:      ui-general, book-creation, ordered-list, book-removal, incomplete-submission
+acceptance:   yes
+instructions: |
+  Assemble the single reading-list screen using the completed workflows and shared UI patterns.
+  Provide a direct path to submit a title and author, show books in insertion order, show the
+  empty-list state, expose removal controls, and display validation failures clearly.
+
+## story verification-suite
+summary:      Run and verify the complete automated test suite through bin/test.sh.
+type:         service
+kind:         test harness
+phase:        1
+implements:   FEATURE-Test-Suite.md
+covers:       VERIFY-001, VERIFY-002
+accepts:       st-001, st-006
+context:
+stack:        python.md
+provides:     sh bin/test.sh
+consumes:     reading_list_screen, book_creation, ordered_book_listing, book_removal, validate_book_submission
+depends:      reading-list-screen
+acceptance:   yes
+instructions: |
+  Provide the automated tests covering adding, ordered listing, removal, and rejection of empty
+  title or author. Provide a POSIX-compatible bin/test.sh runnable from the application root.
+  The terminal verification must execute the complete suite and preserve its command, exit code,
+  standard output, and standard error as evidence.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT DECISIONS.json ===
+[
+  {
+    "id": "Q-001",
+    "type": "choice",
+    "severity": "low",
+    "blueprint": "ARCHITECTURE.md",
+    "story": "architecture",
+    "title": "Single-page reading-list workflow",
+    "description": "The source describes one small reader workflow without separate navigation or authentication requirements.",
+    "options": [
+      {
+        "value": "single-page",
+        "label": "Use one reading-list screen"
+      },
+      {
+        "value": "multi-page",
+        "label": "Split into separate screens"
+      }
+    ],
+    "system_choice": "single-page"
+  },
+  {
+    "id": "Q-002",
+    "type": "choice",
+    "severity": "low",
+    "blueprint": "FEATURE-Book-Creation.md",
+    "story": "book-creation",
+    "title": "Form submission response",
+    "description": "The source requires submitted books to be shown in the list but does not prescribe response mechanics.",
+    "options": [
+      {
+        "value": "redirect",
+        "label": "Redirect to the list"
+      },
+      {
+        "value": "inline",
+        "label": "Render the list inline"
+      }
+    ],
+    "system_choice": "redirect"
+  }
+]
+=== END ARTIFACT ===

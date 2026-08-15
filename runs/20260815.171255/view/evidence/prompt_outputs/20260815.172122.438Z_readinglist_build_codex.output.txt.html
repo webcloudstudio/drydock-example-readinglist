@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20260815.172122.438Z_readinglist_build_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20260815.172122.438Z_readinglist_build_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20260815.172122.438Z_readinglist_build_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>&lt;reusable-compact filename=&quot;DATABASE.md&quot;&gt;
+SQLite `books` persistence via `app.persistence.get_book_store()`:
+- `BookStore.add(title, author) -&gt; Book`
+- `BookStore.list_ordered() -&gt; list[Book]`
+- `BookStore.remove(book_id) -&gt; bool`
+- Schema: `id`, required `title`, required `author`, `created_at`; insertion order follows ascending SQLite primary key.
+- Initialization is idempotent and preserves rows.
+- SQLite access remains encapsulated; connections are scoped to Flask application contexts.
+- Empty titles/authors are rejected and never stored.
+&lt;/reusable-compact&gt;
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/__init__.py
+- app/persistence.py
+- app/routes.py
+- tests/test_persistence.py
+
+SUMMARY:
+Implemented SQLite book persistence with add, ordered listing, removal, validation, idempotent initialization, and context-scoped connections. Added coverage for all acceptance criteria and edge cases. `sh bin/test.sh`: 14 passed. Ruff checks passed.
+
+BLOCKERS:
+- None</pre></article>
+</main>
+</body>
+</html>

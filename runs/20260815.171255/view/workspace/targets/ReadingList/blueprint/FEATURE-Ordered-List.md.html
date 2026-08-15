@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-Ordered-List.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-Ordered-List.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-Ordered-List.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Ordered List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Defines the ordered reading-list read workflow and its empty-list behavior.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-Book-Creation.md</td></tr><tr><td>Provides</td><td>GET /, ordered_book_listing</td></tr><tr><td>Consumes</td><td>book_store.list_ordered, books_table</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Show every stored book in the same order in which it was added.</p>
+<h2>Trigger</h2>
+<p>The reader requests <code>GET /</code>.</p>
+<h2>Workflow</h2>
+<ol><li>Read books through <code>BookStore.list_ordered</code>.</li><li>Render the resulting collection on the reading-list screen.</li><li>When the collection is empty, render an understandable empty-list state.</li></ol>
+<h2>Operational Behavior</h2>
+<p>The list response is successful for both an empty and a populated store. Each displayed book includes its title and author. The persistence ordering is the authoritative display ordering.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC ordered-list-route ===<br>Intent: The reading-list route is reachable and returns a successful response for an empty store.</p>
+<p>from app import create_app</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) response = application.test_client().get(&quot;/&quot;)</p>
+<p>assert response.status_code == 200 === END AC ordered-list-route ===</p>
+<p>=== AC ordered-list-empty-state ===<br>Intent: An empty store produces a reader-understandable empty-list state.</p>
+<p>from app import create_app</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) body = application.test_client().get(&quot;/&quot;).get_data(as_text=True)</p>
+<p>assert body assert &quot;empty&quot; in body.lower() or &quot;no books&quot; in body.lower() === END AC ordered-list-empty-state ===</p>
+<p>=== AC ordered-list-order ===<br>Intent: The list renders multiple books in their insertion order.</p>
+<p>from app import create_app</p>
+<p>first_title = &quot;First Added&quot; first_author = &quot;First Author&quot; second_title = &quot;Second Added&quot; second_author = &quot;Second Author&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client()</p>
+<p>assert client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}).status_code in (302, 303) assert client.post(&quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}).status_code in (302, 303) response = client.get(&quot;/&quot;) body = response.get_data(as_text=True)</p>
+<p>assert response.status_code == 200 assert body.index(first_title) &lt; body.index(second_title) assert first_author in body assert second_author in body === END AC ordered-list-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books must always be displayed in insertion order.</li><li>The empty-list state must be clear.</li><li>The route must read persisted state rather than relying on submission response data.</li></ul></article>
+</main>
+</body>
+</html>

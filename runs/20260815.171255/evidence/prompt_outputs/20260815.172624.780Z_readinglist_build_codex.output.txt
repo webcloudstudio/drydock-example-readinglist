@@ -1,0 +1,12 @@
+RESULT: SUCCESS
+
+FILES CHANGED:
+- tests/test_routes.py
+
+SUMMARY:
+Implemented explicit book-creation acceptance coverage for redirect behavior and insertion-order preservation. Existing `/books` persistence workflow passes all tests.
+
+`sh bin/test.sh`: 20 passed.
+
+BLOCKERS:
+- None

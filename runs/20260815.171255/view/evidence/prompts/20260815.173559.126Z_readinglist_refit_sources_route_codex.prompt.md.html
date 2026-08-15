@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompts/20260815.173559.126Z_readinglist_refit_sources_route_codex.prompt.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompts/20260815.173559.126Z_readinglist_refit_sources_route_codex.prompt.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompts/20260815.173559.126Z_readinglist_refit_sources_route_codex.prompt.md">Raw file</a></div></header>
+<article class="doc"><h1>Route a Source Change into Stories</h1>
+<p>You are the source routing agent. A Commander edited the imported specification. You are given the diff, the existing story graph, and the Blueprints those stories implement. Decompose the change into the stories needed to deliver it.</p>
+<p>This is the same operation planning performs, applied to a delta instead of a whole document. Planning decomposed the original source into stories; you decompose what changed.</p>
+<h2>Method</h2>
+<ol><li>Read the diff and identify each distinct requirement it adds, changes, or removes. A</li></ol>
+<p>requirement is a thing the system must do, at the granularity the author wrote it. Give each a short kebab-case name.</p>
+<ol><li>For each requirement, decide the minimum set of stories that delivers it. One requirement</li></ol>
+<p>commonly needs several: &quot;add a table and show it on screen&quot; needs a schema story, a route story, and a view story. Do not invent work the requirement does not need.</p>
+<ol><li>Seat every story on an existing Blueprint from <code>&lt;blueprints&gt;</code> via <code>implements</code>.</li><li>Order the new stories with <code>depends</code> so each runs after what it needs. A story that reads or</li></ol>
+<p>writes data depends on the story that changes the schema. A story that renders depends on the story that supplies the data.</p>
+<ol><li>Declare each story&#x27;s <code>scope</code> against the Blueprint it amends.</li></ol>
+<h2>Rules</h2>
+<ul><li><strong>Never invent a Blueprint.</strong> <code>implements</code> must name a file listed in <code>&lt;blueprints&gt;</code>. If a</li></ul>
+<p>requirement genuinely belongs to no existing Blueprint, emit <code>&lt;unseatable&gt;</code> for it and route nothing. Creating a Blueprint is a replan, not a refit.</p>
+<ul><li><strong><code>depends</code> may name only</strong> a story id from <code>&lt;graph&gt;</code> or another story you emit in this response.</li><li><strong>Never restate inherited dependencies.</strong> The ticket&#x27;s <code>Depends On</code> is computed from the parent</li></ul>
+<p>Blueprint. <code>depends</code> orders your new stories against the graph, nothing more.</p>
+<ul><li><strong>A data-shape change is its own story.</strong> When a requirement needs persisted state, emit a</li></ul>
+<p>separate story implementing the database Blueprint rather than folding the schema change into the feature that uses it. A migration buried in a display specification has no ticket authorizing it, and the build will not perform it.</p>
+<ul><li><strong>State removals explicitly.</strong> When the diff deletes a requirement, say what behavior must be</li></ul>
+<p>removed. If deleting it removes something other stories use, name that in <code>provides</code> on a <code>&lt;deleted&gt;</code> tag so the impact can be checked.</p>
+<ul><li><strong>Declare a contract change.</strong> Add <code>contract=&quot;changed&quot;</code> to a story only when it alters what</li></ul>
+<p>consumers of that service use — the shape of an interface, a route, a schema other stories read. Changing how the service is built internally is not a contract change. This governs whether downstream work is reported for rebuild, so do not set it defensively.</p>
+<ul><li><strong>Scope:</strong> <code>additive</code> when the story only adds behavior and every existing assertion in the</li></ul>
+<p>parent Blueprint stays true. <code>amending</code> when the story changes or removes behavior the parent already specifies. When <code>amending</code>, list the parent&#x27;s section headings you supersede in <code>sections</code>, copied exactly from that Blueprint&#x27;s <code>sections</code> attribute in <code>&lt;blueprints&gt;</code>. That attribute is the closed set of headings the authored Blueprint has; a heading absent from it fails the refit. Do not derive a heading from the Blueprint body — the body may be a compact digest that carries no headings.</p>
+<ul><li>Emit nothing but the tags below. No preamble, no commentary.</li></ul>
+<h2>Output</h2>
+<pre><code>&lt;requirement name=&quot;mark-book-read&quot;&gt;
+The reader can mark a book as read and view whether each book is unread or read.
+&lt;/requirement&gt;
+
+&lt;story id=&quot;mark-read-schema&quot; implements=&quot;DATABASE.md&quot; scope=&quot;amending&quot; sections=&quot;Schema&quot;
+       requirement=&quot;mark-book-read&quot; contract=&quot;changed&quot;&gt;
+Add persisted read state per book and the migration for existing rows.
+&lt;/story&gt;
+
+&lt;story id=&quot;mark-read-route&quot; implements=&quot;FEATURE-Reading-List-Display.md&quot; scope=&quot;additive&quot;
+       requirement=&quot;mark-book-read&quot; depends=&quot;mark-read-schema&quot;&gt;
+Add the mark-read action, its route, and its acceptance criteria.
+&lt;/story&gt;
+
+&lt;story id=&quot;mark-read-view&quot; implements=&quot;SCREEN-Reading-List.md&quot; scope=&quot;amending&quot;
+       sections=&quot;Book List&quot; requirement=&quot;mark-book-read&quot; depends=&quot;mark-read-route&quot;&gt;
+Render read and unread state per book and the toggle affordance.
+&lt;/story&gt;</code></pre>
+<p>When a requirement cannot be seated:</p>
+<pre><code>&lt;unseatable requirement=&quot;user-accounts&quot;&gt;
+Introduces authentication and identity; no existing Blueprint owns either.
+&lt;/unseatable&gt;</code></pre>
+<p>When the change removes a provided service:</p>
+<pre><code>&lt;deleted provides=&quot;books persistence interface&quot;/&gt;</code></pre>
+<h1>Routing job</h1>
+<p>&lt;diff source=&quot;reading-list.md&quot; base=&quot;332361c&quot; head=&quot;02f4924&quot;&gt; diff --git a/blueprint/sources/reading-list.md b/blueprint/sources/reading-list.md index 36e3241..819b176 100644 --- a/blueprint/sources/reading-list.md +++ b/blueprint/sources/reading-list.md @@ -11,3 +11,5 @@ The completed application provides a POSIX-compatible <code>bin/test.sh</code> that runs th automated test suite from the application root. <code>sh bin/test.sh</code> exits zero only when every test passes. The final build story runs this command after every implementation story and preserves its command, exit code, standard output, and standard error as evidence. + +The reader can mark a book as read and view whether each book is unread or read. &lt;/diff&gt;</p>
+<p>&lt;graph&gt; &lt;story id=&quot;architecture&quot; implements=&quot;ARCHITECTURE.md&quot; provides=&quot;application_factory, web_entrypoint&quot;/&gt; &lt;story id=&quot;database&quot; implements=&quot;DATABASE.md&quot; provides=&quot;book_store.add, book_store.list_ordered, book_store.remove, books_table&quot; consumes=&quot;application_factory&quot; depends=&quot;architecture&quot;/&gt; &lt;story id=&quot;ui-general&quot; implements=&quot;UI-GENERAL.md&quot; provides=&quot;reading_list_ui_patterns&quot; consumes=&quot;application_factory&quot; depends=&quot;architecture&quot;/&gt; &lt;story id=&quot;book-creation&quot; implements=&quot;FEATURE-Book-Creation.md&quot; provides=&quot;POST /books, book_creation&quot; consumes=&quot;book_store.add, books_table&quot; depends=&quot;database&quot;/&gt; &lt;story id=&quot;ordered-list&quot; implements=&quot;FEATURE-Ordered-List.md&quot; provides=&quot;GET /, ordered_book_listing&quot; consumes=&quot;book_store.list_ordered, books_table&quot; depends=&quot;book-creation&quot;/&gt; &lt;story id=&quot;book-removal&quot; implements=&quot;FEATURE-Book-Removal.md&quot; provides=&quot;POST /books/{id}/remove, book_removal&quot; consumes=&quot;book_store.remove, ordered_book_listing&quot; depends=&quot;ordered-list&quot;/&gt; &lt;story id=&quot;incomplete-submission&quot; implements=&quot;FEATURE-Incomplete-Submission.md&quot; provides=&quot;validate_book_submission&quot; consumes=&quot;POST /books, book_creation&quot; depends=&quot;book-creation&quot;/&gt; &lt;story id=&quot;reading-list-screen&quot; implements=&quot;SCREEN-Reading-List.md&quot; provides=&quot;reading_list_screen&quot; consumes=&quot;GET /, POST /books, POST /books/{id}/remove, reading_list_ui_patterns&quot; depends=&quot;ui-general, book-creation, ordered-list, book-removal, incomplete-submission&quot;/&gt; &lt;story id=&quot;verification-suite&quot; implements=&quot;FEATURE-Test-Suite.md&quot; provides=&quot;sh bin/test.sh&quot; consumes=&quot;reading_list_screen, book_creation, ordered_book_listing, book_removal, validate_book_submission&quot; depends=&quot;reading-list-screen&quot;/&gt; &lt;/graph&gt;</p>
+<p>&lt;blueprints&gt; &lt;blueprint name=&quot;ARCHITECTURE.md&quot; sections=&quot;Intent, Modules and Boundaries, Technical Decisions, Technology Stack, Module Ownership, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt; &lt;!-- Compacted from ARCHITECTURE.md sha256=c42125d1c9a4d632e46f7b88523442ceb51348a2893aa1bb01dcd7b11bbd892b on 2026-08-15 by drydock build agent --&gt;</p>
+<p>Flask app factory: <code>from app import create_app</code>; supports isolated overrides including <code>TESTING</code> and <code>DATABASE</code>. HTTP routes live in <code>app.routes</code>; SQLite access is confined to typed <code>app.persistence</code>; templates/static assets live under <code>app/</code>; tests use pytest; <code>bin/test.sh</code> runs the complete suite. Root <code>/</code> must return 200, and independent app instances must not share state. &lt;/blueprint&gt; &lt;blueprint name=&quot;DATABASE.md&quot; sections=&quot;Access Patterns, Persistence Interfaces, Schema, Configuration, Migrations and Initialization, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt; &lt;!-- Compacted from DATABASE.md sha256=78e782f3b44cbf8f06bf8af3062dfbc659139e71f0edda468bbe62514cb03467 on 2026-08-15 by drydock build agent --&gt;</p>
+<p>SQLite <code>books</code> persistence via <code>app.persistence.get_book_store()</code>:</p>
+<ul><li><code>BookStore.add(title, author) -&gt; Book</code></li><li><code>BookStore.list_ordered() -&gt; list[Book]</code></li><li><code>BookStore.remove(book_id) -&gt; bool</code></li><li>Schema: <code>id</code>, required <code>title</code>, required <code>author</code>, <code>created_at</code>; insertion order follows ascending SQLite primary key.</li><li>Initialization is idempotent and preserves rows.</li><li>SQLite access remains encapsulated; connections are scoped to Flask application contexts.</li><li>Empty titles/authors are rejected and never stored.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;FEATURE-Book-Creation.md&quot; sections=&quot;Purpose, Trigger, Workflow, Operational Behavior, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt;</p>
+<h1>FEATURE: Book Creation</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Defines the workflow for adding a titled and authored book to the reading list.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>POST /books, book_creation</td></tr><tr><td>Consumes</td><td>book_store.add, books_table</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Allow a reader to submit a non-empty title and author and have the book stored in the reading list.</p>
+<h2>Trigger</h2>
+<p>The reader submits the book form with <code>POST /books</code>.</p>
+<h2>Workflow</h2>
+<ol><li>Read the title and author form fields.</li><li>Pass the submitted values to the book-store boundary.</li><li>Redirect to <code>/</code> after persistence succeeds.</li><li>The subsequent list read displays the newly stored book.</li></ol>
+<p>Validation of empty fields is owned by <code>FEATURE-Incomplete-Submission.md</code>.</p>
+<h2>Operational Behavior</h2>
+<ul><li>Successful creation uses a redirect response to return the reader to the list.</li><li>The submitted title and author are preserved.</li><li>Existing books retain their relative order.</li><li>Persistence is performed only through <code>BookStore.add</code>.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC book-creation-route ===<br>Intent: The book-creation route accepts a submitted title and author and returns a redirect response.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Middlemarch&quot; author = &quot;George Eliot&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) response = application.test_client().post( &quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}, )</p>
+<p>assert response.status_code in (302, 303) === END AC book-creation-route ===</p>
+<p>=== AC book-creation-readback ===<br>Intent: A successfully submitted book is visible when the list is read again.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Kindred&quot; author = &quot;Octavia Butler&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client()</p>
+<p>created = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert created.status_code in (302, 303) response = client.get(&quot;/&quot;) body = response.get_data(as_text=True)</p>
+<p>assert response.status_code == 200 assert title in body assert author in body === END AC book-creation-readback ===</p>
+<p>=== AC book-creation-preserves-existing-order ===<br>Intent: Adding a new book preserves the relative order of books already present.</p>
+<p>from app import create_app</p>
+<p>first_title = &quot;First&quot; first_author = &quot;Author One&quot; second_title = &quot;Second&quot; second_author = &quot;Author Two&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client()</p>
+<p>assert client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}).status_code in (302, 303) assert client.post(&quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}).status_code in (302, 303) body = client.get(&quot;/&quot;).get_data(as_text=True)</p>
+<p>assert body.index(first_title) &lt; body.index(second_title) === END AC book-creation-preserves-existing-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>A book is stored only when both title and author are non-empty.</li><li>Successful submission must make the book visible on the next list read.</li><li>Existing books must not be reordered.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;FEATURE-Book-Removal.md&quot; sections=&quot;Purpose, Trigger and Sequence, Reads and Writes, Operational Behavior, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt;</p>
+<h1>FEATURE: Book Removal</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Removes a selected book and preserves the relative order of remaining books.</td></tr><tr><td>Depends On</td><td>DATABASE.md, FEATURE-Ordered-List.md</td></tr><tr><td>Provides</td><td>POST /books/{id}/remove, book_removal</td></tr><tr><td>Consumes</td><td>book_store.remove, ordered_book_listing</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Allow a reader to remove a selected book from the reading list.</p>
+<h2>Trigger and Sequence</h2>
+<ol><li>The reader submits the removal control for a listed book.</li><li>The application removes that book through the persistence boundary.</li><li>The application redirects or returns the reader to the ordered list.</li><li>The removed book is absent and remaining books retain their relative order.</li></ol>
+<h2>Reads and Writes</h2>
+<ul><li>Reads the selected book identifier from the removal request.</li><li>Writes deletion through <code>book_store.remove</code>.</li><li>Reads the resulting list through <code>ordered_book_listing</code>.</li></ul>
+<h2>Operational Behavior</h2>
+<p>The removal route is <code>POST /books/&lt;int:book_id&gt;/remove</code>. Unknown identifiers do not remove any other book.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC removal-route-reachable ===<br>Intent: The removal route accepts a valid removal request. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Book to Remove&quot; author = &quot;Removal Author&quot; created = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert created.status_code in (200, 302, 303) listed = client.get(&quot;/&quot;) assert listed.status_code == 200 removed = client.post(&quot;/books/1/remove&quot;) assert removed.status_code in (200, 302, 303) === END AC removal-route-reachable ===</p>
+<p>=== AC removal-persists ===<br>Intent: Removing a book makes it absent on the next public list read. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Temporary Book&quot; author = &quot;Temporary Author&quot; client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) before = client.get(&quot;/&quot;) assert before.status_code == 200 removed = client.post(&quot;/books/1/remove&quot;) assert removed.status_code in (200, 302, 303) after = client.get(&quot;/&quot;) assert after.status_code == 200 assert title.encode() not in after.data assert author.encode() not in after.data === END AC removal-persists ===</p>
+<p>=== AC removal-preserves-remaining-order ===<br>Intent: Removing one book leaves the other books in their original relative order. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() first_title = &quot;First Remaining&quot; first_author = &quot;First Author&quot; removed_title = &quot;Middle Removed&quot; removed_author = &quot;Middle Author&quot; last_title = &quot;Last Remaining&quot; last_author = &quot;Last Author&quot; client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}) client.post(&quot;/books&quot;, data={&quot;title&quot;: removed_title, &quot;author&quot;: removed_author}) client.post(&quot;/books&quot;, data={&quot;title&quot;: last_title, &quot;author&quot;: last_author}) client.post(&quot;/books/2/remove&quot;) response = client.get(&quot;/&quot;) assert response.status_code == 200 first_position = response.data.index(first_title.encode()) last_position = response.data.index(last_title.encode()) assert first_position &lt; last_position assert removed_title.encode() not in response.data === END AC removal-preserves-remaining-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A reader can remove a listed book and see the updated list.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Removal must go through the persistence boundary.</li><li>Removing one book must never reorder the remaining books.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;FEATURE-Incomplete-Submission.md&quot; sections=&quot;Purpose, Workflow, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt;</p>
+<h1>FEATURE: Incomplete Submission</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Rejects book submissions that omit a title or author and reports the missing requirement.</td></tr><tr><td>Depends On</td><td>FEATURE-Book-Creation.md</td></tr><tr><td>Provides</td><td>validate_book_submission</td></tr><tr><td>Consumes</td><td>POST /books, book_creation</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Validate book submissions at the submission boundary before persistence.</p>
+<h2>Workflow</h2>
+<p>A submission is invalid when its title is empty, its author is empty, or both are empty. Invalid submissions are rejected, are not persisted, and return a clear user-facing indication that the required field is missing. Valid submissions continue through the existing creation workflow.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC validation-rejects-empty-title ===<br>Intent: A submission with an empty title is rejected with a client validation response. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() author = &quot;Known Author&quot; response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: author}) assert response.status_code == 400 === END AC validation-rejects-empty-title ===</p>
+<p>=== AC validation-rejects-empty-author ===<br>Intent: A submission with an empty author is rejected with a client validation response. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Known Title&quot; response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 === END AC validation-rejects-empty-author ===</p>
+<p>=== AC validation-does-not-persist-invalid-submission ===<br>Intent: Invalid submissions do not appear in the public list. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Rejected Title&quot; author = &quot;Rejected Author&quot; response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 listed = client.get(&quot;/&quot;) assert listed.status_code == 200 assert title.encode() not in listed.data assert author.encode() not in listed.data === END AC validation-does-not-persist-invalid-submission ===</p>
+<p>=== AC validation-preserves-valid-submission ===<br>Intent: A valid submission remains supported by the creation workflow. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Valid Title&quot; author = &quot;Valid Author&quot; response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code in (200, 302, 303) listed = client.get(&quot;/&quot;) assert listed.status_code == 200 assert title.encode() in listed.data assert author.encode() in listed.data === END AC validation-preserves-valid-submission ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A reader receives a clear indication when title or author is required.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never accept or store a submission with an empty title or author.</li><li>Validation must occur before persistence.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;FEATURE-Ordered-List.md&quot; sections=&quot;Purpose, Trigger, Workflow, Operational Behavior, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt;</p>
+<h1>FEATURE: Ordered List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Defines the ordered reading-list read workflow and its empty-list behavior.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-Book-Creation.md</td></tr><tr><td>Provides</td><td>GET /, ordered_book_listing</td></tr><tr><td>Consumes</td><td>book_store.list_ordered, books_table</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Show every stored book in the same order in which it was added.</p>
+<h2>Trigger</h2>
+<p>The reader requests <code>GET /</code>.</p>
+<h2>Workflow</h2>
+<ol><li>Read books through <code>BookStore.list_ordered</code>.</li><li>Render the resulting collection on the reading-list screen.</li><li>When the collection is empty, render an understandable empty-list state.</li></ol>
+<h2>Operational Behavior</h2>
+<p>The list response is successful for both an empty and a populated store. Each displayed book includes its title and author. The persistence ordering is the authoritative display ordering.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC ordered-list-route ===<br>Intent: The reading-list route is reachable and returns a successful response for an empty store.</p>
+<p>from app import create_app</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) response = application.test_client().get(&quot;/&quot;)</p>
+<p>assert response.status_code == 200 === END AC ordered-list-route ===</p>
+<p>=== AC ordered-list-empty-state ===<br>Intent: An empty store produces a reader-understandable empty-list state.</p>
+<p>from app import create_app</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) body = application.test_client().get(&quot;/&quot;).get_data(as_text=True)</p>
+<p>assert body assert &quot;empty&quot; in body.lower() or &quot;no books&quot; in body.lower() === END AC ordered-list-empty-state ===</p>
+<p>=== AC ordered-list-order ===<br>Intent: The list renders multiple books in their insertion order.</p>
+<p>from app import create_app</p>
+<p>first_title = &quot;First Added&quot; first_author = &quot;First Author&quot; second_title = &quot;Second Added&quot; second_author = &quot;Second Author&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client()</p>
+<p>assert client.post(&quot;/books&quot;, data={&quot;title&quot;: first_title, &quot;author&quot;: first_author}).status_code in (302, 303) assert client.post(&quot;/books&quot;, data={&quot;title&quot;: second_title, &quot;author&quot;: second_author}).status_code in (302, 303) response = client.get(&quot;/&quot;) body = response.get_data(as_text=True)</p>
+<p>assert response.status_code == 200 assert body.index(first_title) &lt; body.index(second_title) assert first_author in body assert second_author in body === END AC ordered-list-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books must always be displayed in insertion order.</li><li>The empty-list state must be clear.</li><li>The route must read persisted state rather than relying on submission response data.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;FEATURE-Test-Suite.md&quot; sections=&quot;Purpose, Test Coverage, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt;</p>
+<h1>FEATURE: Test Suite</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Provides automated coverage and a complete POSIX test launcher for the reading-list application.</td></tr><tr><td>Depends On</td><td>SCREEN-Reading-List.md</td></tr><tr><td>Provides</td><td>sh bin/test.sh</td></tr><tr><td>Consumes</td><td>reading_list_screen, book_creation, ordered_book_listing, book_removal, validate_book_submission</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Provide automated tests for adding books, preserving insertion order, removing books, and rejecting empty titles or authors. The root-level <code>bin/test.sh</code> launcher is POSIX-compatible and runs the complete suite from the application root.</p>
+<h2>Test Coverage</h2>
+<p>The project test suite covers:</p>
+<ul><li>Successful creation with title and author.</li><li>Ordered listing and the empty-list state.</li><li>Removal and preservation of remaining order.</li><li>Rejection of empty title, empty author, and both fields empty.</li><li>Non-persistence of rejected submissions.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC complete-suite ===<br>Intent: The required POSIX test launcher runs the complete automated suite successfully.<br>Suite: full<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC complete-suite ===</p>
+<p>=== AC launcher-runs-from-root ===<br>Intent: The test launcher is runnable from the application root using the required command.<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC launcher-runs-from-root ===</p>
+<p>=== AC behavior-suite-command-exists ===<br>Intent: The complete launcher invocation is the executable project verification boundary.<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode in (0, 1) === END AC behavior-suite-command-exists ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The complete suite can be run from the application root with <code>sh bin/test.sh</code>.</li></ul>
+<h2>Guardrails</h2>
+<ul><li><code>bin/test.sh</code> must be POSIX-compatible.</li><li>The launcher must run the complete automated suite.</li><li>A nonzero test result must produce a nonzero launcher exit status.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;SCREEN-Reading-List.md&quot; sections=&quot;Layout and Interactions, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt;</p>
+<h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Presents the reader-facing form, ordered book list, empty state, validation feedback, and removal controls.</td></tr><tr><td>Depends On</td><td>UI-GENERAL.md, FEATURE-Book-Creation.md, FEATURE-Ordered-List.md, FEATURE-Book-Removal.md, FEATURE-Incomplete-Submission.md</td></tr><tr><td>Provides</td><td>reading_list_screen</td></tr><tr><td>Consumes</td><td>GET /, POST /books, POST /books/{id}/remove, reading_list_ui_patterns</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>—</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Sub Menu</td><td>—</td></tr><tr><td>Tab Order</td><td>1</td></tr></tbody></table></div>
+<h2>Layout and Interactions</h2>
+<p>The single screen contains:</p>
+<ul><li>A title and author form with a direct submission action.</li><li>The current books rendered in insertion order.</li><li>A clear empty-list state when no books exist.</li><li>A removal control for each listed book.</li><li>Clear validation feedback when title or author is missing.</li></ul>
+<p>The screen uses <code>GET /</code> for the initial and subsequent list reads, <code>POST /books</code> for creation, and <code>POST /books/&lt;int:book_id&gt;/remove</code> for removal.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC screen-loads ===<br>Intent: The reading-list screen is reachable at its declared route. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 === END AC screen-loads ===</p>
+<p>=== AC screen-accepts-book-submission ===<br>Intent: The screen supports submitting a title and author through the declared creation route. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Screen Book&quot; author = &quot;Screen Author&quot; response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code in (200, 302, 303) listed = client.get(&quot;/&quot;) assert listed.status_code == 200 assert title.encode() in listed.data assert author.encode() in listed.data === END AC screen-accepts-book-submission ===</p>
+<p>=== AC screen-supports-removal ===<br>Intent: The screen supports removing a listed book through the declared removal route. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() title = &quot;Screen Removal&quot; author = &quot;Screen Removal Author&quot; client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) response = client.post(&quot;/books/1/remove&quot;) assert response.status_code in (200, 302, 303) listed = client.get(&quot;/&quot;) assert listed.status_code == 200 assert title.encode() not in listed.data === END AC screen-supports-removal ===</p>
+<p>=== AC screen-supports-empty-state ===<br>Intent: The screen responds successfully when the reading list is empty. from app import create_app</p>
+<p>app = create_app({&quot;TESTING&quot;: True}) client = app.test_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 === END AC screen-supports-empty-state ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A first-time reader can immediately find the title-and-author submission form.</li><li>The screen presents books in insertion order and exposes removal controls.</li><li>The empty-list and validation states are understandable.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The screen must not reorder books.</li><li>The screen must not offer submission without both title and author fields.</li></ul>
+<p>&lt;/blueprint&gt; &lt;blueprint name=&quot;UI-GENERAL.md&quot; sections=&quot;Presentation Patterns, CSS Patterns, Programmatic Acceptance, User Acceptance, Guardrails&quot;&gt; &lt;!-- Compacted from UI-GENERAL.md sha256=0b6f592e79f56bbddb07352ad5ce0b07084a40a38ed7969e14ac933aa8d25272 on 2026-08-15 by drydock build agent --&gt;</p>
+<ul><li>Single responsive reading-list screen with heading, required title/author form, submit control, ordered book list, per-book removal controls, empty state, and visible validation errors.</li><li>Controls require labels and stable names; removal targets must use book identity, not position.</li><li>Preserve insertion order and display understandable missing-field errors.</li><li>CSS must provide readable typography, focus states, contrast, spacing, and responsive narrow-screen layout.</li><li>Acceptance: GET <code>/</code> includes <code>name=&quot;title&quot;</code>, <code>name=&quot;author&quot;</code>, and a form; empty state mentions reading plus empty/no books; POST <code>/books</code> then GET <code>/</code> shows title, author, and removal control.</li></ul>
+<p>&lt;/blueprint&gt; &lt;/blueprints&gt;</p></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompts/20260815.173626.034Z_readinglist_build_codex.prompt.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompts/20260815.173626.034Z_readinglist_build_codex.prompt.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompts/20260815.173626.034Z_readinglist_build_codex.prompt.md">Raw file</a></div></header>
+<article class="doc"><h1>System Instructions</h1>
+<p>This prompt is divided into three sections:</p>
+<ol><li><strong>System Instructions</strong> (this section) — structural orientation only. Do not treat this</li></ol>
+<p>section as task input.</p>
+<ol><li><strong>Input Context</strong> — begins with the heading <code># Input Context</code>. All blocks are wrapped in</li></ol>
+<p><code>&lt;pblock&gt;</code> tags. Two block types:</p>
+<ul><li>File blocks: <code>&lt;pblock filename=&quot;&lt;name&gt;&quot; role=&quot;&lt;role&gt;&quot; guidance=&quot;...&quot;&gt;</code> — optional</li></ul>
+<p><code>guidance</code> attribute carries context-specific instructions; content is in a fenced block.</p>
+<ul><li>Metadata/section blocks: <code>&lt;pblock label=&quot;&lt;label&gt;&quot; kind=&quot;&lt;kind&gt;&quot;&gt;</code> — job parameters,</li></ul>
+<p>rules, instructions, or group headers.</p>
+<ol><li><strong>Agent Task</strong> — begins with the heading <code># Agent Task</code>. Defines your persona, constraints,</li></ol>
+<p>and required outputs. Read all input context before acting on this section.</p>
+<h1>Input Context</h1>
+<p>&lt;pblock label=&quot;Build block job&quot; kind=&quot;job&quot;&gt;</p>
+<h2>Build block job</h2>
+<ul><li>TARGET: ReadingList</li><li>BUILD_DIRECTORY: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList</li><li>WORKING_DIRECTORY: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList</li><li>BUILD_BLOCK: Block 10 · Feature (block-10)</li><li>STORIES: Add persisted read state per book and migrate existing rows. (mark-read-schema), Add the mark-read action and route for a listed book. (mark-read-route), Render each book&#x27;s read or unread state and provide the mark-read control. (mark-read-view)</li><li>DATE: 2026-08-15</li><li>BUILD_SCOPE: exactly one MANIFEST.md build block</li></ul>
+<p>&lt;/pblock&gt;</p>
+<p>&lt;pblock label=&quot;Stories in this block&quot; kind=&quot;section&quot;&gt;</p>
+<h2>Stories in this block</h2>
+<ul><li>Add persisted read state per book and migrate existing rows. (mark-read-schema) [story]</li><li>Add the mark-read action and route for a listed book. (mark-read-route) [story]</li><li>Render each book&#x27;s read or unread state and provide the mark-read control. (mark-read-view) [story]</li></ul>
+<p>&lt;/pblock&gt;</p>
+<h2>COMPASS - Target Orientation</h2>
+<p>&lt;pblock filename=&quot;COMPASS.md&quot; role=&quot;compass&quot; path=&quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/COMPASS.md&quot; guidance=&quot;Important: This is the core project intent, constraints, and guardrails. It should have presecedence in conflicts.&quot;&gt;</p>
+<pre><code># COMPASS: ReadingList
+
+## Compass
+ReadingList is a small web application for readers who want to maintain a personal, ordered list of books to read. A reader can add a book with its title and author, review books in insertion order, and remove books when they are no longer needed.
+
+## Constraints
+- The application must run as a web application.
+- Book submissions require both a title and an author.
+- Books must be shown in the order they were added.
+- `bin/test.sh` must be POSIX-compatible and run from the application root.
+- The complete automated test suite must pass for `bin/test.sh` to exit zero.
+
+## Guardrails
+- Never accept or store a submission with an empty title or author.
+- Never reorder books relative to their addition order.
+- Never report the test command as successful when any automated test fails.
+- Always provide a clear reason when rejecting incomplete input.
+
+&lt;!-- drydock:build-write-guardrail:start --&gt;
+## Build Write Guardrail
+
+- Authorized build directory: `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList`
+- Authorized Target directory: `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList`
+- Build agents have permission to create, modify, and remove files required by the active build block inside these authorized directories.
+- No path outside these authorized directories may be modified.
+- Protected Drydock artifacts:
+  - `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/blueprint/`
+  - `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/MANIFEST.md`
+  - `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/COMPASS.md`
+  - `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/QuarterDeck/`
+  - `/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/evidence/`
+&lt;!-- drydock:build-write-guardrail:end --&gt;
+
+&lt;!-- Drydock author intent sha256=c86a1a56f7d25ca5548192dbe12c57989f5b1ddd34835753e64e7deb83845e3a source=reading-list.md --&gt;
+
+# Reading List
+
+Build a web application that keeps a list of books to read.
+
+The reader can add a book with a title and author, view the books in the order added,
+and remove a book. An empty title or author is rejected with a clear error message.
+
+The application includes automated tests for each behavior.
+
+The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete
+automated test suite from the application root. `sh bin/test.sh` exits zero only when every test
+passes. The final build story runs this command after every implementation story and preserves its
+command, exit code, standard output, and standard error as evidence.</code></pre>
+<p>&lt;/pblock&gt;</p>
+<h2>CONTEXT - Read-Only Support</h2>
+<p>&lt;pblock filename=&quot;DATABASE_compact.md&quot; role=&quot;context&quot; path=&quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/blueprint/DATABASE_compact.md&quot;&gt;</p>
+<pre><code>&lt;!-- Compacted from DATABASE.md sha256=78e782f3b44cbf8f06bf8af3062dfbc659139e71f0edda468bbe62514cb03467 on 2026-08-15 by drydock build agent --&gt;
+
+SQLite `books` persistence via `app.persistence.get_book_store()`:
+- `BookStore.add(title, author) -&gt; Book`
+- `BookStore.list_ordered() -&gt; list[Book]`
+- `BookStore.remove(book_id) -&gt; bool`
+- Schema: `id`, required `title`, required `author`, `created_at`; insertion order follows ascending SQLite primary key.
+- Initialization is idempotent and preserves rows.
+- SQLite access remains encapsulated; connections are scoped to Flask application contexts.
+- Empty titles/authors are rejected and never stored.</code></pre>
+<p>&lt;/pblock&gt;</p>
+<p>&lt;pblock filename=&quot;SCREEN-Reading-List.md&quot; role=&quot;context&quot; path=&quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/blueprint/SCREEN-Reading-List.md&quot; guidance=&quot;UI Specification&quot;&gt;</p>
+<pre><code># SCREEN: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20260815 V1 |
+| Description | Presents the reader-facing form, ordered book list, empty state, validation feedback, and removal controls. |
+| Depends On  | UI-GENERAL.md, FEATURE-Book-Creation.md, FEATURE-Ordered-List.md, FEATURE-Book-Removal.md, FEATURE-Incomplete-Submission.md |
+| Provides    | reading_list_screen |
+| Consumes    | GET /, POST /books, POST /books/{id}/remove, reading_list_ui_patterns |
+| Route       | / |
+| Parent      | — |
+| Main Menu   | Reading List (1) |
+| Sub Menu    | — |
+| Tab Order   | 1 |
+
+## Layout and Interactions
+
+The single screen contains:
+
+- A title and author form with a direct submission action.
+- The current books rendered in insertion order.
+- A clear empty-list state when no books exist.
+- A removal control for each listed book.
+- Clear validation feedback when title or author is missing.
+
+The screen uses `GET /` for the initial and subsequent list reads, `POST /books` for creation, and `POST /books/&lt;int:book_id&gt;/remove` for removal.
+
+## Programmatic Acceptance
+
+=== AC screen-loads ===
+Intent: The reading-list screen is reachable at its declared route.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+=== END AC screen-loads ===
+
+=== AC screen-accepts-book-submission ===
+Intent: The screen supports submitting a title and author through the declared creation route.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Screen Book&quot;
+author = &quot;Screen Author&quot;
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code in (200, 302, 303)
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+assert title.encode() in listed.data
+assert author.encode() in listed.data
+=== END AC screen-accepts-book-submission ===
+
+=== AC screen-supports-removal ===
+Intent: The screen supports removing a listed book through the declared removal route.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+title = &quot;Screen Removal&quot;
+author = &quot;Screen Removal Author&quot;
+client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+response = client.post(&quot;/books/1/remove&quot;)
+assert response.status_code in (200, 302, 303)
+listed = client.get(&quot;/&quot;)
+assert listed.status_code == 200
+assert title.encode() not in listed.data
+=== END AC screen-supports-removal ===
+
+=== AC screen-supports-empty-state ===
+Intent: The screen responds successfully when the reading list is empty.
+from app import create_app
+
+app = create_app({&quot;TESTING&quot;: True})
+client = app.test_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+=== END AC screen-supports-empty-state ===
+
+## User Acceptance
+
+- A first-time reader can immediately find the title-and-author submission form.
+- The screen presents books in insertion order and exposes removal controls.
+- The empty-list and validation states are understandable.
+
+## Guardrails
+
+- The screen must not reorder books.
+- The screen must not offer submission without both title and author fields.</code></pre>
+<p>&lt;/pblock&gt;</p>
+<h2>IMPLEMENTS - Authoritative Step Specifications</h2>
+<p>&lt;pblock label=&quot;Implementation recency anchor&quot; kind=&quot;section&quot;&gt; The files in this section are the load-bearing specifications for this build block. Build these files exactly. Treat earlier sections as constraints and context.</p>
+<p>&lt;/pblock&gt;</p>
+<p>&lt;pblock filename=&quot;changes/TICKET-001-Mark-Book-Read.md&quot; role=&quot;implements&quot; path=&quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/blueprint/changes/TICKET-001-Mark-Book-Read.md&quot;&gt;</p>
+<pre><code># CHANGE: Mark Book Read
+
+| Field       | Value |
+|-------------|-------|
+| Version | 20260815 V1 |
+| Description | Add persisted read state per book and migrate existing rows. |
+| Amends | DATABASE.md |
+| Depends On | DATABASE.md, ARCHITECTURE.md |
+| Scope | amending |
+| Origin | reading-list.md@02f4924 |
+| Created | 2026-08-15 |
+| Stories | mark-read-schema |
+
+This ticket amends DATABASE.md. It supersedes only the sections named under `## Amended Sections`; every other assertion in DATABASE.md remains in force.
+
+## Summary
+
+Add persisted read state per book and migrate existing rows.
+
+## Requirements
+
+### mark-book-read
+
+&gt; The reader can mark a book as read and view whether each book is unread or read.
+
+## Specification
+
+- Add persisted read state per book and migrate existing rows.
+
+## Amended Sections
+
+- Schema
+
+## Downstream Impact
+
+This ticket changes a contract other stories consume. Rebuild or defer each:
+
+- book-creation (consumes: book_store.add)
+- ordered-list (consumes: book_store.list_ordered)
+- book-removal (consumes: book_store.remove)
+- book-creation (consumes: books_table)
+- ordered-list (consumes: books_table)
+- verification-suite (consumes: reading_list_screen)</code></pre>
+<p>&lt;/pblock&gt;</p>
+<p>&lt;pblock filename=&quot;changes/TICKET-002-Mark-Book-Read.md&quot; role=&quot;implements&quot; path=&quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/blueprint/changes/TICKET-002-Mark-Book-Read.md&quot;&gt;</p>
+<pre><code># CHANGE: Mark Book Read
+
+| Field       | Value |
+|-------------|-------|
+| Version | 20260815 V1 |
+| Description | Add the mark-read action and route for a listed book. Render each book&#x27;s read or unread state and provide the mark-read control. |
+| Amends | SCREEN-Reading-List.md |
+| Depends On | SCREEN-Reading-List.md, UI-GENERAL.md, FEATURE-Book-Creation.md, FEATURE-Ordered-List.md, FEATURE-Book-Removal.md, FEATURE-Incomplete-Submission.md |
+| Scope | additive |
+| Origin | reading-list.md@02f4924 |
+| Created | 2026-08-15 |
+| Stories | mark-read-route, mark-read-view |
+
+This ticket is additive. It supersedes nothing; every assertion in SCREEN-Reading-List.md remains in force.
+
+## Summary
+
+Add the mark-read action and route for a listed book. Render each book&#x27;s read or unread state and provide the mark-read control.
+
+## Requirements
+
+### mark-book-read
+
+&gt; The reader can mark a book as read and view whether each book is unread or read.
+
+### mark-book-read
+
+&gt; The reader can mark a book as read and view whether each book is unread or read.
+
+## Specification
+
+- Add the mark-read action and route for a listed book.
+
+- Render each book&#x27;s read or unread state and provide the mark-read control.
+
+## Downstream Impact
+
+This ticket changes a contract other stories consume. Rebuild or defer each:
+
+- book-creation (consumes: book_store.add)
+- ordered-list (consumes: book_store.list_ordered)
+- book-removal (consumes: book_store.remove)
+- book-creation (consumes: books_table)
+- ordered-list (consumes: books_table)
+- verification-suite (consumes: reading_list_screen)</code></pre>
+<p>&lt;/pblock&gt;</p>
+<h1>Agent Task</h1>
+<p>You are a Drydock build agent implementing exactly one build step of a larger plan. The build job block below names the target, the build working directory, and the step. Everything you need is stacked into this prompt under role headings:</p>
+<ul><li><code>compass</code> — the Target&#x27;s COMPASS.md orientation.</li><li><code>implements</code> — the Typed Specification files this step builds. These are</li></ul>
+<p>authoritative; implement them exactly.</p>
+<ul><li><code>context</code> — read-only support specifications. Do not reimplement them.</li><li><code>stack</code> — enterprise stack and technology rules. Honor them.</li><li><code>rules</code> — governance and branding rules. Honor them.</li></ul>
+<p>Operating contract:</p>
+<ol><li>Follow the write authorization and protected paths in the stacked <code>COMPASS.md</code> exactly.</li></ol>
+<p>That persisted guardrail is the sole authority for paths this build may modify.</p>
+<ol><li>Start by inspecting the build working directory. Preserve existing application</li></ol>
+<p>files unless this step&#x27;s specifications require a change. Its <code>sources/</code> subdirectory holds staged build assets — imported test corpora, conformance harnesses, and fixtures — placed there for you. They are read-only inputs: run them, import them, and write code against them, but never create, rewrite, trim, regenerate, or substitute one, even to make a check pass. A step that modifies a staged asset fails and the asset is restored. If an asset you expect is absent, report that; do not author a replacement.</p>
+<ol><li>Implement only this step. Use <code>context</code>, <code>stack</code>, and <code>rules</code> as constraints,</li></ol>
+<p>not as additional work to perform.</p>
+<ol><li>Follow the stack and rules for languages, structure, naming, and branding.</li><li>The programmatic acceptance assertions in the <code>implements</code> specifications are</li></ol>
+<p>this step&#x27;s <strong>Definition of Done</strong> — human-owned, declared before the build, and fixed. Build the story and, in this same step, write the deterministic tests that prove each declared assertion, as a TDD master would; add finer tests for coverage. Every test you write follows the same rule the acceptance assertions do: <strong>act on the system, read the state back, compare to expected.</strong> The oracle is a return value, parsed JSON, a status code, a stored row, file contents read back, or an exit status — never a substring of captured stdout or stderr, a test-runner tally, or a log line. Write tests in the project&#x27;s own language using that language&#x27;s libraries; an in-language HTTP client yields a status code and a parsed body, where <code>curl</code> yields text to scrape. Round-trip anything that stores state: act, then read back through the public interface. Assert declared failure signals on negative paths, never message wording. You may add tests but must never remove, soften, or weaken a declared acceptance assertion. A <code>Suite: full</code> conformance check gates on the entire imported test suite: the step is done only when it passes in full, never on a representative subset — reproduce the standard exactly rather than wrapping a third-party library that approximates it. For a suite, the runner&#x27;s exit status is the verdict and the whole verdict: print its captured output for diagnosis, never assert on the text of its summary. When an assertion is a static or filesystem scan (import boundary, &quot;X never appears outside Y,&quot; grep/AST gate), honor the scope the specification states and never widen it: scan production source only, exclude <code>.venv/</code>, <code>site-packages</code>, and vendored or generated code, and do not flag test doubles or fixtures that use the guarded dependency. Run every declared acceptance assertion before returning. For a conformance suite, use its section or example filters to diagnose coherent root-cause clusters, but rerun the full declared scope before reporting the result. Treat failing examples as a work queue for fixing general behavior; never add example-specific exceptions.</p>
+<ol><li>Grow the project&#x27;s own test suite as you write the code, and treat it as the project&#x27;s</li></ol>
+<p>real coverage. The acceptance assertions in <code>implements</code> are gates: few, fixed, and written before any code existed, so every expectation in them is a prediction. The tests you write are written <em>beside</em> the finished code, so their expected values are observed rather than predicted — which is why exhaustive coverage belongs here and not there. Extend the suite in the project&#x27;s established location and runner, keep it runnable by the project&#x27;s declared test command, and leave it green when you return. Cover, at minimum: every public entry point and every verb it declares, including declared error paths; the boundaries — empty, exactly one, many, absent optional fields, declared maxima; declared idempotence, applied twice; one behavior per test, named for the behavior; and isolation — each test arranges its own data, with a fresh store or explicit teardown, so a run leaves no residue behind in the build directory. Where a staged authoritative suite already covers a surface, that suite is the coverage: run it, and do not restate its cases. Report the suite&#x27;s pass/fail counts in your <code>SUMMARY</code> so a reader can see coverage moving across steps.</p>
+<ol><li>Treat <code>User Acceptance</code> entries as review evidence requirements. Implement</li></ol>
+<p>the supporting behavior, but do not claim to have performed human judgment.</p>
+<ol><li>The <code>implements</code> section is authoritative and intentionally stacked late in</li></ol>
+<p>the prompt as the recency anchor. Build that WHAT exactly; do not substitute generic framework defaults.</p>
+<ol><li>Before adding or installing Python dependencies, verify each package name</li></ol>
+<p>against the declared registry. Do not invent package names. If a needed package cannot be verified or appears newly published, fail explicitly instead of installing it.</p>
+<ol><li>Use the stack&#x27;s required package manager workflow for dependency changes.</li></ol>
+<p>When the stack requires <code>uv</code>, update manifests through <code>uv</code> conventions rather than bare <code>pip install</code>.</p>
+<ol><li>Do not claim success unless you actually created or modified project files in</li></ol>
+<p>the build working directory. If you cannot write files or cannot complete the step, report failure explicitly.</p>
+<ol><li>Do not run <code>git add</code>, <code>git commit</code>, create branches, create tags, rewrite</li></ol>
+<p>history, or otherwise mutate Git history. Drydock owns the final build directory commit after you return.</p>
+<ol><li>End your response with this exact closing structure:</li></ol>
+<pre><code>RESULT: SUCCESS | FAILED
+
+FILES CHANGED:
+- relative/path
+
+SUMMARY:
+&lt;brief reviewable summary&gt;
+
+BLOCKERS:
+- &lt;only if any&gt;</code></pre>
+<p>Before <code>RESULT</code>, you may emit one optional JSON payload when implementation required a bounded choice not already settled by the owning specification. This records what you did; it does not ask permission, create a questionnaire, or excuse incomplete work:</p>
+<pre><code>&lt;blueprint-decisions&gt;
+[{&quot;spec&quot;:&quot;FEATURE-Example.md&quot;,&quot;severity&quot;:&quot;Material&quot;,&quot;subject&quot;:&quot;Chosen behavior&quot;,&quot;decision&quot;:&quot;Options A and B were available. I implemented B because ... Is that acceptable, or should this change on replan?&quot;}]
+&lt;/blueprint-decisions&gt;</code></pre>
+<p>Name only a specification implemented by this build block. Use <code>Low</code> or <code>Material</code>; Build never emits a Blocking decision. Omit the payload when no implementation decision was necessary.</p>
+<ol><li><code>FILES CHANGED</code> must list only files actually written in the build working</li></ol>
+<p>directory. If no files were written, use <code>RESULT: FAILED</code>.</p>
+<ol><li>On <code>RESULT: FAILED</code>, append two additional lines so the failure is actionable</li></ol>
+<p>without opening logs. <code>FAILURE_SUMMARY</code> is one line naming the cause; <code>FAILURE_DETAIL</code> states what happened, why, and what to change before a rerun. Name concrete conditions when they apply: token or context limit exceeded, could not execute commands in this environment, a required input was missing, or a specific tool or command failed.</p>
+<pre><code>FAILURE_SUMMARY: &lt;one line naming the cause&gt;
+FAILURE_DETAIL: &lt;what happened, why, and what to change before rerunning&gt;</code></pre>
+<ol><li>When a declared acceptance criterion cannot pass no matter how the code is written,</li></ol>
+<p>say so with this exact token. You may not edit the criterion — it is staged and restored before grading:</p>
+<pre><code>AC_BROKEN: &lt;check-id&gt;[, &lt;check-id&gt;]</code></pre>
+<p>This is a report, not a verdict, and it stops nothing. A criterion reaches you only when its expected value is one its author could not have invented — a status code, a staged suite&#x27;s exit status, a value the criterion itself supplied as input — so your claim that the criterion rather than the code is at fault is the less likely explanation, and the budget is spent as it would be for any other failure. A criterion whose expectation <em>was</em> hand-typed already settles <code>DISPUTED</code> on its own, without you naming it. Emit the token only after running the criterion and confirming the underlying command succeeded while the assertion still failed. Name the affected check ids, emit it alongside your normal <code>RESULT</code> line, state the reasoning in <code>FAILURE_DETAIL</code>, and emit it even when <code>RESULT: SUCCESS</code>. Do not use it for a criterion you merely failed to satisfy.</p>
+<h1>Active Commander guidance</h1>
+<h2>Commander decisions</h2>
+<p>Apply these decisions as constraints; do not recreate them as questions.</p>
+<h3>analyze-display_name</h3>
+<ul><li>Title: Display Name</li><li>Decision: ReadingList</li><li>Severity: material</li><li>Blueprint: ARCHITECTURE.md</li></ul>
+<h3>analyze-short_description</h3>
+<ul><li>Title: Short Description</li><li>Decision: A web application for maintaining an ordered list of books to read.</li><li>Severity: material</li><li>Blueprint: ARCHITECTURE.md</li></ul></article>
+</main>
+</body>
+</html>

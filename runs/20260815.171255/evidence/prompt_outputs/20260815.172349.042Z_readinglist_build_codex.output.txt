@@ -1,0 +1,21 @@
+<reusable-compact filename="UI-GENERAL.md">
+- Single responsive reading-list screen with heading, required title/author form, submit control, ordered book list, per-book removal controls, empty state, and visible validation errors.
+- Controls require labels and stable names; removal targets must use book identity, not position.
+- Preserve insertion order and display understandable missing-field errors.
+- CSS must provide readable typography, focus states, contrast, spacing, and responsive narrow-screen layout.
+- Acceptance: GET `/` includes `name="title"`, `name="author"`, and a form; empty state mentions reading plus empty/no books; POST `/books` then GET `/` shows title, author, and removal control.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app/routes.py
+- app/templates/index.html
+- app/static/css/style.css
+- tests/test_routes.py
+
+SUMMARY:
+Implemented the accessible reading-list presentation, add/remove routes, validation alert, empty state, responsive styling, and acceptance-focused tests. Full suite passes: 18 tests. Ruff checks pass.
+
+BLOCKERS:
+- None.

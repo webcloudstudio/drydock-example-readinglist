@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/UI-GENERAL.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/UI-GENERAL.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/UI-GENERAL.md">Raw file</a></div></header>
+<article class="doc"><h1>UI-GENERAL: Reading List Presentation</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Defines shared accessible presentation patterns for the single-screen reading-list interface.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>reading_list_ui_patterns</td></tr><tr><td>Consumes</td><td>application_factory</td></tr></tbody></table></div>
+<h2>Presentation Patterns</h2>
+<p>The reading-list screen uses a simple responsive page with:</p>
+<ul><li>A clear page heading identifying the reading list.</li><li>A book-submission form containing required title and author inputs.</li><li>A submit control with an understandable action label.</li><li>An ordered list of books, showing each title with its author.</li><li>A removal control associated with each listed book.</li><li>A clear empty-list message when no books exist.</li><li>A visible validation-error region when a submission is rejected.</li></ul>
+<p>Controls must have labels, inputs must have stable names, and each removal control must identify its target book without relying on position alone. Error presentation must identify the missing required field or fields.</p>
+<h2>CSS Patterns</h2>
+<p>Styles should provide readable typography, visible focus states, sufficient contrast, and usable spacing on narrow and wide screens. Styling must not change the order of books or hide validation errors.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC ui-patterns-form ===<br>Intent: The shared presentation includes labeled title and author controls and a submission control.</p>
+<p>from app import create_app</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) response = application.test_client().get(&quot;/&quot;) body = response.get_data(as_text=True)</p>
+<p>assert response.status_code == 200 assert &#x27;name=&quot;title&quot;&#x27; in body assert &#x27;name=&quot;author&quot;&#x27; in body assert &quot;&lt;form&quot; in body === END AC ui-patterns-form ===</p>
+<p>=== AC ui-patterns-empty-state ===<br>Intent: The shared presentation provides a reader-visible empty-list state.</p>
+<p>from app import create_app</p>
+<p>application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) body = application.test_client().get(&quot;/&quot;).get_data(as_text=True)</p>
+<p>assert body assert &quot;reading&quot; in body.lower() assert &quot;empty&quot; in body.lower() or &quot;no books&quot; in body.lower() === END AC ui-patterns-empty-state ===</p>
+<p>=== AC ui-patterns-removal-control ===<br>Intent: The shared presentation provides a removal control for a listed book.</p>
+<p>from app import create_app</p>
+<p>title = &quot;Listed Book&quot; author = &quot;Listed Author&quot; application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;}) client = application.test_client() response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code in (302, 303) body = client.get(&quot;/&quot;).get_data(as_text=True)</p>
+<p>assert title in body assert author in body assert &quot;remove&quot; in body.lower() or &quot;delete&quot; in body.lower() === END AC ui-patterns-removal-control ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The interface must provide a direct path to submit both required book fields.</li><li>The list must remain in insertion order.</li><li>Validation errors must remain visible and understandable.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-6.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-6.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-6.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 6 · Service (block-6)</h1>
+<ul><li>block type: block</li><li>date: 2026-08-15</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5440</li><li>execution id: 20260815.172854.587Z-8535c0e7</li></ul>
+<h2>Stories built</h2>
+<ul><li>Remove a selected book from the reading list. (book-removal) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 724)</li><li>implements: FEATURE-Book-Removal.md (SP 864)</li><li>context: ARCHITECTURE_compact.md (SP 133)</li><li>context: DATABASE_compact.md (SP 164)</li><li>stack: python_compact.md (SP 1534)</li><li>stack: flask_compact.md (SP 1083)</li><li>stack: sqlite_compact.md (SP 876)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app/<strong>init</strong>.py</li><li>data/reading_list.db</li><li>tests/test_architecture.py</li><li>tests/test_routes.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): removal-route-reachable (FEATURE-Book-Removal.md)</li></ul>
+<p>intent: The removal route accepts a valid removal request. return code: 0</p>
+<ul><li>RED: removal-persists (FEATURE-Book-Removal.md)</li></ul>
+<p>intent: Removing a book makes it absent on the next public list read. return code: 1 stderr: Traceback (most recent call last): File &quot;removal-persists.py&quot;, line 14, in &lt;module&gt; assert title.encode() not in after.data ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: removal-preserves-remaining-order (FEATURE-Book-Removal.md)</li></ul>
+<p>intent: Removing one book leaves the other books in their original relative order. return code: 1 stderr: Traceback (most recent call last): File &quot;removal-preserves-remaining-order.py&quot;, line 20, in &lt;module&gt; assert removed_title.encode() not in response.data ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: removal-route-reachable (FEATURE-Book-Removal.md)</li></ul>
+<p>intent: The removal route accepts a valid removal request. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: removal-persists (FEATURE-Book-Removal.md)</li></ul>
+<p>intent: Removing a book makes it absent on the next public list read. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: removal-preserves-remaining-order (FEATURE-Book-Removal.md)</li></ul>
+<p>intent: Removing one book leaves the other books in their original relative order. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app/<strong>init</strong>.py</li><li>tests/test_architecture.py</li><li>tests/test_routes.py</li></ul>
+<p>SUMMARY: Implemented isolated test databases and added removal regression coverage. All three acceptance scenarios pass. <code>sh bin/test.sh</code>: 26 passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

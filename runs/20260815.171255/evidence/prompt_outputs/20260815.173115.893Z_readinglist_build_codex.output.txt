@@ -1,0 +1,10 @@
+RESULT: SUCCESS
+
+FILES CHANGED:
+- tests/test_routes.py
+
+SUMMARY:
+Added coverage for missing title, missing author, both missing, non-persistence, and valid submissions. Full suite: 32 passed. All declared acceptance checks passed.
+
+BLOCKERS:
+- None

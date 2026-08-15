@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app/persistence.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app/persistence.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app/persistence.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Typed SQLite persistence boundary for the reading list.&quot;&quot;&quot;
+
+import sqlite3
+from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
+
+from flask import current_app, g
+
+
+@dataclass(frozen=True)
+class Book:
+    &quot;&quot;&quot;A book record returned by the persistence interface.&quot;&quot;&quot;
+
+    id: int
+    title: str
+    author: str
+    created_at: str | None = None
+    is_read: bool = False
+
+
+class BookStore:
+    &quot;&quot;&quot;Store books in SQLite while keeping SQL private to this module.&quot;&quot;&quot;
+
+    def __init__(
+        self,
+        database_path: str,
+        connect: Callable[[], sqlite3.Connection] | None = None,
+    ) -&gt; None:
+        self.database_path = database_path
+        self._connect_provider = connect
+
+    def _connect(self) -&gt; sqlite3.Connection:
+        if self._connect_provider is not None:
+            return self._connect_provider()
+        if self.database_path != &quot;:memory:&quot;:
+            Path(self.database_path).parent.mkdir(parents=True, exist_ok=True)
+        connection = sqlite3.connect(self.database_path)
+        connection.row_factory = sqlite3.Row
+        connection.execute(&quot;PRAGMA journal_mode = WAL&quot;)
+        connection.execute(&quot;PRAGMA foreign_keys = ON&quot;)
+        return connection
+
+    def initialize(self) -&gt; None:
+        &quot;&quot;&quot;Create or migrate the books table without changing existing rows.&quot;&quot;&quot;
+        connection = self._connect()
+        try:
+            connection.execute(
+                &quot;&quot;&quot;
+                CREATE TABLE IF NOT EXISTS books (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    author TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    is_read INTEGER NOT NULL DEFAULT 0
+                )
+                &quot;&quot;&quot;
+            )
+            columns = {
+                row[&quot;name&quot;]
+                for row in connection.execute(&quot;PRAGMA table_info(books)&quot;).fetchall()
+            }
+            if &quot;is_read&quot; not in columns:
+                connection.execute(
+                    &quot;ALTER TABLE books ADD COLUMN is_read INTEGER NOT NULL DEFAULT 0&quot;
+                )
+            connection.commit()
+        finally:
+            if self._connect_provider is None:
+                connection.close()
+
+    def add(self, title: str, author: str) -&gt; Book:
+        &quot;&quot;&quot;Persist and return one book, rejecting incomplete submissions.&quot;&quot;&quot;
+        if not isinstance(title, str) or not title.strip():
+            raise ValueError(&quot;title is required&quot;)
+        if not isinstance(author, str) or not author.strip():
+            raise ValueError(&quot;author is required&quot;)
+
+        connection = self._connect()
+        try:
+            cursor = connection.execute(
+                &quot;INSERT INTO books (title, author) VALUES (?, ?)&quot;,
+                (title, author),
+            )
+            connection.commit()
+            row = connection.execute(
+                &quot;SELECT id, title, author, created_at, is_read FROM books WHERE id = ?&quot;,
+                (cursor.lastrowid,),
+            ).fetchone()
+            assert row is not None
+            return _book_from_row(row)
+        finally:
+            if self._connect_provider is None:
+                connection.close()
+
+    def list_ordered(self) -&gt; list[Book]:
+        &quot;&quot;&quot;Return books in their SQLite-assigned insertion order.&quot;&quot;&quot;
+        connection = self._connect()
+        try:
+            rows = connection.execute(
+                &quot;SELECT id, title, author, created_at, is_read FROM books ORDER BY id&quot;
+            ).fetchall()
+            return [_book_from_row(row) for row in rows]
+        finally:
+            if self._connect_provider is None:
+                connection.close()
+
+    def mark_read(self, book_id: int) -&gt; bool:
+        &quot;&quot;&quot;Mark one book as read and report whether it exists.&quot;&quot;&quot;
+        connection = self._connect()
+        try:
+            cursor = connection.execute(
+                &quot;UPDATE books SET is_read = 1 WHERE id = ?&quot;, (book_id,)
+            )
+            connection.commit()
+            return cursor.rowcount == 1
+        finally:
+            if self._connect_provider is None:
+                connection.close()
+
+    def remove(self, book_id: int) -&gt; bool:
+        &quot;&quot;&quot;Delete a book and report whether a row was removed.&quot;&quot;&quot;
+        connection = self._connect()
+        try:
+            cursor = connection.execute(&quot;DELETE FROM books WHERE id = ?&quot;, (book_id,))
+            connection.commit()
+            return cursor.rowcount == 1
+        finally:
+            if self._connect_provider is None:
+                connection.close()
+
+
+def _book_from_row(row: sqlite3.Row) -&gt; Book:
+    return Book(
+        id=row[&quot;id&quot;],
+        title=row[&quot;title&quot;],
+        author=row[&quot;author&quot;],
+        created_at=row[&quot;created_at&quot;],
+        is_read=bool(row[&quot;is_read&quot;]),
+    )
+
+
+def _context_connection() -&gt; sqlite3.Connection:
+    connection = g.get(&quot;reading_list_db&quot;)
+    if connection is None:
+        database_path = current_app.config[&quot;DATABASE&quot;]
+        if database_path != &quot;:memory:&quot;:
+            Path(database_path).parent.mkdir(parents=True, exist_ok=True)
+        connection = sqlite3.connect(database_path)
+        connection.row_factory = sqlite3.Row
+        connection.execute(&quot;PRAGMA journal_mode = WAL&quot;)
+        connection.execute(&quot;PRAGMA foreign_keys = ON&quot;)
+        g.reading_list_db = connection
+    return connection
+
+
+def get_book_store() -&gt; BookStore:
+    &quot;&quot;&quot;Return the store bound to the current Flask application context.&quot;&quot;&quot;
+    store = g.get(&quot;reading_list_store&quot;)
+    if store is None:
+        store = BookStore(current_app.config[&quot;DATABASE&quot;], _context_connection)
+        g.reading_list_store = store
+    return store
+
+
+def close_connection(_: object | None = None) -&gt; None:
+    &quot;&quot;&quot;Close the current request/workflow connection, if one was opened.&quot;&quot;&quot;
+    connection = g.pop(&quot;reading_list_db&quot;, None)
+    if connection is not None:
+        connection.close()
+
+
+def initialize(database_path: str) -&gt; None:
+    &quot;&quot;&quot;Initialize the schema without exposing SQLite to application code.&quot;&quot;&quot;
+    BookStore(database_path).initialize()
+</pre></article>
+</main>
+</body>
+</html>

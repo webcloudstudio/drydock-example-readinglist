@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/UI-GENERAL_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/UI-GENERAL_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/UI-GENERAL_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from UI-GENERAL.md sha256=0b6f592e79f56bbddb07352ad5ce0b07084a40a38ed7969e14ac933aa8d25272 on 2026-08-15 by drydock build agent --&gt;</p>
+<ul><li>Single responsive reading-list screen with heading, required title/author form, submit control, ordered book list, per-book removal controls, empty state, and visible validation errors.</li><li>Controls require labels and stable names; removal targets must use book identity, not position.</li><li>Preserve insertion order and display understandable missing-field errors.</li><li>CSS must provide readable typography, focus states, contrast, spacing, and responsive narrow-screen layout.</li><li>Acceptance: GET <code>/</code> includes <code>name=&quot;title&quot;</code>, <code>name=&quot;author&quot;</code>, and a form; empty state mentions reading plus empty/no books; POST <code>/books</code> then GET <code>/</code> shows title, author, and removal control.</li></ul></article>
+</main>
+</body>
+</html>

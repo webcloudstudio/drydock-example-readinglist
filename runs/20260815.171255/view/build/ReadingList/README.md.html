@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/README.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/README.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/README.md">Raw file</a></div></header>
+<article class="doc"><h1>ReadingList</h1>
+<p>A web application for maintaining an ordered list of books to read.</p>
+<h2>Intent</h2>
+<p>ReadingList is a small web application for readers who want to maintain a personal, ordered list of books to read. A reader can add a book with its title and author, review books in insertion order, and remove books when they are no longer needed.</p>
+<h2>What It Does</h2>
+<p>Allow a reader to submit a non-empty title and author and have the book stored in the reading list.</p>
+<p>Allow a reader to remove a selected book from the reading list.</p>
+<p>Validate book submissions at the submission boundary before persistence.</p>
+<p>Show every stored book in the same order in which it was added.</p>
+<p>Provide automated tests for adding books, preserving insertion order, removing books, and rejecting empty titles or authors. The root-level <code>bin/test.sh</code> launcher is POSIX-compatible and runs the complete suite from the application root.</p>
+<p>Presents the reader-facing form, ordered book list, empty state, validation feedback, and removal controls.</p>
+<h2>Setup and Running</h2>
+<p><strong>Before first run:</strong></p>
+<ul><li>Copy <code>.env.example</code> to <code>.env</code> and fill in local values before starting.</li><li>Confirm the repository has the expected remote with <code>git remote -v</code>; add <code>origin</code> if the startup guard requires it.</li><li>Run <code>git status --short</code> and commit or intentionally stash local changes before deployment-oriented runs.</li></ul>
+<p><strong>Install dependencies:</strong></p>
+<pre><code>uv sync</code></pre>
+<p><strong>Start the application:</strong></p>
+<pre><code>python run.py</code></pre>
+<h2>Verification</h2>
+<pre><code>bash bin/test.sh</code></pre>
+<h2>Next Steps</h2>
+<ul><li>Complete the first-run checks above.</li><li>Start the application with <code>python run.py</code>.</li><li>Run <code>bash bin/test.sh</code> before making release or deployment changes.</li></ul></article>
+</main>
+</body>
+</html>

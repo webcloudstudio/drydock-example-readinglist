@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/30-score-release.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/30-score-release.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/30-score-release.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+2026-08-15 13:39:31 EDT  Calling CODEX/gpt-5.6-luna (score release)...
+  $ /bin/bash -lc &quot;pwd &amp;&amp; rg --files -g &#x27;&quot;&#x27;! .drydock-probe/**&#x27;&quot;&#x27; -g &#x27;&quot;&#x27;!node_modules/**&#x27;&quot;&#x27; | sort &amp;&amp; find . -maxdepth 3 -type f -path &#x27;./.drydock-probe/*&#x27; -print&quot;
+  -&gt; exit 0
+  $ /bin/bash -lc &quot;sed -n &#x27;1,240p&#x27; app/templates/index.html; sed -n &#x27;1,160p&#x27; app/templates/base.html; sed -n &#x27;1,160p&#x27; README.md; cat pyproject.toml pytest.ini&quot;
+  -&gt; exit 0
+  $ /bin/bash -lc &quot;sed -n &#x27;1,240p&#x27; app/persistence.py &amp;&amp; sed -n &#x27;1,280p&#x27; app/routes.py &amp;&amp; sed -n &#x27;1,120p&#x27; app/__init__.py &amp;&amp; sed -n &#x27;1,160p&#x27; bin/test.sh&quot;
+  -&gt; exit 0
+  $ /bin/bash -lc &#x27;for f in tests/*.py; do echo ===$f; sed -n &#x27;&quot;&#x27;1,260p&#x27; \&quot;&quot;&#x27;$f&quot;; done&#x27;
+  -&gt; exit 0
+  $ /bin/bash -lc &#x27;bash bin/test.sh&#x27;
+  -&gt; exit 0
+  $ /bin/bash -lc &#x27;uv run python .drydock-probe/behavior_probe.py&#x27;
+  -&gt; exit 1
+  $ /bin/bash -lc &#x27;PYTHONPATH=. uv run python .drydock-probe/behavior_probe.py&#x27;
+  -&gt; exit 0
+  Completed CODEX/gpt-5.6-luna (score release)  rc=0
+
+ReadingList: PASSED — 6 of 6
+
+  st-001  MET       bin/test.sh; command: bash bin/test.sh exited 0 with 44 passed
+  st-002  MET       app/routes.py:19; app/persistence.py:52; probe: add submissions returned redirects and listed both books
+  st-003  MET       app/persistence.py:76; probe: body.index(&quot;First&quot;) &lt; body.index(&quot;Second&quot;)
+  st-004  MET       app/routes.py:37; app/persistence.py:92; probe: removed First; Second remained and First was absent
+  st-005  MET       app/routes.py:23; app/templates/index.html:8; probe: both invalid submissions returned 400 with role=&quot;alert&quot;
+  st-006  MET       tests/test_persistence.py:5; tests/test_persistence.py:45; tests/test_persistence.py:66; tests/test_persistence.py:78; tests/test_routes.py:3; command: bash bin/test.sh reported 44 passed
+  reported: Build directory has uncommitted changes
+
+Scorecard: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/SCORECARD.md
+Evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/evidence/score-release.json
+Target - committed project workspace git store
+</pre></article>
+</main>
+</body>
+</html>

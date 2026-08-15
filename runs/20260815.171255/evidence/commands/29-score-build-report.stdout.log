@@ -1,0 +1,25 @@
+Drydock 0.1.8  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+
+Build report: ReadingList
+  evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/targets/ReadingList/evidence
+  usage:    /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20260815.171255/workspace/logs/llm.jsonl
+
+  Block                        AC  Calls     Cached  Uncached    Hit  Output     Time
+  ───────────────────────────────────────────────────────────────────────────────────
+  ✓ Block 1 · Foundational    3/3      1    645,632    39,502  94.2%   7,353   3m 22s
+  ✓ Block 2 · Foundational    4/4      1    318,464    48,503  86.8%   5,713   2m 04s
+  ✓ Block 3 · Foundational    3/3      1    351,488    33,041  91.4%   5,372   2m 16s
+  ✓ Block 4 · Service         3/3      1    272,128    42,982  86.4%   2,049      52s
+  ✓ Block 5 · Service         3/3      1    213,760    34,334  86.2%   2,155   1m 00s
+  ✓ Block 6 · Service         3/3      1    492,800    44,688  91.7%   5,231   2m 06s
+  ✓ Block 7 · Service         4/4      1    276,992    34,345  89.0%   2,973   1m 10s
+  ✓ Block 8 · Service         4/4      1    221,952    33,164  87.0%   2,255   1m 07s
+  ✓ Block 9 · Service         3/3      1    439,808    38,423  92.0%   2,909   1m 14s
+  ✓ Block 10 · Feature        0/0      1    372,480    42,223  89.8%   4,659   2m 15s
+  ───────────────────────────────────────────────────────────────────────────────────
+  TOTAL                     30/30     10  3,605,504   391,205  90.2%  40,669  17m 30s
+
+  Blocks: 10/10 verified · 10 on first call · 0 repaired
+  Model:  gpt-5.6-luna
+  Tokens: 3,605,504 cached · 391,205 uncached · 40,669 out
+

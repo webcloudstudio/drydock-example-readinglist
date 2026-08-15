@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/changes/TICKET-001-Mark-Book-Read.md</title>
+<link rel="stylesheet" href="../../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/changes/TICKET-001-Mark-Book-Read.md</h1><div class="filenav"><a href="../../../../../../index.html">&larr; Report</a><a href="../../../../../../workspace/targets/ReadingList/blueprint/changes/TICKET-001-Mark-Book-Read.md">Raw file</a></div></header>
+<article class="doc"><h1>CHANGE: Mark Book Read</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20260815 V1</td></tr><tr><td>Description</td><td>Add persisted read state per book and migrate existing rows.</td></tr><tr><td>Amends</td><td>DATABASE.md</td></tr><tr><td>Depends On</td><td>DATABASE.md, ARCHITECTURE.md</td></tr><tr><td>Scope</td><td>amending</td></tr><tr><td>Origin</td><td>reading-list.md@02f4924</td></tr><tr><td>Created</td><td>2026-08-15</td></tr><tr><td>Stories</td><td>mark-read-schema</td></tr></tbody></table></div>
+<p>This ticket amends DATABASE.md. It supersedes only the sections named under <code>## Amended Sections</code>; every other assertion in DATABASE.md remains in force.</p>
+<h2>Summary</h2>
+<p>Add persisted read state per book and migrate existing rows.</p>
+<h2>Requirements</h2>
+<h3>mark-book-read</h3>
+<blockquote><p>The reader can mark a book as read and view whether each book is unread or read.</p></blockquote>
+<h2>Specification</h2>
+<ul><li>Add persisted read state per book and migrate existing rows.</li></ul>
+<h2>Amended Sections</h2>
+<ul><li>Schema</li></ul>
+<h2>Downstream Impact</h2>
+<p>This ticket changes a contract other stories consume. Rebuild or defer each:</p>
+<ul><li>book-creation (consumes: book_store.add)</li><li>ordered-list (consumes: book_store.list_ordered)</li><li>book-removal (consumes: book_store.remove)</li><li>book-creation (consumes: books_table)</li><li>ordered-list (consumes: books_table)</li><li>verification-suite (consumes: reading_list_screen)</li></ul></article>
+</main>
+</body>
+</html>

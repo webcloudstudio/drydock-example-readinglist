@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_architecture.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_architecture.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_architecture.py">Raw file</a></div></header>
+<article class="doc"><pre>import importlib
+
+from app import create_app
+
+
+def test_factory_creates_runnable_application():
+    application = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+    response = application.test_client().get(&quot;/&quot;)
+    assert response.status_code == 200
+
+
+def test_factory_isolates_application_instances():
+    first = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+    second = create_app({&quot;TESTING&quot;: True, &quot;DATABASE&quot;: &quot;:memory:&quot;})
+    assert first is not second
+    assert first.test_client().get(&quot;/&quot;).status_code == 200
+    assert second.test_client().get(&quot;/&quot;).status_code == 200
+
+
+def test_testing_factory_uses_isolated_database_by_default():
+    first = create_app({&quot;TESTING&quot;: True})
+    second = create_app({&quot;TESTING&quot;: True})
+
+    first.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Only First&quot;, &quot;author&quot;: &quot;Author&quot;}
+    )
+
+    assert b&quot;Only First&quot; in first.test_client().get(&quot;/&quot;).data
+    assert b&quot;Only First&quot; not in second.test_client().get(&quot;/&quot;).data
+
+
+def test_app_module_exposes_factory_without_starting_server():
+    module = importlib.import_module(&quot;app&quot;)
+    assert callable(module.create_app)
+</pre></article>
+</main>
+</body>
+</html>

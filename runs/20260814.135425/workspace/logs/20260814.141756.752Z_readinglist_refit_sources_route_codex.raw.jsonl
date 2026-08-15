@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"01a000a2-fe70-7613-a393-80d3624032e3"}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"<requirement name=\"mark-book-read\">\nThe reader can mark a book as read and view whether each book is unread or read.\n</requirement>"}}
-{"type":"turn.completed","usage":{"input_tokens":20112,"cached_input_tokens":8960,"cache_write_input_tokens":0,"output_tokens":553,"reasoning_output_tokens":516}}

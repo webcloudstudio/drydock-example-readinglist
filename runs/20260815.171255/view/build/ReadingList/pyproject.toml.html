@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/pyproject.toml</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/pyproject.toml</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/pyproject.toml">Raw file</a></div></header>
+<article class="doc"><pre>[project]
+name = &quot;readinglist&quot;
+version = &quot;0.1.0&quot;
+requires-python = &quot;&gt;=3.11&quot;
+dependencies = [
+    &quot;flask&gt;=3.1&quot;,
+    &quot;python-dotenv&gt;=1.0&quot;,
+]
+
+[project.optional-dependencies]
+dev = [&quot;pytest&gt;=8.0&quot;, &quot;ruff&gt;=0.4&quot;]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [&quot;E&quot;, &quot;F&quot;, &quot;I&quot;, &quot;UP&quot;, &quot;B&quot;]
+</pre></article>
+</main>
+</body>
+</html>
