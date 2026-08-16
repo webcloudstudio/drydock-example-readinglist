@@ -15,17 +15,20 @@
     &quot;verdict&quot;: &quot;PASSED&quot;
   },
   &quot;sources&quot;: [
-    &quot;sources/reading-list.md&quot;
+    &quot;sources/reading-list.md&quot;,
+    &quot;sources/full_test.sh&quot;
   ],
   &quot;updates&quot;: [
     &quot;updates/reading-list.md&quot;
   ],
   &quot;sea_trials&quot;: &quot;inputs/SEA_TRIALS.md&quot;,
   &quot;technology_stack&quot;: &quot;inputs/TECHNOLOGY_STACK.md&quot;,
-  &quot;test_command&quot;: [
-    &quot;sh&quot;,
-    &quot;bin/test.sh&quot;
-  ]
+  &quot;acceptance&quot;: {
+    &quot;full&quot;: [
+      &quot;sh&quot;,
+      &quot;sources/full_test.sh&quot;
+    ]
+  }
 }
 </pre></article>
 </main>
