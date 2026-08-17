@@ -11,7 +11,7 @@
 | Target completion check passed | PASS | drydock status ReadingList --check exited 0. | [evidence/commands/23-refit-1-complete.stdout.log](evidence/commands/23-refit-1-complete.stdout.log) |
 | Acceptance score passed | PASS | drydock score acceptance exited 0. | [evidence/commands/28-score-acceptance.stdout.log](evidence/commands/28-score-acceptance.stdout.log) |
 | Release score passed | PASS | drydock score release exited 0. | [evidence/commands/30-score-release.stdout.log](evidence/commands/30-score-release.stdout.log) |
-| Integrity verification passed | PASS | 949 files digested; verify with sha256sum -c SHA256SUMS. | [SHA256SUMS](SHA256SUMS) |
+| Integrity verification passed | PASS | 953 files digested; verify with sha256sum -c SHA256SUMS. | [SHA256SUMS](SHA256SUMS) |
 
 ## Run facts
 
@@ -47,8 +47,8 @@
 |---|---|---|---|---|
 | 01-init | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock init ReadingList` | 0 | 2.2s | [stdout](evidence/commands/01-init.stdout.log) · [stderr](evidence/commands/01-init.stderr.log) |
 | 02-import-sources | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock import ReadingList sources --format markdown` | 0 | 1.9s | [stdout](evidence/commands/02-import-sources.stdout.log) · [stderr](evidence/commands/02-import-sources.stderr.log) |
-| 03-analyze | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock analyze ReadingList` | 0 | 57.9s | [stdout](evidence/commands/03-analyze.stdout.log) · [stderr](evidence/commands/03-analyze.stderr.log) · [llm](evidence/llm_logs/20260815.171300.938Z_readinglist_analyze_codex.llm.log) |
-| 04-plan | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock plan ReadingList --override` | 0 | 218.9s | [stdout](evidence/commands/04-plan.stdout.log) · [stderr](evidence/commands/04-plan.stderr.log) · [llm](evidence/llm_logs/20260815.171359.143Z_readinglist_plan_codex.llm.log) · [llm](evidence/llm_logs/20260815.171452.254Z_readinglist_plan_codex.llm.log) · [llm](evidence/llm_logs/20260815.171609.224Z_readinglist_plan_codex.llm.log) · [llm](evidence/llm_logs/20260815.171713.601Z_readinglist_lineage_attribute_codex.llm.log) |
+| 03-analyze | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock analyze ReadingList` | 0 | 57.9s | [stdout](evidence/commands/03-analyze.stdout.log) · [stderr](evidence/commands/03-analyze.stderr.log) · [llm](evidence/commands/03-analyze.llm.log) |
+| 04-plan | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock plan ReadingList --override` | 0 | 218.9s | [stdout](evidence/commands/04-plan.stdout.log) · [stderr](evidence/commands/04-plan.stderr.log) · [llm](evidence/commands/04-plan.llm.log) |
 | 05-after-plan-build-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock build status ReadingList` | 0 | 2.2s | [stdout](evidence/commands/05-after-plan-build-status.stdout.log) · [stderr](evidence/commands/05-after-plan-build-status.stderr.log) |
 | 06-after-plan-target-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock status ReadingList` | 0 | 0.9s | [stdout](evidence/commands/06-after-plan-target-status.stdout.log) · [stderr](evidence/commands/06-after-plan-target-status.stderr.log) |
 | 07-after-plan-workspace-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock status` | 0 | 0.3s | [stdout](evidence/commands/07-after-plan-workspace-status.stdout.log) · [stderr](evidence/commands/07-after-plan-workspace-status.stderr.log) |
@@ -60,7 +60,7 @@
 | 13-after-initial-build-target-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock status ReadingList` | 0 | 0.9s | [stdout](evidence/commands/13-after-initial-build-target-status.stdout.log) · [stderr](evidence/commands/13-after-initial-build-target-status.stderr.log) |
 | 14-after-initial-build-workspace-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock status` | 0 | 0.4s | [stdout](evidence/commands/14-after-initial-build-workspace-status.stdout.log) · [stderr](evidence/commands/14-after-initial-build-workspace-status.stderr.log) |
 | 15-import-update-1 | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock import ReadingList --update` | 0 | 2.4s | [stdout](evidence/commands/15-import-update-1.stdout.log) · [stderr](evidence/commands/15-import-update-1.stderr.log) |
-| 16-refit-update-1 | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock refit ReadingList --sources` | 0 | 19.1s | [stdout](evidence/commands/16-refit-update-1.stdout.log) · [stderr](evidence/commands/16-refit-update-1.stderr.log) · [llm](evidence/llm_logs/20260815.173559.126Z_readinglist_refit_sources_route_codex.llm.log) |
+| 16-refit-update-1 | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock refit ReadingList --sources` | 0 | 19.1s | [stdout](evidence/commands/16-refit-update-1.stdout.log) · [stderr](evidence/commands/16-refit-update-1.stderr.log) · [llm](evidence/commands/16-refit-update-1.llm.log) |
 | 17-after-refit-1-build-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock build status ReadingList` | 0 | 0.7s | [stdout](evidence/commands/17-after-refit-1-build-status.stdout.log) · [stderr](evidence/commands/17-after-refit-1-build-status.stderr.log) |
 | 18-after-refit-1-target-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock status ReadingList` | 0 | 0.9s | [stdout](evidence/commands/18-after-refit-1-target-status.stdout.log) · [stderr](evidence/commands/18-after-refit-1-target-status.stderr.log) |
 | 19-after-refit-1-workspace-status | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock status` | 0 | 0.5s | [stdout](evidence/commands/19-after-refit-1-workspace-status.stdout.log) · [stderr](evidence/commands/19-after-refit-1-workspace-status.stderr.log) |
@@ -74,7 +74,7 @@
 | 27-test | `sh bin/test.sh` | 0 | 3.2s | [stdout](evidence/commands/27-test.stdout.log) · [stderr](evidence/commands/27-test.stderr.log) |
 | 28-score-acceptance | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock score ac ReadingList` | 0 | 36.6s | [stdout](evidence/commands/28-score-acceptance.stdout.log) · [stderr](evidence/commands/28-score-acceptance.stderr.log) |
 | 29-score-build-report | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock score build ReadingList` | 0 | 0.3s | [stdout](evidence/commands/29-score-build-report.stdout.log) · [stderr](evidence/commands/29-score-build-report.stderr.log) |
-| 30-score-release | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock score release ReadingList` | 0 | 52.4s | [stdout](evidence/commands/30-score-release.stdout.log) · [stderr](evidence/commands/30-score-release.stderr.log) · [llm](evidence/llm_logs/20260815.173931.006Z_readinglist_score-release_codex.llm.log) |
+| 30-score-release | `/mnt/c/Users/barlo/projects/drydock/.venv/bin/python3 -m drydock score release ReadingList` | 0 | 52.4s | [stdout](evidence/commands/30-score-release.stdout.log) · [stderr](evidence/commands/30-score-release.stderr.log) · [llm](evidence/commands/30-score-release.llm.log) |
 
 ## Evidence
 

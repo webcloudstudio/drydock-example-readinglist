@@ -3839,6 +3839,11 @@
         "sha256": "2a6a4ebdaf02798a26a037f5381cedcaae94ea3f080be5cc62c48a67b3d7c184"
       },
       {
+        "bytes": 278,
+        "path": "evidence/commands/03-analyze.llm.log",
+        "sha256": "3e244a8c36477dda7f156e1e376c9669ca2ddae89afa43f3d46aec4418b725be"
+      },
+      {
         "bytes": 0,
         "path": "evidence/commands/03-analyze.stderr.log",
         "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -3847,6 +3852,11 @@
         "bytes": 718,
         "path": "evidence/commands/03-analyze.stdout.log",
         "sha256": "92b2953ea6eb2c2c953d9c4f77cb2d0460c6d2eb780a79b97976387dd24b8986"
+      },
+      {
+        "bytes": 1120,
+        "path": "evidence/commands/04-plan.llm.log",
+        "sha256": "bd4c2dc2dbd446156540854489437c8f43b844ad7294404b0d925fd276de1f9a"
       },
       {
         "bytes": 0,
@@ -3967,6 +3977,11 @@
         "bytes": 250,
         "path": "evidence/commands/15-import-update-1.stdout.log",
         "sha256": "088bfaef624ad61a281a2fd1f950cdb166ebb7ff18c1178d75c06cf82b522270"
+      },
+      {
+        "bytes": 311,
+        "path": "evidence/commands/16-refit-update-1.llm.log",
+        "sha256": "022dd3bd76074007a2d3432b0bd8b4ba46433bf1cd75d7e6ebc98815f4710ab1"
       },
       {
         "bytes": 0,
@@ -4107,6 +4122,11 @@
         "bytes": 2046,
         "path": "evidence/commands/29-score-build-report.stdout.log",
         "sha256": "d0556d988e4803bfda5bb858d2a424248c6c1afbb8b919a34c204361ffd7b608"
+      },
+      {
+        "bytes": 297,
+        "path": "evidence/commands/30-score-release.llm.log",
+        "sha256": "36c8a3820767086f8d8eaf6724e6aecf4997e633db7e109f91b98cc7dc829569"
       },
       {
         "bytes": 0,
