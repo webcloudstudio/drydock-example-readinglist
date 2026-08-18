@@ -12,7 +12,6 @@
   ],
   "sea_trials": "inputs/SEA_TRIALS.md",
   "technology_stack": "inputs/TECHNOLOGY_STACK.md",
-  "metadata": "inputs/METADATA.md",
   "acceptance": {
     "full": [
       "sh",

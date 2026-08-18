@@ -1,8 +1,8 @@
 # AUTHORITATIVE PROJECT METADATA — FIELDS SHOULD BE CURRENT
 
 name: ReadingList
-display_name: drydock Reading List example
-short_description: Drydock test instance - the smallest kit, and the only one written from scratch rather than from an upstream project.  A short plain-English brief asks for a web application that keeps a list of books to read, and Drydock designs and builds it as a Flask application over SQLite with its own automated tests.  It is also the kit that exercises the change path: once the first build passes, a revised brief is imported and Drydock re-plans and rebuilds only what the change touched instead of starting over.
+display_name: drydock Reading List Uat Case
+short_description: Drydock uat - ReadingList is the smallest kit and the only one written from scratch rather than taken from an upstream project.  It proves two things.  First, that a few paragraphs of plain English are enough input: the source is a short brief asking for a web application that keeps a list of books to read, and Drydock designs the schema, the routes, and the test suite itself rather than transcribing a specification.  Second, that a change to the specification is re-planned rather than rebuilt: once the first build passes, a revised brief is imported and Drydock rebuilds only what the change touched.  TECHNOLOGY_STACK.md specifies Python with Flask and SQLite, but the brief names no stack, so any framework with a Rigging file builds it (copy the python.md format).  Run with drydock uat ReadingList.  Source Repo: none, the brief is original to this kit.  
 stack: Python
 version: 
 build_state: 
