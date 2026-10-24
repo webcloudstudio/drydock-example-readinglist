@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-4.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-4.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-4.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 4 · Service (block-4)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5524</li><li>execution id: 20261023.180241.264Z-b86c6ee1</li></ul>
+<h2>Stories built</h2>
+<ul><li>Render the reading list page with an add form, error display, and remove buttons. (screen-reading-list) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 895)</li><li>implements: SCREEN-ReadingList.md (SP 2871)</li><li>stack: flask.md (SP 691)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/routes/pages.py</li><li>app_server/templates/reading_list.html</li><li>data/app.db</li><li>tests/test_app_shell.py</li><li>tests/test_reading_list_page.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: screen-index-renders (SCREEN-ReadingList.md)</li></ul>
+<p>intent: GET / answers 200 and shows an added book&#x27;s title and author, and GET /books agrees with it on the same book. return code: 1 stderr: Traceback (most recent call last): File &quot;screen-index-renders.py&quot;, line 13, in &lt;module&gt; assert page.status_code == 200 ^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-add-form (SCREEN-ReadingList.md)</li></ul>
+<p>intent: POST /add with a title and author redirects 303 and the book then appears on GET / and in GET /books. return code: 1 stderr: Traceback (most recent call last): File &quot;screen-add-form.py&quot;, line 12, in &lt;module&gt; assert response.status_code == 303 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-add-rejects-empty (SCREEN-ReadingList.md)</li></ul>
+<p>intent: POST /add with an empty title, an empty author, or whitespace-only values answers 400 and stores nothing. return code: 1 stderr: Traceback (most recent call last): File &quot;screen-add-rejects-empty.py&quot;, line 19, in &lt;module&gt; assert response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-remove-form (SCREEN-ReadingList.md)</li></ul>
+<p>intent: POST /remove/{book_id} redirects 303 and the book is gone from GET / and GET /books; an unknown id also redirects 303. return code: 1 stderr: Traceback (most recent call last): File &quot;screen-remove-form.py&quot;, line 11, in &lt;module&gt; assert response.status_code == 303 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-order-added (SCREEN-ReadingList.md)</li></ul>
+<p>intent: GET / presents books in the order they were added. return code: 1 stderr: --- drydock: values at failure --- title = &#x27;ac-screen-order-6a944ab73f9a4f36a0630d7bbafcab52-2&#x27; titles = [&#x27;ac-screen-order-6a944ab73f9a4f36a0630d7bbafcab52-0&#x27;, &#x27;ac-screen-order-6a944ab73f9a4f36a0630d7bbafcab52-1&#x27;, &#x27;ac-screen-order-6a944ab73f9a4f36a0630d7bbafcab52-2&#x27;] html = &#x27;&lt;!doctype html&gt;\n&lt;html lang=en&gt;\n&lt;title&gt;404 Not Found&lt;/title&gt;\n&lt;h1&gt;Not Found&lt;/h1&gt;\n&lt;p&gt;The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.&lt;/p&gt;\n&#x27; --- drydock: end values --- Traceback (most recent call last): File &quot;screen-order-added.py&quot;, line 14, in &lt;module&gt; positions = [html.index(title) for title in titles] ^^^^^^^^^^^^^^^^^<br>ValueError: substring not found</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: screen-index-renders (SCREEN-ReadingList.md)</li></ul>
+<p>intent: GET / answers 200 and shows an added book&#x27;s title and author, and GET /books agrees with it on the same book. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-add-form (SCREEN-ReadingList.md)</li></ul>
+<p>intent: POST /add with a title and author redirects 303 and the book then appears on GET / and in GET /books. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-add-rejects-empty (SCREEN-ReadingList.md)</li></ul>
+<p>intent: POST /add with an empty title, an empty author, or whitespace-only values answers 400 and stores nothing. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-remove-form (SCREEN-ReadingList.md)</li></ul>
+<p>intent: POST /remove/{book_id} redirects 303 and the book is gone from GET / and GET /books; an unknown id also redirects 303. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-order-added (SCREEN-ReadingList.md)</li></ul>
+<p>intent: GET / presents books in the order they were added. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>The baseline is green (75 passed), the book service already validates input and keeps list order, and the routes for <code>/books</code> exist. I&#x27;ll add the three page routes to the <code>pages</code> blueprint, a template, and tests.Now I&#x27;ll update the route-registry test, since this block legitimately adds three routes to the app.Next, the page test module. It reads the rendered HTML through a small structural parser (list items, error region, input values, form actions) rather than substring checks on the page.One test I just wrote is muddled (it checks the plain load and the rejection in one body). I&#x27;ll make it check only the rejection response.All 110 tests pass (75 existing plus 35 new, and the updated route test). Now I&#x27;ll run the five declared scoped acceptance checks from the SCREEN spec myself, since they are not on disk and the runner will grade them.All five declared checks pass. Last, I&#x27;ll confirm which files changed in the build directory.RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/routes/pages.py</li><li>app_server/templates/reading_list.html</li><li>tests/test_reading_list_page.py</li><li>tests/test_app_shell.py</li></ul>
+<p>SUMMARY:</p>
+<ul><li><strong>Routes</strong> (<code>app_server/routes/pages.py</code>, added to the existing <code>pages</code> blueprint):<ul><li><code>GET /</code> renders the page with status 200.</li><li><code>POST /add</code> calls <code>book_service.add_book</code>. Success redirects 303 to <code>/</code>. A <code>ValueError</code> re-renders the page with status 400, the error message, and the entered values echoed back into the form.</li><li><code>POST /remove/&lt;int:book_id&gt;</code> calls <code>book_service.remove_book</code> and redirects 303 to <code>/</code>, including for unknown ids.</li></ul></li><li><strong>Template</strong> (<code>app_server/templates/reading_list.html</code>, extends <code>base.html</code>): heading, error region shown only on rejection, add form posting to <code>/add</code>, ordered list with title and author, a remove form per book, and a &quot;No books yet.&quot; message when empty. Jinja autoescaping is preserved and no JavaScript is used.</li><li><strong>Existing test updated:</strong> <code>test_factory_registers_only_the_declared_routes</code> in <code>tests/test_app_shell.py</code> now expects the three new routes. This is required by this block, since the screen adds them.</li><li><strong>New tests</strong> (<code>tests/test_reading_list_page.py</code>, 35 tests): they read back through the public interface (<code>GET /books</code>, <code>GET /</code>). The page is parsed structurally, not by substring. Coverage includes the order of the list, empty and missing or whitespace fields (parametrized), the error region, no stored rows on rejection, echoed values, removal and reappearance, unknown ids, and the no-script rule.</li></ul>
+<p>Verification:</p>
+<ul><li><code>.venv/bin/pytest -q</code>: <strong>110 passed</strong> (75 pre-existing, 35 new). Command run from the build directory; exit 0.</li><li>The five declared scoped acceptance checks (<code>screen-index-renders</code>, <code>screen-add-form</code>, <code>screen-add-rejects-empty</code>, <code>screen-remove-form</code>, <code>screen-order-added</code>) were reconstructed from the SCREEN spec and run with <code>.venv/bin/python -I</code> against <code>app_server.testing.web_client</code>. All five passed. These are my reconstructions, not the staged originals, so the runner&#x27;s grading is authoritative.</li><li><code>sources/full_test.sh</code> was not run. No criterion in this block invokes it, and it was not modified.</li></ul>
+<p>Choices I made:</p>
+<ul><li>Put the page routes in the existing <code>pages</code> blueprint rather than a new module, since that blueprint already holds application-level routes.</li><li>Used the service&#x27;s own <code>ValueError</code> message for the error text. The spec asks only that the error state which field is missing; I did not assert on the wording in tests.</li></ul>
+<p>No blockers.</p></article>
+</main>
+</body>
+</html>

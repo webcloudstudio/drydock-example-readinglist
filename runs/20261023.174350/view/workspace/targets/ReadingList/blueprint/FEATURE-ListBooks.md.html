@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: List Books</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Return all books in the order they were added.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md, DATABASE.md</td></tr><tr><td>Provides</td><td>GET /books</td></tr><tr><td>Consumes</td><td>books.list</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Let the reader view the books. Books are never presented in any order other than the order added.</p>
+<h2>Trigger</h2>
+<p>A client sends <code>GET /books</code>.</p>
+<h2>Sequence</h2>
+<ol><li>The route calls <code>app_server.services.books.list_books(db)</code>.</li><li>The service calls <code>books.list</code>, which returns rows by id ascending.</li><li>The route returns 200 with a JSON array of <code>{&quot;id&quot;, &quot;title&quot;, &quot;author&quot;}</code> in that order.</li></ol>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Route</th><th>Behavior</th></tr></thead><tbody><tr><td><code>GET /books</code></td><td>Returns 200 with a JSON array ordered by insertion. An empty list returns <code>[]</code>.</td></tr></tbody></table></div>
+<h2>Reads</h2>
+<p><code>books.list</code> returns every stored book ordered by id ascending.</p>
+<h2>Writes</h2>
+<p>None.</p>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOK-003</code> — read: books.list - supplies: — - returns: <code>id</code>, <code>title</code>, <code>author</code></li></ul>
+<h2>Tests</h2>
+<p>The build writes pytest tests that add several books and assert the returned order equals the order submitted, plus the empty-list case.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC listbooks-order ===<br>Intent: GET /books returns the books added during the check in the order they were added.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() titles = [&quot;ac-listbooks-order-first&quot;, &quot;ac-listbooks-order-second&quot;, &quot;ac-listbooks-order-third&quot;] created = [] try: for title in titles: response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;ac-listbooks-author&quot;}) assert response.status_code == 201 created.append(response.get_json()[&quot;id&quot;]) listing = client.get(&quot;/books&quot;) assert listing.status_code == 200 body = listing.get_json() assert isinstance(body, list) mine = [book[&quot;id&quot;] for book in body if book[&quot;id&quot;] in created] assert mine == created finally: with committed_session() as db: for book_id in created: db.books.delete(id=book_id) === END AC listbooks-order ===</p>
+<p>=== AC listbooks-fields ===<br>Intent: Each listed book carries the supplied title and author and its id.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>title = &quot;ac-listbooks-fields-title&quot; author = &quot;ac-listbooks-fields-author&quot; client = web_client() created_id = None try: response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 201 created_id = response.get_json()[&quot;id&quot;] body = client.get(&quot;/books&quot;).get_json() matches = [book for book in body if book[&quot;id&quot;] == created_id] assert len(matches) == 1 assert matches[0][&quot;title&quot;] == title assert matches[0][&quot;author&quot;] == author finally: if created_id is not None: with committed_session() as db: db.books.delete(id=created_id) === END AC listbooks-fields ===</p>
+<p>=== AC listbooks-reachable ===<br>Intent: GET /books is reachable and returns a JSON array even when no check data exists.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client</p>
+<p>response = web_client().get(&quot;/books&quot;) assert response.status_code == 200 assert isinstance(response.get_json(), list) === END AC listbooks-reachable ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never present books in any order other than the order they were added.</li><li>The route never reads the database directly; it calls the book service.</li></ul></article>
+</main>
+</body>
+</html>

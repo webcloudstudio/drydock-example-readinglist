@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-ValidationTests.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-ValidationTests.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-ValidationTests.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Validation Tests</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Automated pytest tests that prove an empty or whitespace-only title or author is rejected with status 400, a reported reason, and nothing stored.</td></tr><tr><td>Depends On</td><td>FEATURE-RejectEmptyTitle.md, FEATURE-RejectEmptyAuthor.md, FEATURE-AddBook.md, ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>tests/test_validation.py</td></tr><tr><td>Consumes</td><td>POST /books, GET /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The guardrails &quot;Never accept an empty title or an empty author&quot; and &quot;Never omit a rejection reason when a submission is rejected&quot; require automated coverage. This specification governs the project&#x27;s own pytest module <code>tests/test_validation.py</code>, written by the build agent beside the finished code. It exercises validation only through <code>POST /books</code> and <code>GET /books</code>.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Test Module</h2>
+<p><code>tests/test_validation.py</code> uses the <code>web_client</code> fixture and covers one behavior per test:</p>
+<div class="scroll"><table><thead><tr><th>Behavior</th><th>Expectation</th></tr></thead><tbody><tr><td>Empty title rejected</td><td>Status 400, a non-empty <code>error</code>, and <code>field</code> naming the title.</td></tr><tr><td>Whitespace-only title rejected</td><td>Same as an empty title.</td></tr><tr><td>Missing title rejected</td><td>Same as an empty title.</td></tr><tr><td>Empty author rejected</td><td>Status 400, a non-empty <code>error</code>, and <code>field</code> naming the author.</td></tr><tr><td>Whitespace-only author rejected</td><td>Same as an empty author.</td></tr><tr><td>Missing author rejected</td><td>Same as an empty author.</td></tr><tr><td>Nothing stored on rejection</td><td>The list from <code>GET /books</code> is unchanged after a rejected submission.</td></tr><tr><td>Browser rejection shows reason</td><td>Without <code>Accept: application/json</code> the answer is 400 and the page body is non-empty.</td></tr></tbody></table></div>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC validation-tests-module-passes ===<br>Intent: The validation pytest module exists and every test in it passes against the built application.<br>Suite: scoped<br>Requires: executable=python3; scope=test</p>
+<p>import subprocess import sys from pathlib import Path</p>
+<p>import app_server</p>
+<p>module = Path(&quot;tests/test_validation.py&quot;) assert module.is_file() result = subprocess.run( [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;-q&quot;, str(module)], capture_output=True, text=True, ) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC validation-tests-module-passes ===</p>
+<p>=== AC validation-empty-title-rejected ===<br>Intent: An empty title is rejected with 400, a non-empty reason, the title field named, and nothing stored.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() field = &quot;title&quot; other = &quot;author&quot; before = client.get(&quot;/books&quot;).get_json() response = client.post( &quot;/books&quot;, data={field: &quot;&quot;, other: &quot;Valid Author&quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == field assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-empty-title-rejected ===</p>
+<p>=== AC validation-blank-title-rejected ===<br>Intent: A whitespace-only title is rejected with 400 and a non-empty reason, and nothing is stored.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() field = &quot;title&quot; blank = &quot;   &quot; before = client.get(&quot;/books&quot;).get_json() response = client.post( &quot;/books&quot;, data={field: blank, &quot;author&quot;: &quot;Valid Author&quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == field assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-blank-title-rejected ===</p>
+<p>=== AC validation-missing-title-rejected ===<br>Intent: A submission with no title field is rejected with 400 and a non-empty reason.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() field = &quot;title&quot; before = client.get(&quot;/books&quot;).get_json() response = client.post( &quot;/books&quot;, data={&quot;author&quot;: &quot;Valid Author&quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == field assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-missing-title-rejected ===</p>
+<p>=== AC validation-empty-author-rejected ===<br>Intent: An empty author is rejected with 400, a non-empty reason, the author field named, and nothing stored.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() field = &quot;author&quot; other = &quot;title&quot; before = client.get(&quot;/books&quot;).get_json() response = client.post( &quot;/books&quot;, data={field: &quot;&quot;, other: &quot;Valid Title&quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == field assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-empty-author-rejected ===</p>
+<p>=== AC validation-blank-author-rejected ===<br>Intent: A whitespace-only author is rejected with 400 and a non-empty reason, and nothing is stored.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() field = &quot;author&quot; blank = &quot;   &quot; before = client.get(&quot;/books&quot;).get_json() response = client.post( &quot;/books&quot;, data={&quot;title&quot;: &quot;Valid Title&quot;, field: blank}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == field assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-blank-author-rejected ===</p>
+<p>=== AC validation-missing-author-rejected ===<br>Intent: A submission with no author field is rejected with 400 and a non-empty reason.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() field = &quot;author&quot; before = client.get(&quot;/books&quot;).get_json() response = client.post( &quot;/books&quot;, data={&quot;title&quot;: &quot;Valid Title&quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == field assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-missing-author-rejected ===</p>
+<p>=== AC validation-browser-rejection-has-body ===<br>Intent: A rejected browser submission answers 400 with a non-empty page that reports the rejection.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() before = client.get(&quot;/books&quot;).get_json() response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 assert len(response.get_data()) &gt; 0 assert client.get(&quot;/books&quot;).get_json() == before === END AC validation-browser-rejection-has-body ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Tests assert the status code, the presence of a non-empty reason, and the named field, never the wording of the reason.</li><li>A rejected submission never changes the stored list.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261014.052631.587Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261014.052631.587Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261014.052631.587Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>Existing code covers POST /books and the persistence layer. Before changing anything, I&#x27;ll get a baseline test run.Baseline is green (38 passing). Now the service layer: list and remove, both going through the declared `books` operations.Now the routes. The 404 body names the id that was not found, matching the 400 convention of naming the offending field.The existing `test_app_factory` asserts the exact set of routes, so it has to change with the new route. Updating that test, then adding tests for both stories.Now the full suite, then the declared acceptance assertions run verbatim.Suite passes (38 → 58 tests). Running the four declared acceptance assertions as written in the specs:All four declared assertions exit 0. Checking that only the intended files changed:Both stories are implemented, and the four declared acceptance assertions pass when run as written. The project suite is green: 58 tests, up from 38.
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/books_service.py
+- app_server/books_views.py
+- tests/test_app_factory.py
+- tests/test_list_books.py
+- tests/test_remove_book.py
+
+SUMMARY:
+- **List (`GET /books`)**: returns 200 with a JSON array of `{id, title, author}`. The service sorts by id, because the generated SELECT has no ORDER BY and I can&#x27;t change the shipped persistence layer.
+- **Remove (`DELETE /books/&lt;int:id&gt;`)**: a stored id is removed through `books.get` then `books.delete` and returns 204 with an empty body. An unknown id returns 404 with `{&quot;id&quot;: &lt;id&gt;}` and leaves the list unchanged.
+- **Existing test changed**: `test_create_app_registers_only_the_add_book_route_besides_static` asserted the exact route set, so the new route broke it. I updated it to include `/books/&lt;int:book_id&gt;`. It is not a declared acceptance assertion.
+- **Tests**: 20 new tests cover ordering, the empty store, read-back after add, the 204/404 paths, repeated delete, non-integer ids, and the service functions. Each test uses its own temporary store.
+- **Test counts**: the project suite (`.venv/bin/python -m pytest -q`) is 58 passed, exit 0. The four declared ACs were run verbatim, all exit 0.
+- **Not touched**: `bin/test.sh` does not exist yet. `sources/full_test.sh` will therefore fail until the block that delivers that entry point, which is outside this step.
+
+&lt;blueprint-decisions&gt;
+[{&quot;spec&quot;:&quot;FEATURE-RemoveBook.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;404 response body&quot;,&quot;decision&quot;:&quot;The spec requires status 404 but no body. I return {\&quot;id\&quot;: &lt;requested id&gt;} so the caller can see which id was missing, mirroring the 400 responses that name the offending field. Is that acceptable, or should the body be empty?&quot;},{&quot;spec&quot;:&quot;FEATURE-ListBooks.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Ordering guarantee&quot;,&quot;decision&quot;:&quot;The DATABASE spec says ascending id, but the shipped SELECT has no ORDER BY. I sort by id in list_books so ordering does not depend on the engine. Is that acceptable?&quot;}]
+&lt;/blueprint-decisions&gt;
+
+BLOCKERS:
+- None for this block.</pre></article>
+</main>
+</body>
+</html>

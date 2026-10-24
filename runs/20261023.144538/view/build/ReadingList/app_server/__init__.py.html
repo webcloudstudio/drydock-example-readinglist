@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/__init__.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/__init__.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/__init__.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Flask application factory for the ReadingList web application.&quot;&quot;&quot;
+
+from pathlib import Path
+
+from flask import Flask
+
+from persistence import open_database
+
+from .books import bp as books_bp
+from .settings import Settings
+
+TEMPLATE_FOLDER = Path(__file__).resolve().parent / &quot;templates&quot;
+
+
+def create_app() -&gt; Flask:
+    &quot;&quot;&quot;Build and return the ReadingList Flask application.
+
+    Opening the store does not connect to it; connections are made on first use, per thread.
+    &quot;&quot;&quot;
+    settings = Settings.from_environment()
+    app = Flask(__name__, template_folder=str(TEMPLATE_FOLDER))
+    app.extensions[&quot;database&quot;] = open_database(settings.database_url)
+    app.register_blueprint(books_bp)
+    return app
+</pre></article>
+</main>
+</body>
+</html>

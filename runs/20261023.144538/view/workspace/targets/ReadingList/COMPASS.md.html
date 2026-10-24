@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/COMPASS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/COMPASS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/COMPASS.md">Raw file</a></div></header>
+<article class="doc"><h1>COMPASS: ReadingList</h1>
+<h2>Compass</h2>
+<p>A reader-facing web application for keeping an ordered list of books to read. Each book has a title and an author. Readers add, view in insertion order, and remove books. The product exists so a reader can track what they intend to read without losing track of the order they added titles.</p>
+<h2>Constraints</h2>
+<ul><li>The application root must contain a POSIX-compatible <code>bin/test.sh</code> runnable with <code>sh</code>.</li><li><code>bin/test.sh</code> must exit zero only when every automated test passes.</li><li>The complete automated test suite must run from the application root.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never accept an empty title or an empty author.</li><li>Never present books in any order other than the order added.</li><li>Never omit a rejection reason when a submission is rejected.</li><li>Never ship a behavior without an automated test covering it.</li></ul>
+<p>&lt;!-- drydock:build-write-guardrail:start --&gt;</p>
+<h2>Build Write Guardrail</h2>
+<ul><li>Authorized build directory: <code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList</code></li><li>Authorized Target directory: <code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList</code></li><li>Build agents have permission to create, modify, and remove files required by the active build block inside these authorized directories.</li><li>No path outside these authorized directories may be modified.</li><li>Protected Drydock artifacts:<ul><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/blueprint/</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/MANIFEST.md</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/COMPASS.md</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/QuarterDeck/</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/evidence/</code></li></ul></li></ul>
+<p>&lt;!-- drydock:build-write-guardrail:end --&gt;</p></article>
+</main>
+</body>
+</html>

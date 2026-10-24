@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/books_views.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/books_views.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/books_views.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;HTTP surface for the book list. Thin: parse the request, call the service, shape the response.&quot;&quot;&quot;
+
+from flask import Blueprint, current_app, jsonify, request
+
+from app_server.books_service import InvalidBook, add_book, list_books, remove_book
+from app_server.settings import DATABASE_EXTENSION
+
+__all__ = [&quot;bp&quot;]
+
+bp = Blueprint(&quot;books&quot;, __name__)
+
+
+@bp.get(&quot;/books&quot;)
+def read_books():
+    database = current_app.extensions[DATABASE_EXTENSION]
+    books = list_books(database)
+    return jsonify([{&quot;id&quot;: book.id, &quot;title&quot;: book.title, &quot;author&quot;: book.author} for book in books]), 200
+
+
+@bp.delete(&quot;/books/&lt;int:book_id&gt;&quot;)
+def delete_book(book_id: int):
+    database = current_app.extensions[DATABASE_EXTENSION]
+    if not remove_book(database, book_id):
+        return jsonify(id=book_id), 404
+    return &quot;&quot;, 204
+
+
+@bp.post(&quot;/books&quot;)
+def create_book():
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        payload = {}
+    database = current_app.extensions[DATABASE_EXTENSION]
+    try:
+        book = add_book(database, payload.get(&quot;title&quot;), payload.get(&quot;author&quot;))
+    except InvalidBook as exc:
+        return jsonify(field=exc.field), 400
+    return jsonify(id=book.id, title=book.title, author=book.author), 201
+</pre></article>
+</main>
+</body>
+</html>

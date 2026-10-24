@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/UI-GENERAL.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/UI-GENERAL.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/UI-GENERAL.md">Raw file</a></div></header>
+<article class="doc"><h1>UI-GENERAL: Reading List Interface</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Shared server-rendered interface patterns for the ReadingList application.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>shared reading-list layout and feedback patterns</td></tr><tr><td>Consumes</td><td><code>app_server.create_app</code></td></tr></tbody></table></div>
+<h2>Interface Patterns</h2>
+<p>The page uses a consistent server-rendered layout with a clear page title, an add-book form, accessible labels for title and author, a list region, and action controls.</p>
+<p>The list displays books in the order supplied by the reading-list feature. When no books exist, the page presents a clear empty-list state. Validation failures preserve the form workflow and expose field-specific feedback without discarding the submitted values.</p>
+<p>Controls use ordinary HTML form submission and remain usable without undocumented client-side behavior.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC ui-general-client ===<br>Intent: The shared interface is available through the application&#x27;s published testing client.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 assert response.request.path == &quot;/&quot; === END AC ui-general-client ===</p>
+<p>=== AC ui-general-form ===<br>Intent: The primary interface accepts the declared book form fields.</p>
+<p>from app_server.testing import web_client</p>
+<p>title = &quot;Interface Acceptance Title&quot; author = &quot;Interface Acceptance Author&quot;</p>
+<p>client = web_client() response = client.post( &quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}, ) assert response.status_code in (200, 302, 303) === END AC ui-general-form ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The page is understandable to a reader without instructions outside the page.</li><li>Empty-list and validation states are visually clear.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The interface never displays a book with an empty title or author.</li><li>Validation feedback leaves the reader able to correct and resubmit.</li><li>Books are displayed in stored insertion order.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/conftest.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/conftest.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/conftest.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Shared pytest fixtures. Each test receives its own client and its own temporary store.&quot;&quot;&quot;
+
+import pytest
+
+from app_server import testing
+from app_server.settings import DATABASE_ENV
+from persistence.testing import db_session as open_session
+
+
+@pytest.fixture(autouse=True)
+def isolated_store(tmp_path, monkeypatch):
+    monkeypatch.setenv(DATABASE_ENV, str(tmp_path / &quot;app.db&quot;))
+
+
+@pytest.fixture
+def web_client():
+    return testing.web_client()
+
+
+@pytest.fixture
+def db_session():
+    with open_session() as db:
+        yield db
+</pre></article>
+</main>
+</body>
+</html>

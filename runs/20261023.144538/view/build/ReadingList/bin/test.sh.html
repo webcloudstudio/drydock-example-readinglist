@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/bin/test.sh</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/bin/test.sh</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/bin/test.sh">Raw file</a></div></header>
+<article class="doc"><pre>#!/bin/sh
+# ReadingList full test suite runner.
+# Runs the complete pytest suite from the application root and exits with pytest&#x27;s status.
+set -eu
+
+PROJECT_DIR=&quot;$(cd &quot;$(dirname &quot;$0&quot;)/..&quot; &amp;&amp; pwd)&quot;
+cd &quot;$PROJECT_DIR&quot;
+
+if [ -f .venv/bin/activate ]; then
+    # The venv activate script reads variables that may be unset, so relax -u only for it.
+    set +u
+    . .venv/bin/activate
+    set -u
+fi
+
+exec pytest -q
+</pre></article>
+</main>
+</body>
+</html>

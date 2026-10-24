@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/17-score-acceptance.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/17-score-acceptance.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/17-score-acceptance.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+  ✓ PASS        [1/22]  architecture-factory         architecture         ARCHITECTURE.md
+  ✓ PASS        [2/22]  architecture-testing         architecture         ARCHITECTURE.md
+  ✗ FAIL        [3/22]  database-books-create        database             DATABASE.md
+  ✗ FAIL        [4/22]  database-books-list          database             DATABASE.md
+  ✗ FAIL        [5/22]  database-books-delete        database             DATABASE.md
+  ✓ PASS        [6/22]  ui-general-client            ui-general           UI-GENERAL.md
+  ✓ PASS        [7/22]  ui-general-form              ui-general           UI-GENERAL.md
+  ✓ PASS        [8/22]  reading-list-reachable       reading-list         FEATURE-READING-LIST.md
+  ✓ PASS        [9/22]  reading-list-order           reading-list         FEATURE-READING-LIST.md
+  ✓ PASS        [10/22]  reading-list-empty           reading-list         FEATURE-READING-LIST.md
+  ✓ PASS        [11/22]  add-book-route               add-book             FEATURE-ADD-BOOK.md
+  ✓ PASS        [12/22]  add-book-persistence         add-book             FEATURE-ADD-BOOK.md
+  ✓ PASS        [13/22]  remove-book-route            remove-book          FEATURE-REMOVE-BOOK.md
+  ✓ PASS        [14/22]  remove-book-readback         remove-book          FEATURE-REMOVE-BOOK.md
+  ✓ PASS        [15/22]  validate-book-route          validate-book        FEATURE-VALIDATE-BOOK.md
+  ✓ PASS        [16/22]  validate-book-author         validate-book        FEATURE-VALIDATE-BOOK.md
+  ✓ PASS        [17/22]  validate-book-correction     validate-book        FEATURE-VALIDATE-BOOK.md
+  ✓ PASS        [18/22]  reading-list-screen-load     reading-list-screen  SCREEN-ReadingList.md
+  ✓ PASS        [19/22]  reading-list-screen-add      reading-list-screen  SCREEN-ReadingList.md
+  ✓ PASS        [20/22]  reading-list-screen-remove   reading-list-screen  SCREEN-ReadingList.md
+  ✓ PASS        [21/22]  verification-runner-present  verification         FEATURE-VERIFICATION.md
+  ✓ PASS        [22/22]  verification-full-suite      verification         FEATURE-VERIFICATION.md
+
+Acceptance verification: ReadingList  (2026-10-23T21:15:02+00:00)
+  PASS 10   FAIL 3   UNVERIFIED 0   PREPASSED 9   (22 AC)
+
+  ✓ PASS        architecture-factory         architecture         ARCHITECTURE.md
+  ✓ PASS        architecture-testing         architecture         ARCHITECTURE.md
+  ✗ FAIL        database-books-create        database             DATABASE.md
+  ✗ FAIL        database-books-list          database             DATABASE.md
+  ✗ FAIL        database-books-delete        database             DATABASE.md
+  ~ PREPASSED   ui-general-client            ui-general           UI-GENERAL.md
+  ✓ PASS        ui-general-form              ui-general           UI-GENERAL.md
+  ~ PREPASSED   reading-list-reachable       reading-list         FEATURE-READING-LIST.md
+  ✓ PASS        reading-list-order           reading-list         FEATURE-READING-LIST.md
+  ~ PREPASSED   reading-list-empty           reading-list         FEATURE-READING-LIST.md
+  ✓ PASS        add-book-route               add-book             FEATURE-ADD-BOOK.md
+  ✓ PASS        add-book-persistence         add-book             FEATURE-ADD-BOOK.md
+  ✓ PASS        remove-book-route            remove-book          FEATURE-REMOVE-BOOK.md
+  ~ PREPASSED   remove-book-readback         remove-book          FEATURE-REMOVE-BOOK.md
+  ✓ PASS        validate-book-route          validate-book        FEATURE-VALIDATE-BOOK.md
+  ✓ PASS        validate-book-author         validate-book        FEATURE-VALIDATE-BOOK.md
+  ✓ PASS        validate-book-correction     validate-book        FEATURE-VALIDATE-BOOK.md
+  ~ PREPASSED   reading-list-screen-load     reading-list-screen  SCREEN-ReadingList.md
+  ~ PREPASSED   reading-list-screen-add      reading-list-screen  SCREEN-ReadingList.md
+  ~ PREPASSED   reading-list-screen-remove   reading-list-screen  SCREEN-ReadingList.md
+  ~ PREPASSED   verification-runner-present  verification         FEATURE-VERIFICATION.md
+  ~ PREPASSED   verification-full-suite      verification         FEATURE-VERIFICATION.md
+
+  ✗ FAIL        database-books-create
+        intent: The books create operation returns the declared book row with the supplied values.
+        assertion: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+        raised at: db.py:291
+        process exit code: 1
+        error: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+        values at failure:
+          operation = Operation(identifier=&#x27;FEATURE-ADD-BOOK-001&#x27;, table=&#x27;books&#x27;, verb=&#x27;create&#x27;, inputs=(&#x27;title&#x27;, &#x27;author&#x27;, &#x27;insertion_order&#x27;), row=&lt;class &#x27;persistence.schema.BookRow&#x27;&gt;, columns=(&#x27;id&#x27;, &#x27;title&#x27;, &#x27;author&#x27;, &#x27;insertion_order&#x27;), key=None)
+        criterion code:
+             1 | from persistence.testing import db_session
+             2 |
+             3 | title = &quot;The Left Hand of Darkness&quot;
+             4 | author = &quot;Ursula K. Le Guin&quot;
+             5 | insertion_order = 1
+             6 |
+             7 | with db_session() as db:
+             8 |     row = db.books.create(
+             9 |         title=title,
+            10 |         author=author,
+            11 |         insertion_order=insertion_order,
+            12 |     )
+            13 |     assert row.title == title
+            14 |     assert row.author == author
+            15 |     assert row.insertion_order == insertion_order
+        check stderr:
+          Traceback (most recent call last):
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 283, in run
+              result = self._dispatch(operation, cursor, names, values)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 323, in _dispatch
+              cursor.execute(self._driver.insert(table, names, key), values)
+          sqlite3.IntegrityError: UNIQUE constraint failed: books.insertion_order
+          The above exception was the direct cause of the following exception:
+          Traceback (most recent call last):
+            File &quot;database-books-create.py&quot;, line 8, in &lt;module&gt;
+              row = db.books.create(
+                    ^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 188, in &lt;lambda&gt;
+              return lambda **arguments: self._database.run(operation, arguments)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 291, in run
+              raise PersistenceError(f&quot;{operation.identifier} failed: {exc}&quot;) from exc
+          persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+
+  ✗ FAIL        database-books-list
+        intent: The books list operation returns books in insertion order.
+        assertion: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+        raised at: db.py:291
+        process exit code: 1
+        error: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+        values at failure:
+          operation = Operation(identifier=&#x27;FEATURE-ADD-BOOK-001&#x27;, table=&#x27;books&#x27;, verb=&#x27;create&#x27;, inputs=(&#x27;title&#x27;, &#x27;author&#x27;, &#x27;insertion_order&#x27;), row=&lt;class &#x27;persistence.schema.BookRow&#x27;&gt;, columns=(&#x27;id&#x27;, &#x27;title&#x27;, &#x27;author&#x27;, &#x27;insertion_order&#x27;), key=None)
+        criterion code:
+             1 | from persistence.testing import db_session
+             2 |
+             3 | first_title = &quot;Dune&quot;
+             4 | first_author = &quot;Frank Herbert&quot;
+             5 | second_title = &quot;Kindred&quot;
+             6 | second_author = &quot;Octavia E. Butler&quot;
+             7 |
+             8 | with db_session() as db:
+             9 |     db.books.create(
+            10 |         title=first_title,
+            11 |         author=first_author,
+            12 |         insertion_order=1,
+            13 |     )
+            14 |     db.books.create(
+            15 |         title=second_title,
+            16 |         author=second_author,
+            17 |         insertion_order=2,
+            18 |     )
+            19 |     rows = db.books.list()
+            20 |
+            21 |     assert [row.title for row in rows] == [first_title, second_title]
+            22 |     assert [row.author for row in rows] == [first_author, second_author]
+        check stderr:
+          Traceback (most recent call last):
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 283, in run
+              result = self._dispatch(operation, cursor, names, values)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 323, in _dispatch
+              cursor.execute(self._driver.insert(table, names, key), values)
+          sqlite3.IntegrityError: UNIQUE constraint failed: books.insertion_order
+          The above exception was the direct cause of the following exception:
+          Traceback (most recent call last):
+            File &quot;database-books-list.py&quot;, line 9, in &lt;module&gt;
+              db.books.create(
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 188, in &lt;lambda&gt;
+              return lambda **arguments: self._database.run(operation, arguments)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 291, in run
+              raise PersistenceError(f&quot;{operation.identifier} failed: {exc}&quot;) from exc
+          persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+
+  ✗ FAIL        database-books-delete
+        intent: The books delete operation returns the selected identifier and removes that book from subsequent reads.
+        assertion: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+        raised at: db.py:291
+        process exit code: 1
+        error: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+        values at failure:
+          operation = Operation(identifier=&#x27;FEATURE-ADD-BOOK-001&#x27;, table=&#x27;books&#x27;, verb=&#x27;create&#x27;, inputs=(&#x27;title&#x27;, &#x27;author&#x27;, &#x27;insertion_order&#x27;), row=&lt;class &#x27;persistence.schema.BookRow&#x27;&gt;, columns=(&#x27;id&#x27;, &#x27;title&#x27;, &#x27;author&#x27;, &#x27;insertion_order&#x27;), key=None)
+        criterion code:
+             1 | from persistence.testing import db_session
+             2 |
+             3 | title = &quot;A Wizard of Earthsea&quot;
+             4 | author = &quot;Ursula K. Le Guin&quot;
+             5 |
+             6 | with db_session() as db:
+             7 |     created = db.books.create(
+             8 |         title=title,
+             9 |         author=author,
+            10 |         insertion_order=1,
+            11 |     )
+            12 |     deleted = db.books.delete(id=created.id)
+            13 |     assert deleted.id == created.id
+            14 |
+            15 |     remaining = db.books.list()
+            16 |     assert all(row.id != created.id for row in remaining)
+        check stderr:
+          Traceback (most recent call last):
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 283, in run
+              result = self._dispatch(operation, cursor, names, values)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 323, in _dispatch
+              cursor.execute(self._driver.insert(table, names, key), values)
+          sqlite3.IntegrityError: UNIQUE constraint failed: books.insertion_order
+          The above exception was the direct cause of the following exception:
+          Traceback (most recent call last):
+            File &quot;database-books-delete.py&quot;, line 7, in &lt;module&gt;
+              created = db.books.create(
+                        ^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 188, in &lt;lambda&gt;
+              return lambda **arguments: self._database.run(operation, arguments)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/persistence/db.py&quot;, line 291, in run
+              raise PersistenceError(f&quot;{operation.identifier} failed: {exc}&quot;) from exc
+          persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+
+  ~ PREPASSED   ui-general-client
+        intent: The shared interface is available through the application&#x27;s published testing client.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reading-list-reachable
+        intent: The primary reading-list route is reachable and returns a successful page response.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reading-list-empty
+        intent: The reading-list route successfully renders when no matching books are present.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   remove-book-readback
+        intent: Removing a book changes subsequent persisted reads so the selected identifier is absent.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reading-list-screen-load
+        intent: The primary reading-list screen is reachable and returns a successful response.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reading-list-screen-add
+        intent: The primary screen accepts a book submission and renders the supplied book after the workflow completes.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reading-list-screen-remove
+        intent: The primary screen removes a selected book and omits it from the subsequent list response.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   verification-runner-present
+        intent: The delivered application provides an executable test runner at the required path.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   verification-full-suite
+        intent: The complete staged release harness runs the delivered test runner successfully.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  Run `drydock score ac ReadingList --full` for untruncated output per failure.
+
+
+  Proof coverage: 10 of 22 criteria are proof — green here, and observed red before the work that turned them green.
+    9 are not. Each names a story whose acceptance did not test it.
+
+    PREPASSED  ui-general-client  ui-general  UI-GENERAL.md
+               green before its block built
+    PREPASSED  reading-list-reachable  reading-list  FEATURE-READING-LIST.md
+               green before its block built
+    PREPASSED  reading-list-empty  reading-list  FEATURE-READING-LIST.md
+               green before its block built
+    PREPASSED  remove-book-readback  remove-book  FEATURE-REMOVE-BOOK.md
+               green before its block built
+    PREPASSED  reading-list-screen-load  reading-list-screen  SCREEN-ReadingList.md
+               green before its block built
+    PREPASSED  reading-list-screen-add  reading-list-screen  SCREEN-ReadingList.md
+               green before its block built
+    PREPASSED  reading-list-screen-remove  reading-list-screen  SCREEN-ReadingList.md
+               green before its block built
+    PREPASSED  verification-runner-present  verification  FEATURE-VERIFICATION.md
+               green before its block built
+    PREPASSED  verification-full-suite  verification  FEATURE-VERIFICATION.md
+               green before its block built
+
+Soundings: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/workspace/targets/ReadingList/SOUNDINGS.md
+Target - committed project workspace git store
+</pre></article>
+</main>
+</body>
+</html>

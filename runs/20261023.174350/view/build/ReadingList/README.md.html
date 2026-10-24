@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/README.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/README.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/README.md">Raw file</a></div></header>
+<article class="doc"><h1>ReadingList</h1>
+<p>A web application for keeping a personal list of books to read, with add, ordered view, and remove.</p>
+<h2>Intent</h2>
+<p>A web application that lets a reader keep a personal list of books to read. The reader adds a book with a title and author, views books in the order they were added, and removes books. It serves a single reader who needs a simple, dependable reading list with clear feedback on invalid input.</p>
+<h2>What It Does</h2>
+<p>Let the reader add a book. A valid submission is stored and returned; the new book appears in later list reads.</p>
+<p>Provide the runnable Flask application that later features register routes on, plus the shared base template and the in-process test client used by acceptance and pytest.</p>
+<p>Let the reader view the books. Books are never presented in any order other than the order added.</p>
+<p>Guarantee the application never accepts an empty title or empty author. Rejection reports a clear, human-readable error naming the offending field.</p>
+<p>A reader removes a book they no longer want on their list. Once removed, the book must be absent from every subsequent list read, and the remaining books keep the order in which they were added.</p>
+<p>Give the reader and the build a single dependable command, <code>sh bin/test.sh</code>, run from the application root, that executes every automated test and reports success only when all of them pass. This is the terminal verification story: it runs after every implementation story, and its command, exit code, standard output, and standard error are preserved as evidence.</p>
+<p>Server-rendered page that shows the reading list in the order added, with an add form, error display, and per-book remove buttons.</p>
+<h2>Setup and Running</h2>
+<p><strong>Before first run:</strong></p>
+<ul><li>Confirm the repository has the expected remote with <code>git remote -v</code>; add <code>origin</code> if the startup guard requires it.</li><li>Run <code>git status --short</code> and commit or intentionally stash local changes before deployment-oriented runs.</li></ul>
+<p><strong>Install dependencies:</strong></p>
+<pre><code>uv sync</code></pre>
+<h2>Verification</h2>
+<pre><code>bash bin/test.sh</code></pre>
+<h2>Next Steps</h2>
+<ul><li>Complete the first-run checks above.</li><li>Run <code>bash bin/test.sh</code> before making release or deployment changes.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-TestRunner.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-TestRunner.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-TestRunner.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Test Runner</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261014 V1</td></tr><tr><td>Description</td><td>POSIX bin/test.sh that runs the complete automated suite and exits with its status; the terminal verification gate.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, SCREEN-ReadingList.md</td></tr><tr><td>Provides</td><td>sh bin/test.sh</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The reader&#x27;s project must provide one command that runs every automated test and reports success only when all of them pass.</p>
+<h2>Runner</h2>
+<ul><li><code>bin/test.sh</code> is a POSIX <code>sh</code> script at the application root.</li><li>It runs the complete pytest suite with <code>.venv/bin/python -m pytest -q</code> from the application root.</li><li>It exits with the status of that run. It exits nonzero if <code>.venv</code> is missing.</li><li>It runs no subset of the suite.</li></ul>
+<h2>Tests</h2>
+<ul><li>Pytest tests cover adding a book, listing books in insertion order, removing a book, and rejecting an empty title or author, as declared by the feature stories.</li><li>Each behavior has at least one test that calls the public route through <code>web_client</code>.</li></ul>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC test-runner-posix-syntax ===<br>Intent: bin/test.sh parses as POSIX sh.</p>
+<p>import subprocess</p>
+<p>result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC test-runner-posix-syntax ===</p>
+<p>=== AC test-runner-full-suite ===<br>Intent: The complete automated suite runs unfiltered through sh bin/test.sh and exits zero only when every test passes.<br>Suite: full</p>
+<p>import subprocess import sys</p>
+<p>result = subprocess.run([&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC test-runner-full-suite ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never report a passing suite while any automated test fails.</li><li>Never ship without automated tests covering each behavior.</li><li><code>bin/test.sh</code> must not skip, filter, or reinterpret the suite.</li></ul></article>
+</main>
+</body>
+</html>

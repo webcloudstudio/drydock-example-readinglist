@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-ListBooksTests.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-ListBooksTests.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-ListBooksTests.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: List Books Tests</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Automated pytest tests that prove books are listed in the order they were added.</td></tr><tr><td>Depends On</td><td>FEATURE-ListBooks.md</td></tr><tr><td>Provides</td><td>None</td></tr><tr><td>Consumes</td><td>GET /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Guarantee that listing books in the order added is covered by an automated test that runs under <code>pytest -q</code>.</p>
+<h2>Deliverable</h2>
+<p><code>tests/test_list_books.py</code>, using the <code>web_client</code> fixture from <code>tests/conftest.py</code>. The file contains pytest tests covering at least:</p>
+<ul><li>an empty store returns an empty JSON array from <code>GET /books</code> (the test isolates its own data from any residue);</li><li>a single added book is returned with <code>id</code>, <code>title</code>, and <code>author</code>;</li><li>several books added in sequence are returned in the order added, with ascending ids.</li></ul>
+<p>Each test uses unique titles and removes the books it created.</p>
+<h2>Reads</h2>
+<p><code>GET /books</code>.</p>
+<h2>Writes</h2>
+<p><code>POST /books</code>, as test setup only.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-ListBooks.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC list-tests-file-defines-tests ===<br>Intent: tests/test_list_books.py exists, parses, defines at least three test functions, and exercises the books route.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>import ast from pathlib import Path</p>
+<p>path = Path(&quot;tests/test_list_books.py&quot;) assert path.is_file() source = path.read_text(encoding=&quot;utf-8&quot;) tree = ast.parse(source) names = [ node.name for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith(&quot;test_&quot;) ] assert len(names) &gt;= 3 assert &quot;/books&quot; in source === END AC list-tests-file-defines-tests ===</p>
+<p>=== AC list-tests-pass ===<br>Intent: The list-books test file passes when run with pytest from the application root.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>import subprocess import sys</p>
+<p>result = subprocess.run( [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;-q&quot;, &quot;tests/test_list_books.py&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC list-tests-pass ===</p>
+<p>=== AC list-order-behavior ===<br>Intent: Books added in sequence are returned by GET /books in the order added.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>author = &quot;ListTestsOrderAuthor&quot; titles = [&quot;ListTestsFirst&quot;, &quot;ListTestsSecond&quot;, &quot;ListTestsThird&quot;]</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.author == author: db.books.delete(id=row.id)</p>
+<p>client = web_client() purge() try: for t in titles: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: t, &quot;author&quot;: author}).status_code == 303 rows = [r for r in client.get(&quot;/books&quot;).get_json() if r[&quot;author&quot;] == author] assert [r[&quot;title&quot;] for r in rows] == titles ids = [r[&quot;id&quot;] for r in rows] assert ids == sorted(ids) finally: purge() === END AC list-order-behavior ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Tests never assume the store is empty; they filter to the books they created.</li><li>Tests assert observable state (parsed responses), not printed text.</li></ul></article>
+</main>
+</body>
+</html>

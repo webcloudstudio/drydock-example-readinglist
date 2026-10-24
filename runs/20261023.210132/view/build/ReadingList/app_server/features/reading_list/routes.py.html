@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/features/reading_list/routes.py</title>
+<link rel="stylesheet" href="../../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/features/reading_list/routes.py</h1><div class="filenav"><a href="../../../../../../index.html">&larr; Report</a><a href="../../../../../../build/ReadingList/app_server/features/reading_list/routes.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Server-rendered HTTP boundary for the reading-list feature.&quot;&quot;&quot;
+
+from flask import Response, current_app, redirect, render_template, request, url_for
+
+from app_server.features.reading_list import reading_list
+from persistence import open_database
+from persistence.schema import BookRow
+
+
+def _database():
+    dsn = current_app.config.get(&quot;DATABASE_URL&quot;) or current_app.config[&quot;DATABASE_PATH&quot;]
+    return open_database(str(dsn))
+
+
+def _next_insertion_order(books: list[BookRow]) -&gt; int:
+    return max((book.insertion_order for book in books), default=0) + 1
+
+
+def _read_books() -&gt; list[BookRow]:
+    database = _database()
+    try:
+        return sorted(database.books.list(), key=lambda book: book.insertion_order)
+    finally:
+        database.close()
+
+
+@reading_list.get(&quot;/&quot;)
+def index() -&gt; str:
+    books = _read_books()
+    return render_template(&quot;reading_list/index.html&quot;, books=books, errors={}, form={})
+
+
+@reading_list.post(&quot;/books&quot;)
+def add_book() -&gt; Response | str:
+    form = {&quot;title&quot;: request.form.get(&quot;title&quot;, &quot;&quot;), &quot;author&quot;: request.form.get(&quot;author&quot;, &quot;&quot;)}
+    errors = {field: f&quot;{field.title()} is required.&quot; for field, value in form.items() if not value.strip()}
+    if errors:
+        books = _read_books()
+        return render_template(&quot;reading_list/index.html&quot;, books=books, errors=errors, form=form), 400
+
+    database = _database()
+    try:
+        books = database.books.list()
+        database.books.create(title=form[&quot;title&quot;].strip(), author=form[&quot;author&quot;].strip(), insertion_order=_next_insertion_order(books))
+    finally:
+        database.close()
+    return redirect(url_for(&quot;reading_list.index&quot;))
+
+
+@reading_list.post(&quot;/books/&lt;int:book_id&gt;/delete&quot;)
+def delete_book(book_id: int) -&gt; Response:
+    database = _database()
+    try:
+        database.books.delete(id=book_id)
+    finally:
+        database.close()
+    return redirect(url_for(&quot;reading_list.index&quot;))
+</pre></article>
+</main>
+</body>
+</html>

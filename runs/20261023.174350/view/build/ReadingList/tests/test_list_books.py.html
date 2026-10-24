@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_list_books.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_list_books.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_list_books.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;List books: GET /books answers 200 with every stored book in the order it was added.&quot;&quot;&quot;
+
+from pathlib import Path
+
+from flask.testing import FlaskClient
+
+from app_server import create_app
+from app_server.config import Config
+
+
+def _add(client: FlaskClient, title: str) -&gt; int:
+    return client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;A&quot;}).get_json()[&quot;id&quot;]
+
+
+def test_get_on_empty_store_answers_200_with_empty_array(fresh_client: FlaskClient) -&gt; None:
+    response = fresh_client.get(&quot;/books&quot;)
+
+    assert response.status_code == 200
+    assert response.get_json() == []
+
+
+def test_list_returns_titles_in_the_order_they_were_added(fresh_client: FlaskClient) -&gt; None:
+    titles = [&quot;Ulysses&quot;, &quot;Dune&quot;, &quot;Emma&quot;]
+    for title in titles:
+        _add(fresh_client, title)
+
+    listed = fresh_client.get(&quot;/books&quot;).get_json()
+
+    assert [book[&quot;title&quot;] for book in listed] == titles
+
+
+def test_list_returns_added_ids_in_submission_order(fresh_client: FlaskClient) -&gt; None:
+    created = [_add(fresh_client, f&quot;Book {n}&quot;) for n in range(4)]
+
+    listed_ids = [book[&quot;id&quot;] for book in fresh_client.get(&quot;/books&quot;).get_json()]
+
+    assert listed_ids == created
+
+
+def test_each_listed_book_carries_id_title_and_author(fresh_client: FlaskClient) -&gt; None:
+    book_id = _add(fresh_client, &quot;Dune&quot;)
+
+    listed = fresh_client.get(&quot;/books&quot;).get_json()
+
+    assert {&quot;id&quot;: book_id, &quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;A&quot;} in listed
+
+
+def test_order_survives_reopening_the_store(fresh_client: FlaskClient, store_path: Path) -&gt; None:
+    created = [_add(fresh_client, f&quot;Book {n}&quot;) for n in range(3)]
+
+    reopened = create_app(Config(database_dsn=str(store_path))).test_client()
+    listed_ids = [book[&quot;id&quot;] for book in reopened.get(&quot;/books&quot;).get_json()]
+
+    assert listed_ids == created
+</pre></article>
+</main>
+</body>
+</html>

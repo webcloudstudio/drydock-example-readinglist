@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Remove Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>A reader removes a book so it no longer appears in the list.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md</td></tr><tr><td>Provides</td><td>POST /books/{id}/delete</td></tr><tr><td>Consumes</td><td>books.get, books.delete</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Let a reader remove a book from the reading list.</p>
+<h2>Trigger</h2>
+<p>A form post to <code>POST /books/{id}/delete</code>.</p>
+<h2>Sequence</h2>
+<ol><li>Look up the book with <code>db.books.get(id=...)</code>.</li><li>If it does not exist, answer <code>404</code> and change nothing.</li><li>Otherwise delete it with <code>db.books.delete(id=...)</code> and answer <code>303</code> redirecting to <code>/</code>.</li><li>Remaining books keep their relative order.</li></ol>
+<h2>Reads</h2>
+<ul><li>One book via <code>books.get</code>.</li></ul>
+<h2>Writes</h2>
+<ul><li>One deletion via <code>books.delete</code>.</li></ul>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOKS-003</code> — read: get a book by id - supplies: <code>id</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li><li><code>FEATURE-BOOKS-004</code> — write: delete a book - supplies: <code>id</code> - returns: <code>id</code></li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC remove-book-omitted-on-next-read ===<br>Intent: A removed book is answered with 303 and is absent on the next read.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-remove-gone&quot; title = marker + &quot; title&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: marker + &quot; author&quot;}).status_code == 303 ours = [row for row in client.get(&quot;/books&quot;).get_json() if row[&quot;title&quot;] == title] assert len(ours) == 1 book_id = ours[0][&quot;id&quot;] response = client.post(f&quot;/books/{book_id}/delete&quot;) assert response.status_code == 303 after = [row[&quot;id&quot;] for row in client.get(&quot;/books&quot;).get_json()] assert book_id not in after finally: cleanup() === END AC remove-book-omitted-on-next-read ===</p>
+<p>=== AC remove-book-keeps-order ===<br>Intent: Removing one book leaves the other books in their original relative order.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-remove-order&quot; titles = [marker + &quot; one&quot;, marker + &quot; two&quot;, marker + &quot; three&quot;]</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: for t in titles: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: t, &quot;author&quot;: marker + &quot; author&quot;}).status_code == 303 rows = [row for row in client.get(&quot;/books&quot;).get_json() if marker in row[&quot;title&quot;]] middle = rows[1] assert client.post(f&quot;/books/{middle[&#x27;id&#x27;]}/delete&quot;).status_code == 303 remaining = [row[&quot;title&quot;] for row in client.get(&quot;/books&quot;).get_json() if marker in row[&quot;title&quot;]] assert remaining == [titles[0], titles[2]] finally: cleanup() === END AC remove-book-keeps-order ===</p>
+<p>=== AC remove-book-unknown-id ===<br>Intent: Removing an id that does not exist answers 404 and removes nothing.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-remove-unknown&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: marker + &quot; title&quot;, &quot;author&quot;: marker + &quot; author&quot;}).status_code == 303 before = [row[&quot;id&quot;] for row in client.get(&quot;/books&quot;).get_json()] unknown_id = max(before) + 1000000 response = client.post(f&quot;/books/{unknown_id}/delete&quot;) assert response.status_code == 404 after = [row[&quot;id&quot;] for row in client.get(&quot;/books&quot;).get_json()] assert after == before finally: cleanup() === END AC remove-book-unknown-id ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Removing a book never changes the relative order of the remaining books.</li><li>An unknown id never changes stored data.</li></ul></article>
+</main>
+</body>
+</html>

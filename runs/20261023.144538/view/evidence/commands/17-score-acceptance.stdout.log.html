@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/17-score-acceptance.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/17-score-acceptance.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/17-score-acceptance.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+  ✓ PASS        [1/53]  arch-create-app                        foundation           ARCHITECTURE.md
+  ✓ PASS        [2/53]  arch-web-client                        foundation           ARCHITECTURE.md
+  ✓ PASS        [3/53]  arch-project-root                      foundation           ARCHITECTURE.md
+  ✓ PASS        [4/53]  books-create                           database             DATABASE.md
+  ✓ PASS        [5/53]  books-get                              database             DATABASE.md
+  ✓ PASS        [6/53]  books-list-order                       database             DATABASE.md
+  ✓ PASS        [7/53]  books-delete                           database             DATABASE.md
+  ✓ PASS        [8/53]  ui-base-template-loads                 web-shell            UI-GENERAL.md
+  ✓ PASS        [9/53]  ui-base-shows-error                    web-shell            UI-GENERAL.md
+  ✓ PASS        [10/53]  ui-base-without-error                  web-shell            UI-GENERAL.md
+  ✓ PASS        [11/53]  add-book-redirects                     add-book             FEATURE-AddBook.md
+  ✓ PASS        [12/53]  add-book-round-trip                    add-book             FEATURE-AddBook.md
+  ✓ PASS        [13/53]  add-book-persists-in-store             add-book             FEATURE-AddBook.md
+  ✓ PASS        [14/53]  list-books-ok                          list-books           FEATURE-ListBooks.md
+  ✓ PASS        [15/53]  list-books-order-added                 list-books           FEATURE-ListBooks.md
+  ✓ PASS        [16/53]  list-books-matches-store               list-books           FEATURE-ListBooks.md
+  ✓ PASS        [17/53]  remove-book-omitted-on-next-read       remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        [18/53]  remove-book-keeps-order                remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        [19/53]  remove-book-unknown-id                 remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        [20/53]  reject-title-empty-json                reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ✓ PASS        [21/53]  reject-title-whitespace                reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ✓ PASS        [22/53]  reject-title-missing                   reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ✓ PASS        [23/53]  reject-title-html                      reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ✓ PASS        [24/53]  reject-author-empty-json               reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ✓ PASS        [25/53]  reject-author-whitespace               reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ✓ PASS        [26/53]  reject-author-missing                  reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ✓ PASS        [27/53]  reject-author-html                     reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ✓ PASS        [28/53]  screen-index-reachable                 screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [29/53]  screen-shows-books-in-order            screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [30/53]  screen-rejection-shown                 screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [31/53]  screen-remove-book                     screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [32/53]  add-tests-file-defines-tests           test-add-book        FEATURE-AddBookTests.md
+  ✓ PASS        [33/53]  add-tests-pass                         test-add-book        FEATURE-AddBookTests.md
+  ✓ PASS        [34/53]  add-roundtrip-behavior                 test-add-book        FEATURE-AddBookTests.md
+  ✓ PASS        [35/53]  list-tests-file-defines-tests          test-list-books      FEATURE-ListBooksTests.md
+  ✓ PASS        [36/53]  list-tests-pass                        test-list-books      FEATURE-ListBooksTests.md
+  ✓ PASS        [37/53]  list-order-behavior                    test-list-books      FEATURE-ListBooksTests.md
+  ✓ PASS        [38/53]  remove-tests-module-passes             test-remove-book     FEATURE-RemoveBookTests.md
+  ✓ PASS        [39/53]  remove-omits-on-next-read              test-remove-book     FEATURE-RemoveBookTests.md
+  ✓ PASS        [40/53]  remove-preserves-order                 test-remove-book     FEATURE-RemoveBookTests.md
+  ✓ PASS        [41/53]  remove-unknown-id-404                  test-remove-book     FEATURE-RemoveBookTests.md
+  ✓ PASS        [42/53]  remove-twice-second-404                test-remove-book     FEATURE-RemoveBookTests.md
+  ✓ PASS        [43/53]  validation-tests-module-passes         test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [44/53]  validation-empty-title-rejected        test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [45/53]  validation-blank-title-rejected        test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [46/53]  validation-missing-title-rejected      test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [47/53]  validation-empty-author-rejected       test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [48/53]  validation-blank-author-rejected       test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [49/53]  validation-missing-author-rejected     test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [50/53]  validation-browser-rejection-has-body  test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        [51/53]  runner-is-posix-script                 verification         VERIFICATION.md
+  ✓ PASS        [52/53]  suite-files-present                    verification         VERIFICATION.md
+  ✓ PASS        [53/53]  full-suite-gate                        verification         VERIFICATION.md
+
+Acceptance verification: ReadingList  (2026-10-23T15:22:51+00:00)
+  PASS 28   FAIL 0   UNVERIFIED 0   PREPASSED 25   (53 AC)
+
+  ✓ PASS        arch-create-app                        foundation           ARCHITECTURE.md
+  ✓ PASS        arch-web-client                        foundation           ARCHITECTURE.md
+  ✓ PASS        arch-project-root                      foundation           ARCHITECTURE.md
+  ✓ PASS        books-create                           database             DATABASE.md
+  ✓ PASS        books-get                              database             DATABASE.md
+  ✓ PASS        books-list-order                       database             DATABASE.md
+  ✓ PASS        books-delete                           database             DATABASE.md
+  ✓ PASS        ui-base-template-loads                 web-shell            UI-GENERAL.md
+  ✓ PASS        ui-base-shows-error                    web-shell            UI-GENERAL.md
+  ✓ PASS        ui-base-without-error                  web-shell            UI-GENERAL.md
+  ✓ PASS        add-book-redirects                     add-book             FEATURE-AddBook.md
+  ✓ PASS        add-book-round-trip                    add-book             FEATURE-AddBook.md
+  ✓ PASS        add-book-persists-in-store             add-book             FEATURE-AddBook.md
+  ✓ PASS        list-books-ok                          list-books           FEATURE-ListBooks.md
+  ✓ PASS        list-books-order-added                 list-books           FEATURE-ListBooks.md
+  ✓ PASS        list-books-matches-store               list-books           FEATURE-ListBooks.md
+  ✓ PASS        remove-book-omitted-on-next-read       remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        remove-book-keeps-order                remove-book          FEATURE-RemoveBook.md
+  ~ PREPASSED   remove-book-unknown-id                 remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        reject-title-empty-json                reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ✓ PASS        reject-title-whitespace                reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ✓ PASS        reject-title-missing                   reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ~ PREPASSED   reject-title-html                      reject-empty-title   FEATURE-RejectEmptyTitle.md
+  ~ PREPASSED   reject-author-empty-json               reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ~ PREPASSED   reject-author-whitespace               reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ~ PREPASSED   reject-author-missing                  reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ~ PREPASSED   reject-author-html                     reject-empty-author  FEATURE-RejectEmptyAuthor.md
+  ✓ PASS        screen-index-reachable                 screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-shows-books-in-order            screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-rejection-shown                 screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-remove-book                     screen-reading-list  SCREEN-ReadingList.md
+  ~ PREPASSED   add-tests-file-defines-tests           test-add-book        FEATURE-AddBookTests.md
+  ~ PREPASSED   add-tests-pass                         test-add-book        FEATURE-AddBookTests.md
+  ~ PREPASSED   add-roundtrip-behavior                 test-add-book        FEATURE-AddBookTests.md
+  ~ PREPASSED   list-tests-file-defines-tests          test-list-books      FEATURE-ListBooksTests.md
+  ~ PREPASSED   list-tests-pass                        test-list-books      FEATURE-ListBooksTests.md
+  ~ PREPASSED   list-order-behavior                    test-list-books      FEATURE-ListBooksTests.md
+  ~ PREPASSED   remove-tests-module-passes             test-remove-book     FEATURE-RemoveBookTests.md
+  ~ PREPASSED   remove-omits-on-next-read              test-remove-book     FEATURE-RemoveBookTests.md
+  ~ PREPASSED   remove-preserves-order                 test-remove-book     FEATURE-RemoveBookTests.md
+  ~ PREPASSED   remove-unknown-id-404                  test-remove-book     FEATURE-RemoveBookTests.md
+  ~ PREPASSED   remove-twice-second-404                test-remove-book     FEATURE-RemoveBookTests.md
+  ✓ PASS        validation-tests-module-passes         test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-empty-title-rejected        test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-blank-title-rejected        test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-missing-title-rejected      test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-empty-author-rejected       test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-blank-author-rejected       test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-missing-author-rejected     test-validation      FEATURE-ValidationTests.md
+  ~ PREPASSED   validation-browser-rejection-has-body  test-validation      FEATURE-ValidationTests.md
+  ✓ PASS        runner-is-posix-script                 verification         VERIFICATION.md
+  ~ PREPASSED   suite-files-present                    verification         VERIFICATION.md
+  ✓ PASS        full-suite-gate                        verification         VERIFICATION.md
+
+  ~ PREPASSED   remove-book-unknown-id
+        intent: Removing an id that does not exist answers 404 and removes nothing.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reject-title-html
+        intent: A browser submission with an empty title is answered 400 with a re-rendered page and nothing is stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reject-author-empty-json
+        intent: An empty author on POST /books answers 400 with a non-empty reason naming the author field and stores nothing.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reject-author-whitespace
+        intent: A whitespace-only author is treated as empty, rejected with 400, and nothing is stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reject-author-missing
+        intent: A POST /books with no author field at all is rejected with 400 and nothing is stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   reject-author-html
+        intent: A browser submission with an empty author is answered 400 with a re-rendered page and nothing is stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   add-tests-file-defines-tests
+        intent: tests/test_add_book.py exists, parses, defines at least three test functions, and exercises the books route.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   add-tests-pass
+        intent: The add-book test file passes when run with pytest from the application root.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   add-roundtrip-behavior
+        intent: Adding a book through POST /books is readable back through GET /books with the supplied title and author.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   list-tests-file-defines-tests
+        intent: tests/test_list_books.py exists, parses, defines at least three test functions, and exercises the books route.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   list-tests-pass
+        intent: The list-books test file passes when run with pytest from the application root.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   list-order-behavior
+        intent: Books added in sequence are returned by GET /books in the order added.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   remove-tests-module-passes
+        intent: The remove-book pytest module exists and every test in it passes against the built application.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   remove-omits-on-next-read
+        intent: A removed book is absent from GET /books on the next read.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   remove-preserves-order
+        intent: Removing the middle book leaves the other two listed in the order they were added.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   remove-unknown-id-404
+        intent: Removing an id that does not exist answers 404.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   remove-twice-second-404
+        intent: Removing the same book twice succeeds once and then answers 404.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-empty-title-rejected
+        intent: An empty title is rejected with 400, a non-empty reason, the title field named, and nothing stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-blank-title-rejected
+        intent: A whitespace-only title is rejected with 400 and a non-empty reason, and nothing is stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-missing-title-rejected
+        intent: A submission with no title field is rejected with 400 and a non-empty reason.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-empty-author-rejected
+        intent: An empty author is rejected with 400, a non-empty reason, the author field named, and nothing stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-blank-author-rejected
+        intent: A whitespace-only author is rejected with 400 and a non-empty reason, and nothing is stored.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-missing-author-rejected
+        intent: A submission with no author field is rejected with 400 and a non-empty reason.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   validation-browser-rejection-has-body
+        intent: A rejected browser submission answers 400 with a non-empty page that reports the rejection.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  ~ PREPASSED   suite-files-present
+        intent: Every behavior has its pytest module in the application&#x27;s test suite.
+        green at this block&#x27;s baseline too, before its code existed — confirm the criterion exercises the story&#x27;s work
+
+  Run `drydock score ac ReadingList --full` for untruncated output per failure.
+
+
+  Proof coverage: 28 of 53 criteria are proof — green here, and observed red before the work that turned them green.
+    25 are not. Each names a story whose acceptance did not test it.
+
+    PREPASSED  remove-book-unknown-id  remove-book  FEATURE-RemoveBook.md
+               green before its block built
+    PREPASSED  reject-title-html  reject-empty-title  FEATURE-RejectEmptyTitle.md
+               green before its block built
+    PREPASSED  reject-author-empty-json  reject-empty-author  FEATURE-RejectEmptyAuthor.md
+               green before its block built
+    PREPASSED  reject-author-whitespace  reject-empty-author  FEATURE-RejectEmptyAuthor.md
+               green before its block built
+    PREPASSED  reject-author-missing  reject-empty-author  FEATURE-RejectEmptyAuthor.md
+               green before its block built
+    PREPASSED  reject-author-html  reject-empty-author  FEATURE-RejectEmptyAuthor.md
+               green before its block built
+    PREPASSED  add-tests-file-defines-tests  test-add-book  FEATURE-AddBookTests.md
+               green before its block built
+    PREPASSED  add-tests-pass  test-add-book  FEATURE-AddBookTests.md
+               green before its block built
+    PREPASSED  add-roundtrip-behavior  test-add-book  FEATURE-AddBookTests.md
+               green before its block built
+    PREPASSED  list-tests-file-defines-tests  test-list-books  FEATURE-ListBooksTests.md
+               green before its block built
+    PREPASSED  list-tests-pass  test-list-books  FEATURE-ListBooksTests.md
+               green before its block built
+    PREPASSED  list-order-behavior  test-list-books  FEATURE-ListBooksTests.md
+               green before its block built
+    PREPASSED  remove-tests-module-passes  test-remove-book  FEATURE-RemoveBookTests.md
+               green before its block built
+    PREPASSED  remove-omits-on-next-read  test-remove-book  FEATURE-RemoveBookTests.md
+               green before its block built
+    PREPASSED  remove-preserves-order  test-remove-book  FEATURE-RemoveBookTests.md
+               green before its block built
+    PREPASSED  remove-unknown-id-404  test-remove-book  FEATURE-RemoveBookTests.md
+               green before its block built
+    PREPASSED  remove-twice-second-404  test-remove-book  FEATURE-RemoveBookTests.md
+               green before its block built
+    PREPASSED  validation-empty-title-rejected  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  validation-blank-title-rejected  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  validation-missing-title-rejected  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  validation-empty-author-rejected  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  validation-blank-author-rejected  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  validation-missing-author-rejected  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  validation-browser-rejection-has-body  test-validation  FEATURE-ValidationTests.md
+               green before its block built
+    PREPASSED  suite-files-present  verification  VERIFICATION.md
+               green before its block built
+
+Soundings: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/SOUNDINGS.md
+Target - committed project workspace git store
+</pre></article>
+</main>
+</body>
+</html>

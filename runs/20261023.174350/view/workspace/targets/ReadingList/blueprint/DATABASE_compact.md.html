@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from DATABASE.md sha256=ba3f2fb135480b34230597f018171e86cdb4992a5e13d7aed20ccb12d8eb8581 on 2026-10-23 by drydock build agent --&gt;</p>
+<p>Store: SQLite via generated <code>persistence</code> (DSN: DATABASE_URL &gt; DATABASE_PATH &gt; data/app.db). Schema applied only at DATABASE step, never at startup. Table <code>books</code>: id INTEGER PK autoincrement (ascending id = order added); title TEXT NOT NULL; author TEXT NOT NULL. Ops (<code>db.books.&lt;verb&gt;</code>):</p>
+<ul><li>create(title, author) -&gt; Book(id, title, author)</li><li>get(id) -&gt; Book | None</li><li>list() -&gt; list[Book], ordered id ASC</li><li>delete(id) -&gt; DeletedBook(id)</li></ul>
+<p>Row type: frozen dataclass <code>persistence.schema.Book</code>. Fixtures: <code>persistence.testing.db_session()</code> (rollback), <code>committed_session()</code>.<br>Guardrails: only <code>persistence/</code> touches the store; callers use <code>db.books.&lt;verb&gt;</code>; books ordered id ASC only.</p></article>
+</main>
+</body>
+</html>

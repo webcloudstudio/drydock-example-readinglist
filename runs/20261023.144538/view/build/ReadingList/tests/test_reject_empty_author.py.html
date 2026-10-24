@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_reject_empty_author.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_reject_empty_author.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_reject_empty_author.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Reject empty author: a submission without an author answers 400 with a reason and stores nothing.&quot;&quot;&quot;
+
+from pathlib import Path
+
+import pytest
+
+from app_server import create_app
+from app_server.book_service import BookRejected, add_book
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+JSON_ACCEPT = {&quot;Accept&quot;: &quot;application/json&quot;}
+BROWSER_ACCEPT = {&quot;Accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&quot;}
+
+
+@pytest.fixture
+def app(monkeypatch, tmp_path):
+    &quot;&quot;&quot;A fresh application over its own store, so no test touches the configured data/app.db.&quot;&quot;&quot;
+    store = tmp_path / &quot;reject-empty-author.db&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, f&quot;sqlite:///{store}&quot;)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+    application = create_app()
+    application.extensions[&quot;database&quot;].execute_script((PROJECT_ROOT / &quot;schema.sql&quot;).read_text())
+    return application
+
+
+def _stored(app) -&gt; list[tuple[str, str]]:
+    &quot;&quot;&quot;Read every stored book back through the persistence package, in order added.&quot;&quot;&quot;
+    return [(row.title, row.author) for row in app.extensions[&quot;database&quot;].books.list()]
+
+
+@pytest.mark.parametrize(
+    &quot;form&quot;,
+    [
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;   &quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot; \t\n &quot;},
+        {&quot;title&quot;: &quot;Dune&quot;},
+    ],
+    ids=[&quot;empty-author&quot;, &quot;spaces-author&quot;, &quot;whitespace-author&quot;, &quot;author-absent&quot;],
+)
+def test_json_rejection_answers_400(app, form):
+    response = app.test_client().post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize(
+    &quot;form&quot;,
+    [
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;   &quot;},
+        {&quot;title&quot;: &quot;Dune&quot;},
+    ],
+    ids=[&quot;empty-author&quot;, &quot;spaces-author&quot;, &quot;author-absent&quot;],
+)
+def test_json_rejection_body_has_non_empty_reason(app, form):
+    response = app.test_client().post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    body = response.get_json()
+    assert isinstance(body[&quot;error&quot;], str)
+    assert body[&quot;error&quot;].strip()
+
+
+@pytest.mark.parametrize(
+    &quot;form&quot;,
+    [
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;   &quot;},
+        {&quot;title&quot;: &quot;Dune&quot;},
+    ],
+    ids=[&quot;empty-author&quot;, &quot;spaces-author&quot;, &quot;author-absent&quot;],
+)
+def test_json_rejection_names_author_field(app, form):
+    response = app.test_client().post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert response.get_json()[&quot;field&quot;] == &quot;author&quot;
+
+
+@pytest.mark.parametrize(
+    &quot;form&quot;,
+    [
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;   &quot;},
+        {&quot;title&quot;: &quot;Dune&quot;},
+    ],
+    ids=[&quot;empty-author&quot;, &quot;spaces-author&quot;, &quot;author-absent&quot;],
+)
+def test_json_rejection_stores_nothing(app, form):
+    app.test_client().post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert _stored(app) == []
+
+
+def test_whitespace_author_is_trimmed_then_rejected(app):
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;\t  \n&quot;}, headers=JSON_ACCEPT
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()[&quot;field&quot;] == &quot;author&quot;
+    assert _stored(app) == []
+
+
+def test_empty_title_and_empty_author_names_title_first(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;}, headers=JSON_ACCEPT)
+
+    assert response.status_code == 400
+    assert response.get_json()[&quot;field&quot;] == &quot;title&quot;
+
+
+def test_html_rejection_answers_400(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;})
+
+    assert response.status_code == 400
+
+
+def test_html_rejection_rerenders_page_with_author_reason_in_alert_region(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;})
+
+    assert response.mimetype == &quot;text/html&quot;
+    assert b&#x27;role=&quot;alert&quot;&#x27; in response.data
+    assert b&quot;rejected: author is empty&quot; in response.data
+
+
+def test_html_rejection_for_absent_author_shows_reason(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;})
+
+    assert response.status_code == 400
+    assert b&quot;rejected: author is empty&quot; in response.data
+
+
+def test_html_rejection_stores_nothing(app):
+    app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;})
+
+    assert _stored(app) == []
+
+
+def test_browser_accept_header_gets_html_author_rejection(app):
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;}, headers=BROWSER_ACCEPT
+    )
+
+    assert response.status_code == 400
+    assert response.mimetype == &quot;text/html&quot;
+    assert b&quot;rejected: author is empty&quot; in response.data
+
+
+def test_wildcard_accept_header_gets_html_author_rejection(app):
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;}, headers={&quot;Accept&quot;: &quot;*/*&quot;}
+    )
+
+    assert response.mimetype == &quot;text/html&quot;
+
+
+def test_rejection_leaves_earlier_books_untouched(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Emma&quot;, &quot;author&quot;: &quot;&quot;}, headers=JSON_ACCEPT)
+
+    assert _stored(app) == [(&quot;Dune&quot;, &quot;Frank Herbert&quot;)]
+
+
+def test_add_book_service_refuses_empty_author_with_field_and_reason(app):
+    database = app.extensions[&quot;database&quot;]
+
+    with pytest.raises(BookRejected) as rejected:
+        add_book(database, title=&quot;Dune&quot;, author=&quot;&quot;)
+
+    assert rejected.value.field == &quot;author&quot;
+    assert rejected.value.reason.strip()
+    assert _stored(app) == []
+</pre></article>
+</main>
+</body>
+</html>

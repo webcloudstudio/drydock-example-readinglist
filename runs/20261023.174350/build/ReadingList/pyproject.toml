@@ -1,0 +1,21 @@
+[project]
+name = "readinglist"
+version = "0.1.0"
+description = "Single-reader web application for a personal reading list."
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.1,<4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9,<10",
+]
+
+[tool.uv]
+# The application is run from the source tree; it is not built as an installable package.
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

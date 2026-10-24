@@ -1,0 +1,11 @@
+<requirement name="provide-test-script" stories="test-runner">
+the application provides a POSIX-compatible bin/test.sh
+</requirement>
+<unattached story="architecture"/>
+<unattached story="database"/>
+<unattached story="app-shell"/>
+<unattached story="add-book"/>
+<unattached story="list-books"/>
+<unattached story="remove-book"/>
+<unattached story="reject-empty-fields"/>
+<unattached story="screen-reading-list"/>

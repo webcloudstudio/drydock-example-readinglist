@@ -1,0 +1,180 @@
+# MANIFEST: ReadingList
+updated:     2026-10-14T05:20:41+00:00
+state:       approved
+blocks:      5
+
+applied_specs: |
+  ARCHITECTURE.md sha256=6ffc16486a0aad1b27190c96896304f063205378eac5ea9b8ddf3ff1b7ae4b38 commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-1 applied_at=2026-10-14T05:23:42+00:00 build_sha256=9b32cea505dbc06f5745c5bc031860fcb480303cc32ab945a1efd2ff707db081
+  ARCHITECTURE_compact.md sha256=2b19a2fddf552dce9533925724eee490c42da03e759b615083fc5e2f1594dc40 commit=cbeee717c6f20a98f2aaa16e94cceb112efeb13b applied_by=block-5 applied_at=2026-10-14T05:32:54+00:00 build_sha256=2b19a2fddf552dce9533925724eee490c42da03e759b615083fc5e2f1594dc40
+  DATABASE.md sha256=6e75da4739c7c041d1f9831eaa86fae8c13b9e5e592b277c9d9dd0cf188eb3bb commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-1 applied_at=2026-10-14T05:23:42+00:00 build_sha256=5093ed43b5b976d24cc5620c719e0fa641c90078b95921f0867a9a070cc5a148 database_operations=FEATURE-BOOKS-001:f29d82f32e92e3941826ab559d4059a0f85c17a8e648b975fc9c1ddfa4b9183a;FEATURE-BOOKS-002:a5365e472dd490e88aba3507b1cef2cc4239a027fad0bd12e7ba60a9d6a46f9e;FEATURE-BOOKS-003:77d66c23d63850c35a933ce7d5479002c57e9e71216cf8445776a80765e80617;FEATURE-BOOKS-004:c2effbe6e2b3e1ca592d2f76084ce3a9112eec668f4447a25ad5f00cfa7c19aa
+  DATABASE_compact.md sha256=347bfbdd10c01c69a7a011dcfb92ead880dbbd858e0496d6d03e3332539aa8db commit=cbeee717c6f20a98f2aaa16e94cceb112efeb13b applied_by=block-5 applied_at=2026-10-14T05:32:54+00:00 build_sha256=347bfbdd10c01c69a7a011dcfb92ead880dbbd858e0496d6d03e3332539aa8db
+  FEATURE-AddBook.md sha256=79aa00ddc51ad12474aaf8ccd5e29a9be4b074932c859a29fa20af2b7d1ae67c commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-2 applied_at=2026-10-14T05:26:09+00:00 build_sha256=dd3dc2b532e1b050b8851d9a2229ecab9b7e389260bc1a3678ae5278d8ff1cbd
+  FEATURE-ListBooks.md sha256=e59dd2afb991eca39c0af41a58c21eedbaa09805ba1354d96c5574bbcc445831 commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-3 applied_at=2026-10-14T05:28:15+00:00 build_sha256=e11d7380b0df75a8de4e115e5409f7f911a89693d79fb02c9ee523a785e931cf
+  FEATURE-RemoveBook.md sha256=5670b139c5f38f1d5b746fa2e7bfcd2c7196e6fe9624286fdb72bf56a8d58f47 commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-3 applied_at=2026-10-14T05:28:15+00:00 build_sha256=4dd169cb7f707c665efd5934703d0b0292f3967e516b1de1eb0c879c24e61f48
+  FEATURE-TestRunner.md sha256=9afe5a2b86b09d5d72285997a163f7d214c14ee7a95453a7669da00a2f551e65 commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-5 applied_at=2026-10-14T05:32:54+00:00 build_sha256=5da4abb1d7f3e4477d7d32b21c87e352a4e80ef4bbf65922a6c36ab0f15909a9
+  SCREEN-ReadingList.md sha256=85a87d665bff698c4b1efc3e86d423eb7e1a0ce2a126053bd78348decb9935b0 commit=2c30744ef3ff93682c3605b23f3ff2a0f5d2fca7 applied_by=block-4 applied_at=2026-10-14T05:30:44+00:00 build_sha256=0be50bf42d95d127a4e486333129afd0011506e7b33a8feaebeb9eb99c7bb693
+## story 1: Stand up the Python project tree, environment, test runner, and Flask application factory.
+id:           architecture-foundation
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-1.md
+summary:      Stand up the Python project tree, environment, test runner, and Flask application factory.
+type:         foundational
+kind:         capability
+phase:        1
+block:        1
+implements:   ARCHITECTURE.md
+instructions: |
+  Create pyproject.toml with a committed uv.lock, a .venv created by uv venv, and app_server/__init__.py exposing create_app() -> Flask.
+  Add app_server/testing.py exposing web_client() exactly as the Foundation Contract shows.
+  Register no routes here; the application factory only wires the blueprints and error handlers that later stories add.
+stack:        python.md, flask.md
+stack_mode:   builder
+size:         3295
+provides:     create_app, app_server.testing.web_client
+acceptance:   yes
+state: closed/implemented
+
+## story 2: Declare the reading-list store and generate the persistence package from DATABASE.md.
+id:           persistence-foundation
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-1.md
+summary:      Declare the reading-list store and generate the persistence package from DATABASE.md.
+type:         foundational
+kind:         migration
+phase:        1
+block:        1
+implements:   DATABASE.md
+instructions: |
+  Declare one table, books, with integer primary key, title, author, and insertion ordering by id.
+  Declare access patterns for create, list in insertion order, get by id, and delete by id.
+  Drydock generates persistence/ and schema.sql; do not write SQL or sqlite3 calls by hand.
+stack:        persistence.md, sqlite.md, python.md
+stack_mode:   builder
+size:         8301
+provides:     books.create, books.list, books.get, books.delete
+depends:      architecture-foundation
+acceptance:   yes
+state: closed/implemented
+
+## story 3: Accept a title and author, store the book, and reject empty fields with a named reason.
+id: feature-add-book
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-2.md
+summary: Accept a title and author, store the book, and reject empty fields with a named reason.
+type: service
+kind: capability
+phase: 1
+block: 2
+implements: FEATURE-AddBook.md
+covers: BOOKS-001, BOOKS-002, TEST-001, TEST-004
+accepts: st-002, st-005
+context: ARCHITECTURE_compact.md, DATABASE_compact.md
+stack: python.md, flask.md
+stack_mode: consumer
+size: 5054
+provides: POST /books
+consumes: books.create
+instructions: |
+  Add the POST /books route. A valid title and author are stored through books.create and the book is returned.
+  An empty or whitespace-only title or author is rejected with status 400 and a body naming the failing field (title or author), per AC-001.
+  Pytest covers the add behavior and the rejection behavior.
+acceptance: yes
+depends: persistence-foundation, architecture-foundation
+state: closed/implemented
+
+## story 4: List stored books in the order they were added.
+id: feature-list-books
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-3.md
+summary: List stored books in the order they were added.
+type: service
+kind: capability
+phase: 1
+block: 3
+implements: FEATURE-ListBooks.md
+covers: BOOKS-003, TEST-002
+accepts: st-003
+context: ARCHITECTURE_compact.md, DATABASE_compact.md
+stack: python.md, flask.md
+stack_mode: consumer
+size: 4588
+provides: GET /books
+consumes: books.list
+instructions: |
+  Add the GET /books route returning books through books.list in insertion order.
+  Pytest covers ordering when several books are added.
+acceptance: yes
+depends: feature-add-book, persistence-foundation
+state: closed/implemented
+
+## story 5: Remove a book and omit it from the next read; report a missing id without altering the list.
+id: feature-remove-book
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-3.md
+summary: Remove a book and omit it from the next read; report a missing id without altering the list.
+type: service
+kind: capability
+phase: 1
+block: 3
+implements: FEATURE-RemoveBook.md
+covers: BOOKS-004, TEST-003
+accepts: st-004
+context: ARCHITECTURE_compact.md, DATABASE_compact.md
+stack: python.md, flask.md
+stack_mode: consumer
+size: 4817
+provides: DELETE /books/{id}
+consumes: books.get, books.delete
+instructions: |
+  Add DELETE /books/{id}. A stored id is removed through books.delete and returns 204.
+  An unknown id returns 404 and leaves the list unchanged, per AC-002.
+  Pytest covers the removal and the missing-id behavior.
+acceptance: yes
+depends: feature-list-books, persistence-foundation
+state: closed/implemented
+
+## story 6: Serve the reading list page that adds, lists, and removes books.
+id: screen-reading-list
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-4.md
+summary: Serve the reading list page that adds, lists, and removes books.
+type: service
+kind: capability
+phase: 1
+block: 4
+implements: SCREEN-ReadingList.md
+context: ARCHITECTURE_compact.md, DATABASE_compact.md
+stack: python.md, flask.md
+stack_mode: consumer
+size: 4904
+provides: GET /
+consumes: POST /books, GET /books, DELETE /books/{id}
+instructions: |
+  Render an HTML page at GET / with a form for title and author, the ordered list, and a remove control per book.
+  The page calls the three feature routes; validation errors are shown beside the form.
+acceptance: yes
+depends: feature-add-book, feature-list-books, feature-remove-book
+state: closed/implemented
+
+## story 7: Provide POSIX bin/test.sh that runs the complete automated suite and is the terminal verification gate.
+id: feature-test-runner
+finding: ADVISORY: implemented, not verified — no governed acceptance command covers this story. Declare one in ACCEPTANCE.json to gate it.
+evidence: evidence/block-5.md
+summary: Provide POSIX bin/test.sh that runs the complete automated suite and is the terminal verification gate.
+type: feature
+kind: test harness
+phase: 1
+block: 5
+implements: FEATURE-TestRunner.md
+covers: TEST-005
+accepts: st-001, st-006
+context: ARCHITECTURE_compact.md, DATABASE_compact.md
+stack: python.md
+stack_mode: consumer
+size: 4217
+instructions: |
+  Write bin/test.sh as a POSIX sh script at the application root that runs pytest from .venv and exits with its status.
+  This is the terminal story. Its acceptance runs sh bin/test.sh unfiltered and requires exit zero.
+acceptance: yes
+depends: feature-add-book, feature-list-books, feature-remove-book, screen-reading-list, persistence-foundation, architecture-foundation
+state: closed/implemented

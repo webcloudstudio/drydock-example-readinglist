@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_add_book.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_add_book.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_add_book.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Add a book: POST /books stores a valid submission and redirects to the start page.&quot;&quot;&quot;
+
+import uuid
+from pathlib import Path
+
+import pytest
+
+from app_server import create_app
+from app_server.book_service import BookRejected, add_book
+from persistence.testing import committed_session
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+@pytest.fixture
+def app(monkeypatch, tmp_path):
+    &quot;&quot;&quot;A fresh application over its own store, so no test touches the configured data/app.db.&quot;&quot;&quot;
+    store = tmp_path / &quot;add-book.db&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, f&quot;sqlite:///{store}&quot;)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+    application = create_app()
+    application.extensions[&quot;database&quot;].execute_script((PROJECT_ROOT / &quot;schema.sql&quot;).read_text())
+    return application
+
+
+def _stored(app) -&gt; list[tuple[str, str]]:
+    &quot;&quot;&quot;Read every stored book back through the persistence package, in order added.&quot;&quot;&quot;
+    return [(row.title, row.author) for row in app.extensions[&quot;database&quot;].books.list()]
+
+
+def test_valid_submission_redirects_with_303_to_start_page(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    assert response.status_code == 303
+    assert response.headers[&quot;Location&quot;] == &quot;/&quot;
+
+
+def test_valid_submission_stores_title_and_author(app):
+    app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    assert _stored(app) == [(&quot;Dune&quot;, &quot;Frank Herbert&quot;)]
+
+
+def test_surrounding_whitespace_is_trimmed_before_storing(app):
+    app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;  Dune \t&quot;, &quot;author&quot;: &quot;\n Frank Herbert  &quot;})
+
+    assert _stored(app) == [(&quot;Dune&quot;, &quot;Frank Herbert&quot;)]
+
+
+def test_internal_whitespace_is_kept(app):
+    app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune  Messiah&quot;, &quot;author&quot;: &quot;Frank  Herbert&quot;})
+
+    assert _stored(app) == [(&quot;Dune  Messiah&quot;, &quot;Frank  Herbert&quot;)]
+
+
+def test_new_book_is_appended_after_existing_books(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;First&quot;, &quot;author&quot;: &quot;A&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Second&quot;, &quot;author&quot;: &quot;B&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Third&quot;, &quot;author&quot;: &quot;C&quot;})
+
+    assert _stored(app) == [(&quot;First&quot;, &quot;A&quot;), (&quot;Second&quot;, &quot;B&quot;), (&quot;Third&quot;, &quot;C&quot;)]
+
+
+def test_same_book_submitted_twice_is_stored_twice(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    assert _stored(app) == [(&quot;Dune&quot;, &quot;Frank Herbert&quot;), (&quot;Dune&quot;, &quot;Frank Herbert&quot;)]
+
+
+@pytest.mark.parametrize(
+    &quot;form&quot;,
+    [
+        {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;},
+        {&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: &quot;Frank Herbert&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot; \t &quot;},
+        {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;},
+        {&quot;author&quot;: &quot;Frank Herbert&quot;},
+        {&quot;title&quot;: &quot;Dune&quot;},
+        {},
+    ],
+    ids=[
+        &quot;empty-title&quot;,
+        &quot;blank-title&quot;,
+        &quot;empty-author&quot;,
+        &quot;blank-author&quot;,
+        &quot;both-empty&quot;,
+        &quot;title-absent&quot;,
+        &quot;author-absent&quot;,
+        &quot;both-absent&quot;,
+    ],
+)
+def test_empty_or_absent_field_is_rejected_with_400_and_not_stored(app, form):
+    response = app.test_client().post(&quot;/books&quot;, data=form)
+
+    assert response.status_code == 400
+    assert _stored(app) == []
+
+
+def test_rejection_states_reason_in_alert_region(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    assert b&#x27;role=&quot;alert&quot;&#x27; in response.data
+    assert b&quot;rejected: title is empty&quot; in response.data
+
+
+def test_rejected_author_states_reason_in_alert_region(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot; &quot;})
+
+    assert b&quot;rejected: author is empty&quot; in response.data
+
+
+def test_rejection_after_valid_submission_keeps_earlier_book(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Nobody&quot;})
+
+    assert _stored(app) == [(&quot;Dune&quot;, &quot;Frank Herbert&quot;)]
+
+
+def test_add_book_service_returns_stored_row(app):
+    database = app.extensions[&quot;database&quot;]
+
+    row = add_book(database, title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+
+    assert (row.title, row.author) == (&quot;Dune&quot;, &quot;Frank Herbert&quot;)
+    assert row.id is not None
+    assert database.books.get(id=row.id) == row
+
+
+def test_add_book_service_refuses_empty_title_with_reason(app):
+    database = app.extensions[&quot;database&quot;]
+
+    with pytest.raises(BookRejected) as rejected:
+        add_book(database, title=&quot;&quot;, author=&quot;Frank Herbert&quot;)
+
+    assert rejected.value.reason == &quot;rejected: title is empty&quot;
+    assert _stored(app) == []
+
+
+def test_add_book_service_refuses_empty_author_with_reason(app):
+    database = app.extensions[&quot;database&quot;]
+
+    with pytest.raises(BookRejected) as rejected:
+        add_book(database, title=&quot;Dune&quot;, author=&quot;&quot;)
+
+    assert rejected.value.reason == &quot;rejected: author is empty&quot;
+    assert _stored(app) == []
+
+
+# Round trip through the configured store: POST /books, then read the book back via GET /books.
+
+
+def _unique(label: str) -&gt; str:
+    &quot;&quot;&quot;Return a title no other test or run has used, so the shared store can hold it safely.&quot;&quot;&quot;
+    return f&quot;AddTest-{label}-{uuid.uuid4().hex}&quot;
+
+
+@pytest.fixture
+def added_titles():
+    &quot;&quot;&quot;Collect the titles a test adds, then remove exactly those books from the store afterwards.&quot;&quot;&quot;
+    titles: list[str] = []
+    yield titles
+    with committed_session() as database:
+        for row in database.books.list():
+            if row.title in titles:
+                database.books.delete(id=row.id)
+
+
+def _listed(client, title: str) -&gt; list[dict]:
+    &quot;&quot;&quot;Return the listed books whose title is ``title``, read back through GET /books.&quot;&quot;&quot;
+    return [row for row in client.get(&quot;/books&quot;).get_json() if row[&quot;title&quot;] == title]
+
+
+def test_round_trip_add_answers_303_to_start_page(web_client, added_titles):
+    title = _unique(&quot;redirect&quot;)
+    added_titles.append(title)
+
+    response = web_client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;Test Author&quot;})
+
+    assert response.status_code == 303
+    assert response.headers[&quot;Location&quot;] == &quot;/&quot;
+
+
+def test_added_book_is_listed_with_submitted_title_and_author(web_client, added_titles):
+    title = _unique(&quot;roundtrip&quot;)
+    author = &quot;Round Trip Author&quot;
+    added_titles.append(title)
+
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+
+    rows = _listed(web_client, title)
+    assert len(rows) == 1
+    assert rows[0][&quot;title&quot;] == title
+    assert rows[0][&quot;author&quot;] == author
+    assert isinstance(rows[0][&quot;id&quot;], int)
+
+
+def test_added_book_is_stored_with_submitted_title_and_author(web_client, added_titles):
+    title = _unique(&quot;stored&quot;)
+    author = &quot;Stored Author&quot;
+    added_titles.append(title)
+
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+
+    with committed_session() as database:
+        stored = [row for row in database.books.list() if row.title == title]
+    assert len(stored) == 1
+    assert stored[0].author == author
+
+
+def test_round_trip_trims_surrounding_whitespace(web_client, added_titles):
+    title = _unique(&quot;trimmed&quot;)
+    added_titles.append(title)
+
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: f&quot;  {title}  &quot;, &quot;author&quot;: &quot;  Trim Author  &quot;})
+
+    rows = _listed(web_client, title)
+    assert len(rows) == 1
+    assert rows[0][&quot;author&quot;] == &quot;Trim Author&quot;
+
+
+def test_two_round_trip_adds_are_both_listed(web_client, added_titles):
+    first = _unique(&quot;both-first&quot;)
+    second = _unique(&quot;both-second&quot;)
+    added_titles.extend([first, second])
+
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: first, &quot;author&quot;: &quot;First Author&quot;})
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: second, &quot;author&quot;: &quot;Second Author&quot;})
+
+    listed_titles = [row[&quot;title&quot;] for row in web_client.get(&quot;/books&quot;).get_json()]
+    assert listed_titles.count(first) == 1
+    assert listed_titles.count(second) == 1
+
+
+def test_two_round_trip_adds_keep_the_order_they_were_added(web_client, added_titles):
+    first = _unique(&quot;order-first&quot;)
+    second = _unique(&quot;order-second&quot;)
+    added_titles.extend([first, second])
+
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: first, &quot;author&quot;: &quot;First Author&quot;})
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: second, &quot;author&quot;: &quot;Second Author&quot;})
+
+    ours = [
+        row[&quot;title&quot;]
+        for row in web_client.get(&quot;/books&quot;).get_json()
+        if row[&quot;title&quot;] in (first, second)
+    ]
+    assert ours == [first, second]
+
+
+def test_each_round_trip_book_keeps_its_own_author(web_client, added_titles):
+    first = _unique(&quot;author-first&quot;)
+    second = _unique(&quot;author-second&quot;)
+    added_titles.extend([first, second])
+
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: first, &quot;author&quot;: &quot;Author One&quot;})
+    web_client.post(&quot;/books&quot;, data={&quot;title&quot;: second, &quot;author&quot;: &quot;Author Two&quot;})
+
+    assert _listed(web_client, first)[0][&quot;author&quot;] == &quot;Author One&quot;
+    assert _listed(web_client, second)[0][&quot;author&quot;] == &quot;Author Two&quot;
+</pre></article>
+</main>
+</body>
+</html>

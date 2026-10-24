@@ -1,0 +1,1 @@
+2026-10-23T21:08:59.386295Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to read file to update /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/build/ReadingList/app_server/config.py: No such file or directory (os error 2)

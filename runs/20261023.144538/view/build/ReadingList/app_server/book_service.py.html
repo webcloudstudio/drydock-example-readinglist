@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/book_service.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/book_service.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/book_service.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Book behavior for the ReadingList web application, free of any Flask dependency.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from persistence import Database
+from persistence.schema import BookRow
+
+
+class BookRejected(ValueError):
+    &quot;&quot;&quot;A submission the application refuses to store; ``reason`` says why and ``field`` names the input.&quot;&quot;&quot;
+
+    def __init__(self, reason: str, field: str) -&gt; None:
+        super().__init__(reason)
+        self.reason = reason
+        self.field = field
+
+
+class BookNotFound(LookupError):
+    &quot;&quot;&quot;A removal named an id that no stored book carries; ``book_id`` is that id.&quot;&quot;&quot;
+
+    def __init__(self, book_id: int) -&gt; None:
+        super().__init__(book_id)
+        self.book_id = book_id
+
+
+def add_book(database: Database, title: str, author: str) -&gt; BookRow:
+    &quot;&quot;&quot;Store a book appended after every existing book and return the stored row.
+
+    Values are expected already trimmed by the caller. An empty title or author is refused
+    without touching the store, so a stored book always has both.
+    &quot;&quot;&quot;
+    if not title:
+        raise BookRejected(&quot;rejected: title is empty&quot;, field=&quot;title&quot;)
+    if not author:
+        raise BookRejected(&quot;rejected: author is empty&quot;, field=&quot;author&quot;)
+    return database.books.create(title=title, author=author)
+
+
+def list_books(database: Database) -&gt; list[BookRow]:
+    &quot;&quot;&quot;Return every stored book in the order added, oldest first.
+
+    The order is enforced here, by ascending id, rather than trusted to the store&#x27;s select, which
+    the generated persistence layer issues without an ORDER BY clause.
+    &quot;&quot;&quot;
+    return sorted(database.books.list(), key=lambda row: row.id)
+
+
+def remove_book(database: Database, book_id: int) -&gt; None:
+    &quot;&quot;&quot;Delete the stored book with ``book_id``; the remaining books keep their order.
+
+    An id that no stored book carries is refused with ``BookNotFound`` before any write, so an
+    unknown id never changes stored data.
+    &quot;&quot;&quot;
+    if database.books.get(id=book_id) is None:
+        raise BookNotFound(book_id)
+    database.books.delete(id=book_id)
+</pre></article>
+</main>
+</body>
+</html>

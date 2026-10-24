@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading List</title>
+</head>
+<body>
+  <nav>
+    <a href="/">Reading List (1)</a>
+  </nav>
+  <main>
+    <h1>Reading List</h1>
+
+    <form id="add-book" method="post" action="/books" novalidate>
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text">
+      <span id="title-error" class="error" role="alert"></span>
+
+      <label for="author">Author</label>
+      <input id="author" name="author" type="text">
+      <span id="author-error" class="error" role="alert"></span>
+
+      <button type="submit">Add book</button>
+    </form>
+
+    <ol id="books"></ol>
+  </main>
+
+  <script>
+    (function () {
+      var FIELDS = ["title", "author"];
+      var form = document.getElementById("add-book");
+      var list = document.getElementById("books");
+
+      function clearErrors() {
+        FIELDS.forEach(function (field) {
+          document.getElementById(field + "-error").textContent = "";
+        });
+      }
+
+      function showError(field, message) {
+        if (FIELDS.indexOf(field) === -1) {
+          return;
+        }
+        document.getElementById(field + "-error").textContent = message;
+      }
+
+      function renderBooks(books) {
+        list.textContent = "";
+        books.forEach(function (book) {
+          var item = document.createElement("li");
+          var label = document.createElement("span");
+          label.textContent = book.title + " by " + book.author;
+          var remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = "Remove";
+          remove.addEventListener("click", function () {
+            removeBook(book.id);
+          });
+          item.appendChild(label);
+          item.appendChild(document.createTextNode(" "));
+          item.appendChild(remove);
+          list.appendChild(item);
+        });
+      }
+
+      function loadBooks() {
+        return fetch("/books", { headers: { Accept: "application/json" } })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(renderBooks);
+      }
+
+      function removeBook(id) {
+        return fetch("/books/" + encodeURIComponent(id), { method: "DELETE" })
+          .then(function (response) {
+            if (response.status === 204) {
+              return loadBooks();
+            }
+          });
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        clearErrors();
+
+        var title = form.elements.title.value.trim();
+        var author = form.elements.author.value.trim();
+        if (title === "") {
+          showError("title", "Title must not be empty.");
+          return;
+        }
+        if (author === "") {
+          showError("author", "Author must not be empty.");
+          return;
+        }
+
+        fetch("/books", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ title: title, author: author })
+        })
+          .then(function (response) {
+            if (response.status === 201) {
+              form.reset();
+              return loadBooks();
+            }
+            return response.json().then(function (body) {
+              showError(body.field, body.field + " must not be empty.");
+            });
+          });
+      });
+
+      loadBooks();
+    })();
+  </script>
+</body>
+</html>

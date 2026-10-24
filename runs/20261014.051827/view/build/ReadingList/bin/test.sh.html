@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/bin/test.sh</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/bin/test.sh</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/bin/test.sh">Raw file</a></div></header>
+<article class="doc"><pre>#!/bin/sh
+# bin/test.sh — terminal verification gate. Runs the complete pytest suite
+# from .venv and exits with its status. It runs no subset.
+set -u
+
+root=$(cd &quot;$(dirname &quot;$0&quot;)/..&quot; &amp;&amp; pwd) || exit 1
+cd &quot;$root&quot; || exit 1
+
+if [ ! -x .venv/bin/python ]; then
+    echo &quot;error: .venv not found at the application root.&quot; &gt;&amp;2
+    echo &quot;create it with &#x27;uv venv&#x27; and install dependencies with &#x27;uv sync&#x27;.&quot; &gt;&amp;2
+    exit 1
+fi
+
+exec .venv/bin/python -m pytest -q
+</pre></article>
+</main>
+</body>
+</html>

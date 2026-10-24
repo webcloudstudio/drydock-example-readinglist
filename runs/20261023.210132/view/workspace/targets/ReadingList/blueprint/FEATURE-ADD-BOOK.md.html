@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-ADD-BOOK.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-ADD-BOOK.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-ADD-BOOK.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Add Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Adds valid books to the persisted reading list.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>POST <code>/books</code></td></tr><tr><td>Consumes</td><td><code>app_server.create_app</code>, <code>persistence.books.create</code></td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>A reader submits a title and author to <code>POST /books</code>. The feature persists the book through <code>books.create</code> and returns the reader to a usable reading-list workflow where the new book can be seen.</p>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-ADD-BOOK-001</code> — write: create a book - supplies: <code>title</code>, <code>author</code>, <code>insertion_order</code> - returns: <code>id</code>, <code>title</code>, <code>author</code>, <code>insertion_order</code></li></ul>
+<h2>Workflow</h2>
+<ol><li>Receive title and author form values.</li><li>Create the book through the persistence contract.</li><li>Redirect to the primary list page.</li><li>The subsequent list read includes the created book.</li></ol>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC add-book-route ===<br>Intent: The book-creation route accepts a valid title and author submission.</p>
+<p>from app_server.testing import web_client</p>
+<p>title = &quot;Add Book Acceptance Title&quot; author = &quot;Add Book Acceptance Author&quot;</p>
+<p>client = web_client() response = client.post( &quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}, ) assert response.status_code == 302</p>
+<p>follow_up = client.get(&quot;/&quot;) assert follow_up.status_code == 200 body = follow_up.get_data(as_text=True) assert title in body assert author in body === END AC add-book-route ===</p>
+<p>=== AC add-book-persistence ===<br>Intent: A valid submission is persisted and readable through the public list workflow.</p>
+<p>from app_server.testing import web_client</p>
+<p>title = &quot;Persisted Add Book Title&quot; author = &quot;Persisted Add Book Author&quot;</p>
+<p>client = web_client() created_response = client.post( &quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}, ) assert created_response.status_code == 302</p>
+<p>read_response = client.get(&quot;/&quot;) assert read_response.status_code == 200 body = read_response.get_data(as_text=True) assert title in body assert author in body === END AC add-book-persistence ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A reader can submit a title and author and see the new book in the list.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Valid submissions use the generated persistence contract.</li><li>A created book is not silently omitted from the next list read.</li><li>Empty fields are rejected by the validation boundary.</li></ul></article>
+</main>
+</body>
+</html>

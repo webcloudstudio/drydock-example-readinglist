@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-12.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-12.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-12.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 12 · Service (block-12)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 4546</li><li>execution id: 20261023.151420.658Z-34c16494</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide automated pytest tests for removing a book. (test-remove-book) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-RemoveBookTests.md#remove-tests-module-passes: executable=python3; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-RemoveBookTests.md (SP 2148)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE_compact.md (SP 360)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>data/app.db</li><li>tests/test_remove_book.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): remove-tests-module-passes (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: The remove-book pytest module exists and every test in it passes against the built application. return code: 0 stdout: .................                                                        [100%] 17 passed in 1.00s</p>
+<ul><li>GREEN (prepassed): remove-omits-on-next-read (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: A removed book is absent from GET /books on the next read. return code: 0</p>
+<ul><li>GREEN (prepassed): remove-preserves-order (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: Removing the middle book leaves the other two listed in the order they were added. return code: 0</p>
+<ul><li>GREEN (prepassed): remove-unknown-id-404 (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: Removing an id that does not exist answers 404. return code: 0</p>
+<ul><li>GREEN (prepassed): remove-twice-second-404 (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: Removing the same book twice succeeds once and then answers 404. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: remove-tests-module-passes (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: The remove-book pytest module exists and every test in it passes against the built application. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0 stdout: .............                                                            [100%] 13 passed in 0.60s</p>
+<ul><li>PASS: remove-omits-on-next-read (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: A removed book is absent from GET /books on the next read. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: remove-preserves-order (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: Removing the middle book leaves the other two listed in the order they were added. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: remove-unknown-id-404 (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: Removing an id that does not exist answers 404. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: remove-twice-second-404 (FEATURE-RemoveBookTests.md)</li></ul>
+<p>intent: Removing the same book twice succeeds once and then answers 404. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>I&#x27;ll start by inspecting the build directory to see what already exists.A <code>tests/test_remove_book.py</code> already exists, so I need to read it before deciding what to change. I&#x27;ll also read the fixtures and the app code it depends on.The existing module is already substantial and appears to be committed. Next I&#x27;ll check whether git tracks it, look at the route it exercises, and run it.The module is committed from block 6 and all 17 tests pass. It does not match the block&#x27;s specification, though. The spec says each test should create books through <code>POST /books</code>, read ids back from <code>GET /books</code>, use the <code>web_client</code> fixture, and that tests reach removal only through the HTTP routes, never the store. The current file uses the service and store directly, including <code>remove_book</code> and <code>database.books.list()</code>, and runs against a tmp store. I&#x27;ll rewrite it to match the spec and keep the behaviors it already covers.Now I&#x27;ll run the rewritten module, then the project&#x27;s own test command to check nothing else is affected. I&#x27;m not touching <code>sources/full_test.sh</code>, since no criterion in this block invokes it.The rewritten module passes 13 of 13, and the full project suite passes 137 of 137 with no test residue left in the store. The block also declares four programmatic acceptance criteria. I&#x27;ll run them against the built app from a scratch directory outside the build tree.The remove-book test module now follows the feature spec, and all declared checks pass. The change is uncommitted, as the build rules require.</p>
+<p>I rewrote <code>tests/test_remove_book.py</code>. It already existed from block 6 and passed, but it did not match the spec. It called the service and read the store directly, and it used a temporary store rather than the configured one. The new version:</p>
+<ul><li>Uses the <code>web_client</code> fixture and reaches removal only through <code>POST /books/{id}/delete</code>.</li><li>Creates books through <code>POST /books</code>, reads ids back from <code>GET /books</code>, and removes its own books at teardown.</li><li>Covers the spec&#x27;s five behaviors, plus remaining order, remaining id/title/author, a non-integer id, and GET on the delete path returning 405.</li></ul>
+<p>Verification:</p>
+<ul><li><code>tests/test_remove_book.py</code>: 13 passed. The earlier version had 17, and the four dropped tests reached the store or service directly.</li><li>Full project suite (<code>pytest -q</code>): 137 passed.</li><li>The four declared acceptance checks (omits on next read, preserves order, unknown id 404, second removal 404) all pass when run against the built app.</li><li>No test books are left in the store afterwards.</li></ul>
+<p>I did not run <code>sources/full_test.sh</code>, since no criterion in this block invokes it.</p>
+<p>One thing outside this block: COMPASS requires a POSIX <code>bin/test.sh</code>, and the repo only has <code>bin/run.sh</code>. I did not add it, because it is not part of this step.</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>tests/test_remove_book.py</li></ul>
+<p>SUMMARY: Rewrote the remove-book pytest module to match FEATURE-RemoveBookTests.md. It exercises removal only through the HTTP routes, using the <code>web_client</code> fixture, creates and cleans up its own books, and covers removal, omission on next read, order preservation, unknown id 404, and repeat removal 404. Module: 13 passed. Full project suite: 137 passed. Declared acceptance checks: 4 of 4 pass (run manually from /tmp against the built app; the module check is covered by the 13-pass module run).</p>
+<p>&lt;blueprint-decisions&gt; [{&quot;spec&quot;:&quot;FEATURE-RemoveBookTests.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Dropped service-level and store-read tests from tests/test_remove_book.py&quot;,&quot;decision&quot;:&quot;The earlier module called remove_book and read database.books directly, which the spec&#x27;s guardrail forbids (\&quot;Tests reach removal only through the public HTTP routes, never through the store\&quot;). I removed those four tests and rewrote the rest to use HTTP only. Is that acceptable, or should service-level coverage live in a separate module?&quot;}] &lt;/blueprint-decisions&gt;</p>
+<p>BLOCKERS:</p>
+<ul><li>None for this block.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/config.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/config.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/config.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Typed application configuration defaults.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import os
+
+
+@dataclass(frozen=True)
+class ApplicationConfig:
+    &quot;&quot;&quot;Settings owned by the application boundary.&quot;&quot;&quot;
+
+    database_path: str = &quot;data/app.db&quot;
+    database_url: str | None = None
+    secret_key: str | None = None
+
+    @classmethod
+    def load(cls) -&gt; &quot;ApplicationConfig&quot;:
+        return cls(
+            database_path=os.environ.get(&quot;DATABASE_PATH&quot;, &quot;data/app.db&quot;),
+            database_url=os.environ.get(&quot;DATABASE_URL&quot;),
+            secret_key=os.environ.get(&quot;SECRET_KEY&quot;),
+        )
+
+    def as_flask_config(self) -&gt; dict[str, object]:
+        return {
+            &quot;DATABASE_PATH&quot;: self.database_path,
+            &quot;DATABASE_URL&quot;: self.database_url,
+            &quot;SECRET_KEY&quot;: self.secret_key,
+            &quot;TESTING&quot;: False,
+        }
+</pre></article>
+</main>
+</body>
+</html>

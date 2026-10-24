@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md">Raw file</a></div></header>
+<article class="doc"><h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Server-rendered page that shows the reading list in the order added, with an add form, error display, and per-book remove buttons.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md, FEATURE-RejectEmptyFields.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, FEATURE-AppShell.md</td></tr><tr><td>Provides</td><td>GET /, POST /add, POST /remove/{book_id}</td></tr><tr><td>Consumes</td><td>GET /books, POST /books, DELETE /books/{book_id}</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>—</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Tab Order</td><td>—</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The single page of the application. A reader sees their books in the order they were added, adds a book with a title and author, sees a clear error when either is empty, and removes books they no longer want.</p>
+<h2>Layout</h2>
+<ul><li>Page heading: &quot;Reading List&quot;.</li><li>Add form with a <code>title</code> text input, an <code>author</code> text input, and an &quot;Add&quot; submit button, posting to <code>/add</code>.</li><li>Error region directly above the form, rendered only when a submission was rejected. It states which field is missing.</li><li>Ordered list of books, one entry per book showing title and author, in the order added (id ascending).</li><li>Each entry carries a &quot;Remove&quot; button, a form posting to <code>/remove/{book_id}</code>.</li><li>An empty list renders a short &quot;No books yet&quot; message instead of the list.</li></ul>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Route</th><th>Method</th><th>Behavior</th></tr></thead><tbody><tr><td><code>/</code></td><td>GET</td><td>Renders the page with all books in the order added; status 200.</td></tr><tr><td><code>/add</code></td><td>POST</td><td>Form fields <code>title</code> and <code>author</code>. Valid input stores the book through the book service and redirects 303 to <code>/</code>. Empty or whitespace-only title or author re-renders the page with status 400, a visible error message, and nothing stored.</td></tr><tr><td><code>/remove/{book_id}</code></td><td>POST</td><td>Removes the book through the book service and redirects 303 to <code>/</code>. An unknown id also redirects 303 to <code>/</code> without changing state.</td></tr></tbody></table></div>
+<p>The screen calls the same service functions that back <code>POST /books</code>, <code>GET /books</code>, and <code>DELETE /books/{book_id}</code>, so browser and JSON behavior cannot diverge. No client-side JavaScript is used.</p>
+<h2>Interactions</h2>
+<ol><li>The reader fills in both fields and submits; the page reloads with the new book at the end of the list.</li><li>The reader submits with an empty title or author; the page reloads with an error message and the list unchanged. Entered values are preserved in the form.</li><li>The reader presses &quot;Remove&quot; on a book; the page reloads without that book.</li></ol>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC screen-index-renders ===<br>Intent: GET / answers 200 and shows an added book&#x27;s title and author, and GET /books agrees with it on the same book.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() token = uuid.uuid4().hex title = &quot;ac-screen-title-&quot; + token author = &quot;ac-screen-author-&quot; + token created = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert created.status_code == 201 book_id = created.get_json()[&quot;id&quot;] try: page = client.get(&quot;/&quot;) assert page.status_code == 200 html = page.get_data(as_text=True) assert title in html assert author in html listed = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] assert book_id in listed finally: client.delete(f&quot;/books/{book_id}&quot;) === END AC screen-index-renders ===</p>
+<p>=== AC screen-add-form ===<br>Intent: POST /add with a title and author redirects 303 and the book then appears on GET / and in GET /books.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() token = uuid.uuid4().hex title = &quot;ac-form-title-&quot; + token author = &quot;ac-form-author-&quot; + token added_ids = [] try: before = {b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()} response = client.post(&quot;/add&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 303 after = client.get(&quot;/books&quot;).get_json() added_ids = [b[&quot;id&quot;] for b in after if b[&quot;id&quot;] not in before] assert len(added_ids) == 1 stored = [b for b in after if b[&quot;id&quot;] == added_ids[0]][0] assert stored[&quot;title&quot;] == title assert stored[&quot;author&quot;] == author html = client.get(&quot;/&quot;).get_data(as_text=True) assert title in html finally: for book_id in added_ids: client.delete(f&quot;/books/{book_id}&quot;) === END AC screen-add-form ===</p>
+<p>=== AC screen-add-rejects-empty ===<br>Intent: POST /add with an empty title, an empty author, or whitespace-only values answers 400 and stores nothing.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() token = uuid.uuid4().hex valid_title = &quot;ac-reject-title-&quot; + token valid_author = &quot;ac-reject-author-&quot; + token cases = [ {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: valid_author}, {&quot;title&quot;: valid_title, &quot;author&quot;: &quot;&quot;}, {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;}, {&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: valid_author}, {&quot;title&quot;: valid_title, &quot;author&quot;: &quot;   &quot;}, ] before = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] try: for form in cases: response = client.post(&quot;/add&quot;, data=form) assert response.status_code == 400 assert len(response.get_data(as_text=True)) &gt; 0 after = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] assert after == before finally: current = client.get(&quot;/books&quot;).get_json() for book in current: if book[&quot;id&quot;] not in before: client.delete(f&quot;/books/{book[&#x27;id&#x27;]}&quot;) === END AC screen-add-rejects-empty ===</p>
+<p>=== AC screen-remove-form ===<br>Intent: POST /remove/{book_id} redirects 303 and the book is gone from GET / and GET /books; an unknown id also redirects 303.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() title = &quot;ac-screen-remove-&quot; + uuid.uuid4().hex created = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;ac-screen-author&quot;}) assert created.status_code == 201 book_id = created.get_json()[&quot;id&quot;] try: response = client.post(f&quot;/remove/{book_id}&quot;) assert response.status_code == 303 listed = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] assert book_id not in listed html = client.get(&quot;/&quot;).get_data(as_text=True) assert title not in html again = client.post(f&quot;/remove/{book_id}&quot;) assert again.status_code == 303 finally: client.delete(f&quot;/books/{book_id}&quot;) === END AC screen-remove-form ===</p>
+<p>=== AC screen-order-added ===<br>Intent: GET / presents books in the order they were added.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() token = uuid.uuid4().hex titles = [f&quot;ac-screen-order-{token}-{n}&quot; for n in range(3)] ids = [] try: for title in titles: resp = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;ac-screen-author&quot;}) assert resp.status_code == 201 ids.append(resp.get_json()[&quot;id&quot;]) html = client.get(&quot;/&quot;).get_data(as_text=True) positions = [html.index(title) for title in titles] assert positions == sorted(positions) finally: for book_id in ids: client.delete(f&quot;/books/{book_id}&quot;) === END AC screen-order-added ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The page is readable: the form, the error message, and the book list are visually distinct.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books are never presented in any order other than the order they were added.</li><li>An empty or whitespace-only title or author is never stored; the reader sees a clear error message.</li><li>A removed book never reappears on the page.</li><li>The page uses no client-side JavaScript.</li></ul></article>
+</main>
+</body>
+</html>

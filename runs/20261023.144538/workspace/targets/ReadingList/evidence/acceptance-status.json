@@ -1,0 +1,375 @@
+{
+  "criteria": {
+    "add-book-persists-in-store": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "3563fdfe2e41efb5c6c04c4ff7c3cb56db2a421789ec24f04c45560c336395d0",
+      "updated_at": "2026-10-23T14:56:54+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "add-book-redirects": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "0d3c64a98a26f160ad947b0884bb2a4254b645b58ced3d01db856067f006a545",
+      "updated_at": "2026-10-23T14:56:54+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "add-book-round-trip": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "19919136a414c8b2835bff64b3905516ba2464dcba697be1767bb85b6cd3813d",
+      "updated_at": "2026-10-23T14:56:54+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "add-roundtrip-behavior": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "4023bd4b9adfdd7230b9b36a5aad86bb0c71080428df4437afedb9d36946582f",
+      "updated_at": "2026-10-23T15:09:51+00:00",
+      "detail": ""
+    },
+    "add-tests-file-defines-tests": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "fb9a9b3cecef4a346083ecc0de1306f03f2f3ff314fb2707322f58c316a7dd28",
+      "updated_at": "2026-10-23T15:09:51+00:00",
+      "detail": ""
+    },
+    "add-tests-pass": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "4ec290380572a97c2a73c508ab2cd70941d4af41380b01ae9370088467bf4cd0",
+      "updated_at": "2026-10-23T15:09:51+00:00",
+      "detail": ""
+    },
+    "arch-create-app": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "5743f1c6b7c0756800d5a311482a192eff938bd514b88d7d6306aa7873da4ae3",
+      "updated_at": "2026-10-23T14:52:06+00:00",
+      "detail": ""
+    },
+    "arch-project-root": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "963a9c8d79df3e5b34157759a4e995f31a6e09480971854b2fa5d6b98a58fb4a",
+      "updated_at": "2026-10-23T14:52:06+00:00",
+      "detail": ""
+    },
+    "arch-web-client": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "47e374e9ea7a4fa9aa56ca6b8c1188f01e476cdb0a834bf0872fce2c52bcf099",
+      "updated_at": "2026-10-23T14:52:06+00:00",
+      "detail": ""
+    },
+    "books-create": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "ca59d51a5e29f8826c70fdae26596031c2d743defed9f818b9b0d4520b814a61",
+      "updated_at": "2026-10-23T14:54:49+00:00",
+      "detail": ""
+    },
+    "books-delete": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "dca1552065d80211cbe3da1a041ae21d26970f5cb9991b60b84d64af7f2cfa46",
+      "updated_at": "2026-10-23T14:54:49+00:00",
+      "detail": ""
+    },
+    "books-get": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "ae55438284e914e577781c2b586e52d36980dedb8d735dfc17c5356cae41b7e8",
+      "updated_at": "2026-10-23T14:54:49+00:00",
+      "detail": ""
+    },
+    "books-list-order": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "c76cd9eb369f29cc817367a9e9ea4efba2362055261763d3ea2b18bae09e78cd",
+      "updated_at": "2026-10-23T14:54:49+00:00",
+      "detail": ""
+    },
+    "full-suite-gate": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "57a57554b6b0cfb64bf5f36609c734bf618148b2331d1fe0da150d9d5f8c6c1c",
+      "updated_at": "2026-10-23T15:19:28+00:00",
+      "detail": ""
+    },
+    "list-books-matches-store": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "e7db9a7bd8d31638576746123d47ff1021f6f635615132562d1090340a0a3b81",
+      "updated_at": "2026-10-23T14:58:59+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "list-books-ok": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "65cc54f8a9b8c91df0fc1e38d1d8f6f8550e8580aa40eb23ae2b32fd64a4cdca",
+      "updated_at": "2026-10-23T14:58:59+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "list-books-order-added": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "fe8a4a536629f31c3194179ddf5d2acbef1158ca29a7803230cb2c3ff72d1b35",
+      "updated_at": "2026-10-23T14:58:59+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "list-order-behavior": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "4b494604273858c108e6b1a9c9af51a64bec7f6d1dd8b76eefb3bc84d012eafd",
+      "updated_at": "2026-10-23T15:12:16+00:00",
+      "detail": ""
+    },
+    "list-tests-file-defines-tests": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "55d40981dc3d1f56682ede2f6a236712539cd0c1f13f2945f52156792732713f",
+      "updated_at": "2026-10-23T15:12:16+00:00",
+      "detail": ""
+    },
+    "list-tests-pass": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "542989b001a924a7796f91983a93ec4fc33a8bd12717206040c6c3a872c9d200",
+      "updated_at": "2026-10-23T15:12:16+00:00",
+      "detail": ""
+    },
+    "reject-author-empty-json": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "475b5db404b4061e00b6bb0187cc9d34103399696390aeb2cde9e8b37f44fb02",
+      "updated_at": "2026-10-23T15:05:28+00:00",
+      "detail": ""
+    },
+    "reject-author-html": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "076c5cf43be13f4b74818e3d9dd5b68f2e08e487b28a5ff27d21714021862dd8",
+      "updated_at": "2026-10-23T15:05:28+00:00",
+      "detail": ""
+    },
+    "reject-author-missing": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "282d1fcc67fd35ac2bd1e00a86a5505f402396abfa48ebb32ca7fc7f08a74b72",
+      "updated_at": "2026-10-23T15:05:28+00:00",
+      "detail": ""
+    },
+    "reject-author-whitespace": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "6d2f6d4b0e432106ed0f4d36b1f9d228601433a3efb44ba0746774002796f138",
+      "updated_at": "2026-10-23T15:05:28+00:00",
+      "detail": ""
+    },
+    "reject-title-empty-json": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "a0b9c3c50e7d713dc90a5eb74d909956159b08e3f869c03d1c0bc0ffeb320457",
+      "updated_at": "2026-10-23T15:03:33+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not subscriptable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "reject-title-html": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "112538e93f420e5190e3b56b76447ef19813b2e907a3d56486574baf9f71a110",
+      "updated_at": "2026-10-23T15:03:33+00:00",
+      "detail": ""
+    },
+    "reject-title-missing": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "7f6f697f44624322a7e84161b7107e1e2391229baed3af83556dc7ba289b2b80",
+      "updated_at": "2026-10-23T15:03:33+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not subscriptable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "reject-title-whitespace": {
+      "status": "ERROR",
+      "error_code": "malformed",
+      "code_sha256": "b6016926de473429eddafec5283937fe679a785cc160aaa3a94a9c6c3747a195",
+      "updated_at": "2026-10-23T15:03:33+00:00",
+      "detail": "malformed check: the assertion itself raised TypeError ('NoneType' object is not subscriptable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification."
+    },
+    "remove-book-keeps-order": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "d8e2d1d01b969323ecc00738a745e112340fbe5d035e15b30750f6429f2c214b",
+      "updated_at": "2026-10-23T15:01:29+00:00",
+      "detail": ""
+    },
+    "remove-book-omitted-on-next-read": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "eb526cc85a3b12c073553df55310055e8838a3a0683ae0c6735d97909e48da6b",
+      "updated_at": "2026-10-23T15:01:29+00:00",
+      "detail": ""
+    },
+    "remove-book-unknown-id": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "929872aabe280091c259ce4cc0bcad579ba7e24c93b6f0cc5df4df6a96e5e2f9",
+      "updated_at": "2026-10-23T15:01:29+00:00",
+      "detail": ""
+    },
+    "remove-omits-on-next-read": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "446fd0ccf1c63a84a274ff503d36391aa00af174916f1a3861d2a8c3dceee1cf",
+      "updated_at": "2026-10-23T15:14:14+00:00",
+      "detail": ""
+    },
+    "remove-preserves-order": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "1dd29802a60895ea41026429585fe7307d9d180e39a3cd58a743577c67a0335e",
+      "updated_at": "2026-10-23T15:14:14+00:00",
+      "detail": ""
+    },
+    "remove-tests-module-passes": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "0c51565ec8a68c19d57973a6211abfd82ac8b697a074bef5b7184e31a1bcd39b",
+      "updated_at": "2026-10-23T15:14:14+00:00",
+      "detail": ""
+    },
+    "remove-twice-second-404": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "35d24b4c7616616666489aef4b9917402b25ddf7d56fea0209b08ef6ef747b22",
+      "updated_at": "2026-10-23T15:14:14+00:00",
+      "detail": ""
+    },
+    "remove-unknown-id-404": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "75bff93502f748c898f23386646bfc7650b980db9bda3c268f85a1cb4c9ecdbf",
+      "updated_at": "2026-10-23T15:14:14+00:00",
+      "detail": ""
+    },
+    "runner-is-posix-script": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "f89976a0e8b20e70f6a82c3832380ed3ad465137e0964101966483d9065c778e",
+      "updated_at": "2026-10-23T15:19:28+00:00",
+      "detail": ""
+    },
+    "screen-index-reachable": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "de5cee5e7af190ada6ff3d1c33104d57bc7ae0d8ae02e591199613d2f2c9d1c7",
+      "updated_at": "2026-10-23T15:07:25+00:00",
+      "detail": ""
+    },
+    "screen-rejection-shown": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "075adbb34b1c14c93f798084db6b8f19553c61c765930d5757240d6e65fcf737",
+      "updated_at": "2026-10-23T15:07:25+00:00",
+      "detail": ""
+    },
+    "screen-remove-book": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "69c6fe3fa14835b790b082011dadd434303fbc8f28b68b968d9fafb4475d2f66",
+      "updated_at": "2026-10-23T15:07:25+00:00",
+      "detail": ""
+    },
+    "screen-shows-books-in-order": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "5c8baf4328c5b2f1bfbc3bcda919ae925267cc9aad74c41104a5aad715f20ef7",
+      "updated_at": "2026-10-23T15:07:25+00:00",
+      "detail": ""
+    },
+    "suite-files-present": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "daaced706f0509a483f72f2ec5945af5ab3f44bca4e6b8b4d892898e72c1bd7e",
+      "updated_at": "2026-10-23T15:19:28+00:00",
+      "detail": ""
+    },
+    "ui-base-shows-error": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "bb437a412f00ea884f0dc6333a282f35a89560d0658816b6765664483fb780f3",
+      "updated_at": "2026-10-23T14:55:06+00:00",
+      "detail": ""
+    },
+    "ui-base-template-loads": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "695bd19eb073e48d621eaec8fe0f388dd2bb8c23dba6bb64e49aa93df7d3b6df",
+      "updated_at": "2026-10-23T14:55:06+00:00",
+      "detail": ""
+    },
+    "ui-base-without-error": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "89e07dfaa1d5d147f2edbbae05ccd1750ea738cdac111d4be26cdbe469dfe721",
+      "updated_at": "2026-10-23T14:55:06+00:00",
+      "detail": ""
+    },
+    "validation-blank-author-rejected": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "190e0866477da3147a54e928de05aeeb45b1ef492f071d4b3f075b8362979654",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-blank-title-rejected": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "1209475c01badc70fd6de48377d7913b3047d7c74330c6da66cf466f459c62e1",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-browser-rejection-has-body": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "78976d9b1d17ab8b33f324c85e2b5241174d45168f946c2da0cd6279df5f9bb7",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-empty-author-rejected": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "0655c8246c6569f489d5826ca119fa677ded64c912786afb3c66793cdd8f6ab5",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-empty-title-rejected": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "41d537bfab557c0c67bbb065c8ab465eac986da5e57cc0cba91305a71a82db6d",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-missing-author-rejected": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "3d8ee36a175f011fd0054dde3593800c2501329865b81dbddb38af120252586d",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-missing-title-rejected": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "c9e41a6e4e7274ab3e356b95a298a19d62f2105137ec147d84ccd0ab411c64da",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    },
+    "validation-tests-module-passes": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "4f21619d46853cebb2325d0016a09ac1d509f5e8228db9e04392a939fe992e26",
+      "updated_at": "2026-10-23T15:16:48+00:00",
+      "detail": ""
+    }
+  }
+}

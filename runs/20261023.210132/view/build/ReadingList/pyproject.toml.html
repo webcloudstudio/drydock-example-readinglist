@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/pyproject.toml</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/pyproject.toml</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/pyproject.toml">Raw file</a></div></header>
+<article class="doc"><pre>[project]
+name = &quot;reading-list&quot;
+version = &quot;0.1.0&quot;
+description = &quot;A small personal reading-list web application&quot;
+requires-python = &quot;&gt;=3.11&quot;
+dependencies = [
+    &quot;Flask&gt;=3.1,&lt;4&quot;,
+]
+
+[dependency-groups]
+test = [
+    &quot;pytest&gt;=8,&lt;10&quot;,
+]
+
+[tool.pytest.ini_options]
+testpaths = [&quot;tests&quot;]
+addopts = &quot;-q&quot;
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/DECISIONS.json</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/DECISIONS.json</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/DECISIONS.json">Raw file</a></div></header>
+<article class="doc"><pre>[
+  {
+    &quot;id&quot;: &quot;Q-001&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyFields.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-fields&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Whitespace-only title or author&quot;,
+    &quot;description&quot;: &quot;The source rejects empty values and is silent on whitespace-only input. Options: treat whitespace-only as empty, or accept it. Treating it as empty is the narrowest reading of a reader-facing &#x27;empty&#x27;.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;reject-whitespace&quot;,
+        &quot;label&quot;: &quot;Strip and reject whitespace-only values&quot;
+      },
+      {
+        &quot;value&quot;: &quot;accept-whitespace&quot;,
+        &quot;label&quot;: &quot;Reject only zero-length values&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;reject-whitespace&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-002&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyFields.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-fields&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Response contract for rejected submissions&quot;,
+    &quot;description&quot;: &quot;The source gives no status code or error channel. Chosen: POST /books returns 400 with a JSON error body; the HTML form route re-renders the page with status 400 and a visible message.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;400&quot;,
+        &quot;label&quot;: &quot;400 Bad Request&quot;
+      },
+      {
+        &quot;value&quot;: &quot;422&quot;,
+        &quot;label&quot;: &quot;422 Unprocessable Entity&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;400&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-003&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RemoveBook.md&quot;,
+    &quot;story&quot;: &quot;remove-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Response for removal&quot;,
+    &quot;description&quot;: &quot;The source gives no removal response contract. Chosen: DELETE /books/{book_id} returns 204 on success and 404 for an unknown id.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;204-404&quot;,
+        &quot;label&quot;: &quot;204 on success, 404 for unknown id&quot;
+      },
+      {
+        &quot;value&quot;: &quot;204-always&quot;,
+        &quot;label&quot;: &quot;204 even for unknown id&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;204-404&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-004&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;SCREEN-ReadingList.md&quot;,
+    &quot;story&quot;: &quot;screen-reading-list&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Browser form routes versus JSON API&quot;,
+    &quot;description&quot;: &quot;Browser forms cannot issue DELETE, so the screen provides POST /add and POST /remove/{book_id} over the same services as the JSON routes. Server-rendered HTML with no client-side JavaScript was chosen as the narrowest interface.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;server-rendered-forms&quot;,
+        &quot;label&quot;: &quot;Server-rendered forms, no JavaScript&quot;
+      },
+      {
+        &quot;value&quot;: &quot;fetch-js&quot;,
+        &quot;label&quot;: &quot;Client-side fetch against the JSON API&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;server-rendered-forms&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-rejectemptyfields.md-validation-error-message-format&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyFields.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Validation error message format&quot;,
+    &quot;description&quot;: &quot;Missing, non-string, or whitespace-only fields produce &#x27;title must be non-empty text&#x27; (or &#x27;title and author must be non-empty text&#x27; when both fail). This names the field and is human-readable, as the spec requires. Acceptable, or should the wording change on replan?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Missing, non-string, or whitespace-only fields produce &#x27;title must be non-empty text&#x27; (or &#x27;title and author must be non-empty text&#x27; when both fail). This names the field and is human-readable, as the spec requires. Acceptable, or should the wording change on replan?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-testrunner.md-how-bin/test.sh-behavior-is-tested&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-TestRunner.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;How bin/test.sh behavior is tested&quot;,
+    &quot;description&quot;: &quot;The runner tests copy the real bin/test.sh into a temporary application root and run it with a stub pytest first on PATH. Running the real script from inside pytest would recurse. Is that acceptable?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The runner tests copy the real bin/test.sh into a temporary application root and run it with a stub pytest first on PATH. Running the real script from inside pytest would recurse. Is that acceptable?&quot;
+  }
+]
+</pre></article>
+</main>
+</body>
+</html>

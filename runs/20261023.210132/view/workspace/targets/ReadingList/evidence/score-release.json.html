@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/score-release.json</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/score-release.json</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/score-release.json">Raw file</a></div></header>
+<article class="doc"><pre>{
+  &quot;schema_version&quot;: 5,
+  &quot;recorded_at&quot;: &quot;2026-10-23T21:16:06+00:00&quot;,
+  &quot;target&quot;: &quot;ReadingList&quot;,
+  &quot;verdict&quot;: &quot;PASSED&quot;,
+  &quot;verdict_line&quot;: &quot;ReadingList: PASSED \u2014 6 of 6&quot;,
+  &quot;statement&quot;: &quot;ReadingList: PASSED \u2014 6 of 6\n\n  st-001  MET       governed gate full returned 0 with 18 passing tests; bin/test.sh:1-12\n  st-002  MET       probe: POST /books succeeded and GET / contained the submitted title; app_server/features/reading_list/routes.py:25-40\n  st-003  MET       probe: First Probe Book appeared before Second Probe Book; app_server/features/reading_list/routes.py:17-22\n  st-004  MET       probe: POST /books/&lt;id&gt;/delete succeeded and the removed title was absent from GET /; app_server/features/reading_list/routes.py:43-50\n  st-005  MET       probe: empty title and whitespace-only author both returned 400 with required-field messages; app_server/features/reading_list/routes.py:29-34\n  st-006  MET       tests/test_verification_runner.py:17-80; tests/test_reading_list_screen.py:38-88; governed gate full passed&quot;,
+  &quot;complete&quot;: true,
+  &quot;governed_gate&quot;: {
+    &quot;name&quot;: &quot;full&quot;,
+    &quot;outcome&quot;: &quot;PASS&quot;,
+    &quot;argv&quot;: [
+      &quot;sh&quot;,
+      &quot;sources/full_test.sh&quot;
+    ],
+    &quot;return_code&quot;: 0,
+    &quot;duration_ms&quot;: 4916,
+    &quot;detail&quot;: &quot;&quot;,
+    &quot;timed_out&quot;: false,
+    &quot;build_identity&quot;: &quot;3ba9a6fc64636198&quot;,
+    &quot;stdout&quot;: &quot;..................                                                       [100%]\n&quot;,
+    &quot;stderr&quot;: &quot;&quot;
+  },
+  &quot;criteria&quot;: [
+    {
+      &quot;criterion_id&quot;: &quot;st-001&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The supplied full gate passed and bin/test.sh is a POSIX executable invoking pytest.&quot;,
+      &quot;evidence&quot;: [
+        &quot;governed gate full returned 0 with 18 passing tests&quot;,
+        &quot;bin/test.sh:1-12&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-002&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The ephemeral probe successfully submitted a book and found it on the next list read.&quot;,
+      &quot;evidence&quot;: [
+        &quot;probe: POST /books succeeded and GET / contained the submitted title&quot;,
+        &quot;app_server/features/reading_list/routes.py:25-40&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-003&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The ephemeral probe confirmed books were displayed in insertion order.&quot;,
+      &quot;evidence&quot;: [
+        &quot;probe: First Probe Book appeared before Second Probe Book&quot;,
+        &quot;app_server/features/reading_list/routes.py:17-22&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-004&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The ephemeral probe removed a selected book and confirmed it was absent from the next read.&quot;,
+      &quot;evidence&quot;: [
+        &quot;probe: POST /books/&lt;id&gt;/delete succeeded and the removed title was absent from GET /&quot;,
+        &quot;app_server/features/reading_list/routes.py:43-50&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-005&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;The ephemeral probe confirmed empty title and author submissions return 400 responses with field-specific reasons.&quot;,
+      &quot;evidence&quot;: [
+        &quot;probe: empty title and whitespace-only author both returned 400 with required-field messages&quot;,
+        &quot;app_server/features/reading_list/routes.py:29-34&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-006&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Automated tests cover adding, insertion ordering, removal, and rejecting empty title and author.&quot;,
+      &quot;evidence&quot;: [
+        &quot;tests/test_verification_runner.py:17-80&quot;,
+        &quot;tests/test_reading_list_screen.py:38-88&quot;,
+        &quot;governed gate full passed&quot;
+      ]
+    }
+  ],
+  &quot;guardrail_ids&quot;: [],
+  &quot;observations&quot;: [],
+  &quot;blockers&quot;: [],
+  &quot;attestations&quot;: [],
+  &quot;kit_faults&quot;: [],
+  &quot;warnings&quot;: [],
+  &quot;improvements&quot;: [],
+  &quot;identities&quot;: {
+    &quot;code&quot;: &quot;08eb9a0fc8f4dcb4425ba8f9ad0ae5e4de5c61dd&quot;,
+    &quot;sea_trials&quot;: &quot;0d1c05649d96f906f963f89c12ad5c9c510e8d13a03b81ebff4efd9b9d691e9f&quot;,
+    &quot;blueprint&quot;: {
+      &quot;ARCHITECTURE.md&quot;: &quot;b6aaa721727d6d785b4ddbf830818102584f78446b4f2e57ba1bfddb1dfa554a&quot;,
+      &quot;ARCHITECTURE_compact.md&quot;: &quot;9debdaade4762c69b0ede9ce1269bfcd5c548c90c1dc214d3457f3cc86c413a2&quot;,
+      &quot;DATABASE.md&quot;: &quot;0bab0628f6130ff0e1c840409170226b73ac94f3a474ecee669f2d01577bbbd7&quot;,
+      &quot;DATABASE_compact.md&quot;: &quot;232477bf2e9d073cc69c80cbf7d3fe1e0744a54952f55e7806f26a0701a36cef&quot;,
+      &quot;FEATURE-ADD-BOOK.md&quot;: &quot;4f0a0049b4a12ee66194bf88e1a80527706bcaac981164e9b84698ebf64b16ee&quot;,
+      &quot;FEATURE-READING-LIST.md&quot;: &quot;869e7a401e9a11dc9d93974b7e8bacd0ed77a95a2a5e51c968e0dbc73ec68c35&quot;,
+      &quot;FEATURE-REMOVE-BOOK.md&quot;: &quot;61778c0517fc3c78608e367450e801d3173dc569769718cd94577cd31d80cf88&quot;,
+      &quot;FEATURE-VALIDATE-BOOK.md&quot;: &quot;45a2fdea982a272ce49fd3bce8a04ff3c98559767c19186bfeecafc915cd7c6e&quot;,
+      &quot;FEATURE-VERIFICATION.md&quot;: &quot;96f43a6006bc8aa865e4127e1e20a470709a060bba6168dba7a788bcf6c7247c&quot;,
+      &quot;SCREEN-ReadingList.md&quot;: &quot;b442ee2a69c9b9e5c92a3899500b1e0f3fd028c7fe5c8cff4df3990771bcbbfb&quot;,
+      &quot;UI-GENERAL.md&quot;: &quot;6f2477b3375daecce60509d945b2cf8af28b9aa47a32173449c94fcf6a00196c&quot;
+    }
+  },
+  &quot;execution_id&quot;: &quot;20261023.211537.447Z-31f2e099&quot;
+}
+</pre></article>
+</main>
+</body>
+</html>

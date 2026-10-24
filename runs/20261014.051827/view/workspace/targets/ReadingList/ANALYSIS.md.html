@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/ANALYSIS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/ANALYSIS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/ANALYSIS.md">Raw file</a></div></header>
+<article class="doc"><h1>Blueprint Analysis: ReadingList</h1>
+<h2>Commander Expectations</h2>
+<ul><li>assert the product lets a reader add a book with a title and an author</li><li>assert the product shows books in the order they were added</li><li>assert the product lets a reader remove a book</li><li>assert an empty title or author is rejected with a clear error message</li><li>assert the product includes automated tests for each behavior</li><li>assert the completed application provides a POSIX-compatible <code>bin/test.sh</code> that runs the complete automated test suite from the application root and exits zero only when every test passes</li></ul>
+<h2>Crew</h2>
+<div class="scroll"><table><thead><tr><th>Crew</th><th>Charge</th></tr></thead><tbody><tr><td>Commander</td><td>Defines intent and decides what done means.</td></tr><tr><td>Team Lead</td><td>Confirms epic completeness and stakeholder expectations.</td></tr><tr><td>Planning Crew</td><td>Authors atomic specifications and the ordered Manifest.</td></tr><tr><td>Shipyard Crew</td><td>Builds the tickets without synchronous Commander access.</td></tr></tbody></table></div>
+<h2>Story List</h2>
+<h3>Feature: Book List Management</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>BOOKS-001</td><td>Add a book with title and author</td><td>Submitting a title and an author stores the book and shows it in the list</td></tr><tr><td>BOOKS-002</td><td>Reject a submission with an empty title or author</td><td>An empty title or empty author is rejected and the reason is reported</td></tr><tr><td>BOOKS-003</td><td>List books in the order added</td><td>Books are presented in insertion order</td></tr><tr><td>BOOKS-004</td><td>Remove a book from the list</td><td>A removed book is omitted from the list on the next read</td></tr></tbody></table></div>
+<h3>Feature: Test Coverage and Verification</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>TEST-001</td><td>Automated tests cover adding a book</td><td>An automated test exercises the add behavior</td></tr><tr><td>TEST-002</td><td>Automated tests cover listing books in order added</td><td>An automated test exercises the ordering behavior</td></tr><tr><td>TEST-003</td><td>Automated tests cover removing a book</td><td>An automated test exercises the remove behavior</td></tr><tr><td>TEST-004</td><td>Automated tests cover rejecting an empty title or author</td><td>An automated test exercises the rejection behavior</td></tr><tr><td>TEST-005</td><td>Provide POSIX-compatible <code>bin/test.sh</code> runner</td><td><code>sh bin/test.sh</code> runs the complete automated test suite from the application root and exits zero only when every test passes</td></tr></tbody></table></div>
+<h2>Story Guidance</h2>
+<p>Named stories planning must produce. Authoritative record: <code>STORY_GUIDANCE.json</code>.</p>
+<p>None.</p>
+<h2>Surfaced Acceptance Criteria</h2>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story ID</th><th>Criterion</th></tr></thead><tbody><tr><td>AC-001</td><td>BOOKS-002</td><td>The rejection message names the failing field (title or author)</td></tr><tr><td>AC-002</td><td>BOOKS-004</td><td>Removing a book that is not in the list is reported without altering the list</td></tr></tbody></table></div>
+<h2>Source Inventory</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Content kind</th><th>Disposition</th><th>Reason</th></tr></thead><tbody><tr><td><code>sources/full_test.sh</code></td><td>code</td><td>analyzed</td><td>readable UTF-8</td></tr><tr><td><code>sources/reading-list.md</code></td><td>markdown</td><td>analyzed</td><td>readable UTF-8</td></tr></tbody></table></div>
+<h2>Relationship Model</h2>
+<div class="scroll"><table><thead><tr><th>Source or group</th><th>Relationship type</th><th>Related source or group</th><th>Evidence</th><th>Delivery implication</th></tr></thead><tbody><tr><td>sources/full_test.sh</td><td>test-kit-to-implementation</td><td>bin/test.sh</td><td><code>sources/full_test.sh</code> checks for <code>bin/test.sh</code> at the application root and execs it</td><td>The application must supply <code>bin/test.sh</code>; the harness reports its absence as failure</td></tr><tr><td>sources/reading-list.md</td><td>instruction-to-test</td><td>TEST-005</td><td><code>reading-list.md</code> requires <code>sh bin/test.sh</code> to exit zero only when every test passes</td><td>TEST-005 gates on the complete suite</td></tr><tr><td>sources/reading-list.md</td><td>dependency</td><td>BOOKS-001..004</td><td><code>reading-list.md</code> lists add, order, remove, and reject behaviors</td><td>Each behavior has a paired test story (TEST-001..004)</td></tr></tbody></table></div>
+<h2>Source Roles</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Role</th><th>Plan disposition</th><th>Build disposition</th></tr></thead><tbody><tr><td>sources/reading-list.md</td><td>author intent</td><td>compass</td><td>prompt-only</td></tr><tr><td>sources/full_test.sh</td><td>conformance harness</td><td>context</td><td>stage</td></tr></tbody></table></div>
+<h2>Planning Instructions</h2>
+<h3>Delivery Shape</h3>
+<p>The system is a web application that keeps a reading list. Inputs are a reader&#x27;s submitted title and author, and removal requests. Outputs are the rendered ordered list and validation errors. The required execution flow is: the application is built, then <code>sh bin/test.sh</code> runs from the application root, and <code>sources/full_test.sh</code> acts as the scoring entry point that delegates to it.</p>
+<h3>Story Realization Map</h3>
+<ul><li>BOOKS-001: add behavior. Evidence: <code>sources/reading-list.md</code> (&quot;add a book with a title and author&quot;). Requires a persistence capability and a submission route/screen.</li><li>BOOKS-002: rejection of empty fields. Evidence: <code>sources/reading-list.md</code> (&quot;An empty title or author is rejected with a clear error message&quot;). Requires validation and an error display.</li><li>BOOKS-003: ordering. Evidence: <code>sources/reading-list.md</code> (&quot;view the books in the order added&quot;). Requires stable insertion ordering in the store and list view.</li><li>BOOKS-004: removal. Evidence: <code>sources/reading-list.md</code> (&quot;remove a book&quot;). Requires a removal route/screen and persistence.</li><li>TEST-001..004: focused automated tests, one per behavior. Evidence: <code>sources/reading-list.md</code> (&quot;automated tests for each behavior&quot;).</li><li>TEST-005: POSIX runner <code>bin/test.sh</code> and terminal full-suite verification. Evidence: <code>sources/reading-list.md</code>, <code>sources/full_test.sh</code>. Requires the test harness capability.</li></ul>
+<h3>Test and Acceptance Strategy</h3>
+<p>Focused story tests run the slice each story owns and declare <code>Suite: scoped</code>. TEST-005 is the single terminal verification story. It depends on every implementation and test story, and its acceptance assertion declares <code>Suite: full</code>, running <code>sh bin/test.sh</code> unfiltered and requiring exit zero. Sea Trial st-001 proves the same complete-suite requirement.</p>
+<h3>Sequencing and Dependencies</h3>
+<ul><li>BOOKS-001 precedes BOOKS-002 and BOOKS-003 (the list must hold stored books before validation and ordering are observable).</li><li>BOOKS-003 precedes BOOKS-004 (removal is observed through the ordered list).</li><li>Each TEST-00n follows its BOOKS story.</li><li>TEST-005 follows every implementation and test story.</li></ul>
+<h3>Source Conflicts and Gaps</h3>
+<ul><li>None. The sources do not contain conflicting definitions. Stack and persistence choices are proposed in <code>TECHNOLOGY_STACK.md</code> and do not block planning.</li></ul>
+<h2>Analysis Notes</h2>
+<p>generated: 2026-10-14 blueprint: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/blueprint</p>
+<p>Quality: Ready blockers: 0 questions: 0 features: 2 stories: 9 stack: not declared display_name: ReadingList short_description: not proposed</p>
+<p>None.</p></article>
+</main>
+</body>
+</html>

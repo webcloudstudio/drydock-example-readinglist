@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.152418.545Z_readinglist_score-release_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.152418.545Z_readinglist_score-release_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.152418.545Z_readinglist_score-release_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>```json
+{
+  &quot;criteria&quot;: [
+    {
+      &quot;id&quot;: &quot;st-001&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;bin/test.sh exists as a POSIX sh script that runs pytest, and the pinned governed gate `sh sources/full_test.sh` exited 0 with 191 passed.&quot;,
+      &quot;evidence&quot;: [&quot;bin/test.sh:1-11 is `#!/bin/sh` with `set -eu` and ends in `exec pytest -q`&quot;, &quot;governed gate full: outcome PASS, return_code 0, stdout &#x27;191 passed in 9.87s&#x27;&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;st-002&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe POSTed a title and author through the real app over a fresh store; the submission redirected with 303 and the book was listed and rendered on the page.&quot;,
+      &quot;evidence&quot;: [&quot;app_server/books.py:create_book POST /books calls add_book and redirects 303&quot;, &quot;probe: add status 303 Location &#x27;/&#x27;&quot;, &quot;probe: GET /books returned [{&#x27;title&#x27;: &#x27;Dune&#x27;, &#x27;author&#x27;: &#x27;Frank Herbert&#x27;, ...}]&quot;, &quot;probe: GET / page contains &#x27;Dune&#x27; and &#x27;Frank Herbert&#x27;&quot;, &quot;tests/test_add_book.py round-trip tests pass in the gate&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;st-003&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe added Dune then Emma and the listing returned them oldest first; list_books sorts by ascending id rather than relying on an unordered select.&quot;,
+      &quot;evidence&quot;: [&quot;app_server/book_service.py:list_books returns sorted(..., key=id)&quot;, &quot;probe: list returned Dune (id 1) then Emma (id 2)&quot;, &quot;tests/test_list_books.py:58 test_several_books_are_listed_in_the_order_added passes in the gate&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;st-004&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe removed the first book via POST /books/&lt;id&gt;/delete and the next GET /books no longer contained it, while the other book remained.&quot;,
+      &quot;evidence&quot;: [&quot;app_server/books.py:delete_book POST /books/&lt;int:book_id&gt;/delete calls remove_book then 303&quot;, &quot;probe: after remove, GET /books returned [&#x27;Emma&#x27;]&quot;, &quot;tests/test_remove_book.py:64 test_removed_book_is_absent_from_the_next_listing passes in the gate&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;st-005&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe submitted an empty title and an empty author (blank whitespace); both were refused with 400 and a reason naming the field, and the reason appears in the page alert region for HTML requests.&quot;,
+      &quot;evidence&quot;: [&quot;app_server/book_service.py:add_book raises BookRejected(&#x27;rejected: title is empty&#x27; / &#x27;rejected: author is empty&#x27;) before any write&quot;, &quot;probe: empty title, HTML -&gt; 400, alert region and &#x27;rejected: title is empty&#x27; present&quot;, &quot;probe: blank author, JSON Accept -&gt; 400 {&#x27;error&#x27;: &#x27;rejected: author is empty&#x27;, &#x27;field&#x27;: &#x27;author&#x27;}&quot;, &quot;tests/test_reject_empty_title.py and test_reject_empty_author.py assert nothing is stored; they pass in the gate&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;st-006&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Test files exist for each named behavior (add, list in order, remove, reject empty title, reject empty author), and all 191 collected tests pass in the governed gate.&quot;,
+      &quot;evidence&quot;: [&quot;tests/test_add_book.py&quot;, &quot;tests/test_list_books.py (order-added tests at lines 58 and 117)&quot;, &quot;tests/test_remove_book.py&quot;, &quot;tests/test_reject_empty_title.py&quot;, &quot;tests/test_reject_empty_author.py&quot;, &quot;governed gate full: 191 passed, return_code 0&quot;]
+    }
+  ],
+  &quot;improvements&quot;: [
+    &quot;The round-trip tests in tests/test_add_book.py (and the other web tests that use committed_session) write to the configured shared store and clean up by deleting their own titles. Give them an isolated store per test, as the fixtures in test_add_book.py already do for their first half, so a failed run cannot leave rows behind in data/app.db.&quot;,
+    &quot;st-006 is judged by file names and the green suite rather than by a mapping from each named behavior to a test ID. Add a short traceability note in README.md mapping each criterion to its test file so that future reviews can confirm coverage without searching.&quot;
+  ]
+}
+```</pre></article>
+</main>
+</body>
+</html>

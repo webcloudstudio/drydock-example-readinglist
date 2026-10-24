@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-RejectEmptyAuthor.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-RejectEmptyAuthor.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-RejectEmptyAuthor.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Reject Empty Author</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>A book submission whose author is empty is rejected with a reported reason and nothing is stored.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md, UI-GENERAL.md</td></tr><tr><td>Provides</td><td>None</td></tr><tr><td>Consumes</td><td>POST /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The reader must never be able to add a book without an author. The submission is rejected and the reader is told why.</p>
+<h2>Trigger</h2>
+<p>A reader submits <code>POST /books</code> where the <code>author</code> form field is missing, empty, or whitespace-only.</p>
+<h2>Sequence</h2>
+<ol><li><code>POST /books</code> receives form fields <code>title</code> and <code>author</code>.</li><li>The author is trimmed. If the trimmed author is empty, validation fails. Title is checked first, so this rejection names <code>author</code> only when the title is valid.</li><li>The route answers status 400 and stores nothing.</li><li>If the request carries <code>Accept: application/json</code>, the body is JSON with <code>error</code> (a non-empty reason string) and <code>field</code> equal to <code>author</code>.</li><li>Otherwise the page is re-rendered in the shared layout&#x27;s error region with the reason shown, still with status 400.</li></ol>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Route</th><th>Behavior</th></tr></thead><tbody><tr><td><code>POST /books</code></td><td>Extended by this feature with author validation; valid submissions remain owned by FEATURE-AddBook.md</td></tr></tbody></table></div>
+<h2>Reads</h2>
+<p>None.</p>
+<h2>Writes</h2>
+<p>None. A rejected submission writes nothing.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC reject-author-empty-json ===<br>Intent: An empty author on POST /books answers 400 with a non-empty reason naming the author field and stores nothing.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>marker = &quot;RejAuthorEmptyTitle01&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.title == marker: db.books.delete(id=row.id)</p>
+<p>def stored(): with committed_session() as db: return [row for row in db.books.list() if row.title == marker]</p>
+<p>client = web_client() purge() try: response = client.post( &quot;/books&quot;, data={&quot;title&quot;: marker, &quot;author&quot;: &quot;&quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert isinstance(body[&quot;error&quot;], str) assert body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == &quot;author&quot; assert len(stored()) == 0 finally: purge() === END AC reject-author-empty-json ===</p>
+<p>=== AC reject-author-whitespace ===<br>Intent: A whitespace-only author is treated as empty, rejected with 400, and nothing is stored.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>marker = &quot;RejAuthorBlankTitle02&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.title == marker: db.books.delete(id=row.id)</p>
+<p>def stored(): with committed_session() as db: return [row for row in db.books.list() if row.title == marker]</p>
+<p>client = web_client() purge() try: response = client.post( &quot;/books&quot;, data={&quot;title&quot;: marker, &quot;author&quot;: &quot;   &quot;}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == &quot;author&quot; assert len(stored()) == 0 finally: purge() === END AC reject-author-whitespace ===</p>
+<p>=== AC reject-author-missing ===<br>Intent: A POST /books with no author field at all is rejected with 400 and nothing is stored.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>marker = &quot;RejAuthorMissingTitle03&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.title == marker: db.books.delete(id=row.id)</p>
+<p>def stored(): with committed_session() as db: return [row for row in db.books.list() if row.title == marker]</p>
+<p>client = web_client() purge() try: response = client.post( &quot;/books&quot;, data={&quot;title&quot;: marker}, headers={&quot;Accept&quot;: &quot;application/json&quot;}, ) assert response.status_code == 400 body = response.get_json() assert body[&quot;error&quot;].strip() assert body[&quot;field&quot;] == &quot;author&quot; assert len(stored()) == 0 finally: purge() === END AC reject-author-missing ===</p>
+<p>=== AC reject-author-html ===<br>Intent: A browser submission with an empty author is answered 400 with a re-rendered page and nothing is stored.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>marker = &quot;RejAuthorHtmlTitle04&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.title == marker: db.books.delete(id=row.id)</p>
+<p>def stored(): with committed_session() as db: return [row for row in db.books.list() if row.title == marker]</p>
+<p>client = web_client() purge() try: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: marker, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 assert len(response.data) &gt; 0 assert len(stored()) == 0 finally: purge() === END AC reject-author-html ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never accept an empty author.</li><li>Never reject a submission without a non-empty reason.</li><li>Never store a book from a rejected submission.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/bin/test.sh</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/bin/test.sh</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/bin/test.sh">Raw file</a></div></header>
+<article class="doc"><pre>#!/bin/sh
+# Run the complete automated suite from the application root.
+#
+# Exits zero only when every test passes. The exit status is pytest&#x27;s own, so any
+# failure, error, or collection problem is reported as non-zero.
+# POSIX sh only: no bashisms, arrays, or [[ ]].
+
+script_dir=$(CDPATH= cd -- &quot;$(dirname -- &quot;$0&quot;)&quot; &amp;&amp; pwd) || exit 1
+app_root=$(CDPATH= cd -- &quot;$script_dir/..&quot; &amp;&amp; pwd) || exit 1
+cd &quot;$app_root&quot; || exit 1
+
+if [ -f .venv/bin/activate ]; then
+    . .venv/bin/activate
+fi
+
+pytest -q
+</pre></article>
+</main>
+</body>
+</html>

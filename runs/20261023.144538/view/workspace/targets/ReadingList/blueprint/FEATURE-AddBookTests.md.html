@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-AddBookTests.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-AddBookTests.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-AddBookTests.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Add Book Tests</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Automated pytest tests that prove a reader can add a book and read it back with its title and author.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md</td></tr><tr><td>Provides</td><td>None</td></tr><tr><td>Consumes</td><td>POST /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Guarantee that adding a book is covered by an automated test that runs under <code>pytest -q</code>.</p>
+<h2>Deliverable</h2>
+<p><code>tests/test_add_book.py</code>, using the <code>web_client</code> fixture from <code>tests/conftest.py</code>. The file contains pytest tests covering at least:</p>
+<ul><li>a valid <code>POST /books</code> is answered 303;</li><li>the added book appears in <code>GET /books</code> with the title and author that were submitted;</li><li>adding two books keeps both, in the order added.</li></ul>
+<p>Each test uses criterion-owned unique titles and removes the books it created so tests do not depend on each other&#x27;s residue.</p>
+<h2>Reads</h2>
+<p><code>GET /books</code>.</p>
+<h2>Writes</h2>
+<p><code>POST /books</code>.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC add-tests-file-defines-tests ===<br>Intent: tests/test_add_book.py exists, parses, defines at least three test functions, and exercises the books route.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>import ast from pathlib import Path</p>
+<p>path = Path(&quot;tests/test_add_book.py&quot;) assert path.is_file() source = path.read_text(encoding=&quot;utf-8&quot;) tree = ast.parse(source) names = [ node.name for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith(&quot;test_&quot;) ] assert len(names) &gt;= 3 assert &quot;/books&quot; in source === END AC add-tests-file-defines-tests ===</p>
+<p>=== AC add-tests-pass ===<br>Intent: The add-book test file passes when run with pytest from the application root.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>import subprocess import sys</p>
+<p>result = subprocess.run( [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;-q&quot;, &quot;tests/test_add_book.py&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC add-tests-pass ===</p>
+<p>=== AC add-roundtrip-behavior ===<br>Intent: Adding a book through POST /books is readable back through GET /books with the supplied title and author.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>title = &quot;AddTestsRoundTripTitle&quot; author = &quot;AddTestsRoundTripAuthor&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.title == title and row.author == author: db.books.delete(id=row.id)</p>
+<p>client = web_client() purge() try: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 303 rows = [r for r in client.get(&quot;/books&quot;).get_json() if r[&quot;title&quot;] == title] assert len(rows) == 1 assert rows[0][&quot;author&quot;] == author finally: purge() === END AC add-roundtrip-behavior ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Tests assert observable state (status codes and parsed responses), not printed text.</li><li>Tests remove only the books they created.</li></ul></article>
+</main>
+</body>
+</html>

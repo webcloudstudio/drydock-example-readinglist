@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/routes/pages.py</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/routes/pages.py</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../build/ReadingList/app_server/routes/pages.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Application-level routes: the health check and the reading list page.
+
+Each handler parses form or HTTP input, calls the book service, and shapes the response.
+&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from flask import Blueprint, Response, current_app, jsonify, redirect, render_template, request, url_for
+
+from app_server.services import books as book_service
+
+pages = Blueprint(&quot;pages&quot;, __name__)
+
+
+@pages.get(&quot;/health&quot;)
+def health() -&gt; tuple[Response, int]:
+    return jsonify({&quot;status&quot;: &quot;ok&quot;}), 200
+
+
+@pages.get(&quot;/&quot;)
+def index() -&gt; tuple[str, int]:
+    return _render_reading_list(), 200
+
+
+@pages.post(&quot;/add&quot;)
+def add() -&gt; tuple[str, int] | Response:
+    db = current_app.extensions[&quot;db&quot;]
+    title = request.form.get(&quot;title&quot;)
+    author = request.form.get(&quot;author&quot;)
+    try:
+        book_service.add_book(db, title, author)
+    except ValueError as error:
+        return _render_reading_list(error=str(error), title=title, author=author), 400
+    return redirect(url_for(&quot;pages.index&quot;), code=303)
+
+
+@pages.post(&quot;/remove/&lt;int:book_id&gt;&quot;)
+def remove(book_id: int) -&gt; Response:
+    book_service.remove_book(current_app.extensions[&quot;db&quot;], book_id)
+    return redirect(url_for(&quot;pages.index&quot;), code=303)
+
+
+def _render_reading_list(
+    error: str | None = None, title: str | None = None, author: str | None = None
+) -&gt; str:
+    &quot;&quot;&quot;Render the page with every book in the order added; echo rejected form values back.&quot;&quot;&quot;
+    books = book_service.list_books(current_app.extensions[&quot;db&quot;])
+    return render_template(
+        &quot;reading_list.html&quot;,
+        books=books,
+        error=error,
+        title=title or &quot;&quot;,
+        author=author or &quot;&quot;,
+    )
+</pre></article>
+</main>
+</body>
+</html>

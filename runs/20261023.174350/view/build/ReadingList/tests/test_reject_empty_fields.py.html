@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_reject_empty_fields.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_reject_empty_fields.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_reject_empty_fields.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Reject empty fields: POST /books answers 400 with a clear error and stores nothing.&quot;&quot;&quot;
+
+import pytest
+from flask.testing import FlaskClient
+
+from persistence import Database
+
+REJECTED_PAYLOADS = [
+    {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;A&quot;},
+    {&quot;title&quot;: &quot;T&quot;, &quot;author&quot;: &quot;&quot;},
+    {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;},
+    {&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: &quot;A&quot;},
+    {&quot;title&quot;: &quot;T&quot;, &quot;author&quot;: &quot;\t\n&quot;},
+    {&quot;author&quot;: &quot;A&quot;},
+    {&quot;title&quot;: &quot;T&quot;},
+    {},
+    {&quot;title&quot;: 42, &quot;author&quot;: &quot;A&quot;},
+]
+
+
+@pytest.mark.parametrize(&quot;payload&quot;, REJECTED_PAYLOADS)
+def test_blank_or_missing_field_answers_400_with_error_message(
+    fresh_client: FlaskClient, payload: dict
+) -&gt; None:
+    response = fresh_client.post(&quot;/books&quot;, json=payload)
+
+    assert response.status_code == 400
+    assert isinstance(response.get_json()[&quot;error&quot;], str)
+
+
+@pytest.mark.parametrize(
+    &quot;payload, field&quot;,
+    [({&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;A&quot;}, &quot;title&quot;), ({&quot;title&quot;: &quot;T&quot;, &quot;author&quot;: &quot;  &quot;}, &quot;author&quot;)],
+)
+def test_error_names_the_offending_field(fresh_client: FlaskClient, payload: dict, field: str) -&gt; None:
+    error = fresh_client.post(&quot;/books&quot;, json=payload).get_json()[&quot;error&quot;]
+
+    assert field in error
+
+
+def test_non_json_body_answers_400(fresh_client: FlaskClient) -&gt; None:
+    response = fresh_client.post(&quot;/books&quot;, data=&quot;not json&quot;, content_type=&quot;text/plain&quot;)
+
+    assert response.status_code == 400
+
+
+def test_rejected_submissions_store_nothing(fresh_client: FlaskClient, fresh_db: Database) -&gt; None:
+    kept = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;A&quot;}).get_json()
+    before = [book.id for book in fresh_db.books.list()]
+
+    for payload in REJECTED_PAYLOADS:
+        assert fresh_client.post(&quot;/books&quot;, json=payload).status_code == 400
+
+    after = [book.id for book in fresh_db.books.list()]
+    assert after == before == [kept[&quot;id&quot;]]
+</pre></article>
+</main>
+</body>
+</html>

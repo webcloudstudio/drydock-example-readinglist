@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_persistence.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_persistence.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_persistence.py">Raw file</a></div></header>
+<article class="doc"><pre>import pytest
+
+from persistence import PersistenceError, UnknownOperation
+from persistence.schema import Book
+from persistence.testing import db_session as open_session
+
+
+def test_new_store_lists_no_books(db_session):
+    assert db_session.books.list() == []
+
+
+def test_create_returns_id_and_get_reads_back_the_book(db_session):
+    book_id = db_session.books.create(title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+    assert db_session.books.get(id=book_id) == Book(id=book_id, title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+
+
+def test_get_returns_none_for_absent_id(db_session):
+    assert db_session.books.get(id=999) is None
+
+
+def test_list_returns_books_in_insertion_order(db_session):
+    first = db_session.books.create(title=&quot;A&quot;, author=&quot;One&quot;)
+    second = db_session.books.create(title=&quot;B&quot;, author=&quot;Two&quot;)
+    third = db_session.books.create(title=&quot;C&quot;, author=&quot;Three&quot;)
+    assert [book.id for book in db_session.books.list()] == [first, second, third]
+
+
+def test_delete_removes_only_the_named_book(db_session):
+    keep = db_session.books.create(title=&quot;Keep&quot;, author=&quot;Author&quot;)
+    drop = db_session.books.create(title=&quot;Drop&quot;, author=&quot;Author&quot;)
+    assert db_session.books.delete(id=drop) == 1
+    assert db_session.books.get(id=drop) is None
+    assert db_session.books.get(id=keep).title == &quot;Keep&quot;
+
+
+def test_delete_of_absent_id_removes_nothing(db_session):
+    db_session.books.create(title=&quot;Only&quot;, author=&quot;Author&quot;)
+    assert db_session.books.delete(id=999) == 0
+    assert len(db_session.books.list()) == 1
+
+
+def test_undeclared_verb_raises_unknown_operation(db_session):
+    with pytest.raises(UnknownOperation):
+        db_session.books.update(id=1, title=&quot;Nope&quot;)
+
+
+def test_stores_are_isolated_between_sessions():
+    with open_session() as first:
+        first.books.create(title=&quot;Only in first&quot;, author=&quot;Author&quot;)
+    with open_session() as second:
+        assert second.books.list() == []
+
+
+def test_persistence_error_is_a_runtime_error():
+    assert issubclass(PersistenceError, RuntimeError)
+</pre></article>
+</main>
+</body>
+</html>

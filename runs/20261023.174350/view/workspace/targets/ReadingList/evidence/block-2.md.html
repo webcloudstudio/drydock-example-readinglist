@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-2.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-2.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-2.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 2 · Foundational (block-2)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 13887</li><li>execution id: 20261023.175049.857Z-ba4d9a18</li></ul>
+<h2>Stories built</h2>
+<ul><li>Declare the books table and its repository operations. (database) [story]</li><li>Provide the Flask application factory, shared page layout, and web_client test fixture. (app-shell) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-AppShell.md#appshell-factory: python-package=flask; scope=test; authorization=existing Target environment</li><li>FEATURE-AppShell.md#appshell-client: python-package=flask; scope=test; authorization=existing Target environment</li><li>FEATURE-AppShell.md#appshell-health: python-package=flask; scope=test; authorization=existing Target environment</li><li>FEATURE-AppShell.md#appshell-unknown-route: python-package=flask; scope=test; authorization=existing Target environment</li></ul>
+<h2>Reusable compacts</h2>
+<ul><li>DATABASE_compact.md</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 895)</li><li>implements: DATABASE.md (SP 2304)</li><li>context: ARCHITECTURE_compact.md (SP 424)</li><li>stack: persistence.md (SP 4315)</li><li>stack: sqlite.md (SP 3027)</li><li>implements: FEATURE-AppShell.md (SP 1076)</li><li>context: DATABASE.md (SP 2304)</li><li>stack: flask.md (SP 691)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/config.py</li><li>app_server/routes/<strong>init</strong>.py</li><li>app_server/routes/pages.py</li><li>app_server/templates/base.html</li><li>app_server/testing.py</li><li>tests/conftest.py</li><li>tests/test_app_shell.py</li><li>tests/test_books_persistence.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: books-create (DATABASE.md)</li></ul>
+<p>intent: books.create stores a book and returns the declared Output row carrying the supplied title and author. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: books-get (DATABASE.md)</li></ul>
+<p>intent: books.get reads back a created book by id with the stored title and author. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: books-list (DATABASE.md)</li></ul>
+<p>intent: books.list returns books in the order they were added. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: books-delete (DATABASE.md)</li></ul>
+<p>intent: books.delete removes a book so it no longer appears in the next list read, and leaves other books in place. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: appshell-factory (FEATURE-AppShell.md)</li></ul>
+<p>intent: create_app returns a Flask application. error: foundation not built: <code>app_server</code> is the package the web-server foundation (django.md, fastapi.md, flask.md) builds, and the build directory has no <code>app_server/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: appshell-client (FEATURE-AppShell.md)</li></ul>
+<p>intent: web_client returns a usable test client for a testing-mode app. error: foundation not built: <code>app_server</code> is the package the web-server foundation (django.md, fastapi.md, flask.md) builds, and the build directory has no <code>app_server/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: appshell-health (FEATURE-AppShell.md)</li></ul>
+<p>intent: GET /health is reachable and answers 200 with a JSON body. error: foundation not built: <code>app_server</code> is the package the web-server foundation (django.md, fastapi.md, flask.md) builds, and the build directory has no <code>app_server/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: appshell-unknown-route (FEATURE-AppShell.md)</li></ul>
+<p>intent: A path no feature declares is absent and answers 404. error: foundation not built: <code>app_server</code> is the package the web-server foundation (django.md, fastapi.md, flask.md) builds, and the build directory has no <code>app_server/</code>. The criterion exercises the built application, so it was not run.</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: books-create (DATABASE.md)</li></ul>
+<p>intent: books.create stores a book and returns the declared Output row carrying the supplied title and author. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: books-get (DATABASE.md)</li></ul>
+<p>intent: books.get reads back a created book by id with the stored title and author. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: books-list (DATABASE.md)</li></ul>
+<p>intent: books.list returns books in the order they were added. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: books-delete (DATABASE.md)</li></ul>
+<p>intent: books.delete removes a book so it no longer appears in the next list read, and leaves other books in place. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: appshell-factory (FEATURE-AppShell.md)</li></ul>
+<p>intent: create_app returns a Flask application. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: appshell-client (FEATURE-AppShell.md)</li></ul>
+<p>intent: web_client returns a usable test client for a testing-mode app. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: appshell-health (FEATURE-AppShell.md)</li></ul>
+<p>intent: GET /health is reachable and answers 200 with a JSON body. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: appshell-unknown-route (FEATURE-AppShell.md)</li></ul>
+<p>intent: A path no feature declares is absent and answers 404. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>The DATABASE layer is already generated on disk (<code>persistence/</code>, <code>schema.sql</code>), so this block&#x27;s work is the app shell plus callers-free wiring. Let me check the toolchain and existing test run before writing anything.The venv works (Flask 3.1.3, pytest 9.1.1) and the existing 8 foundation tests pass. Plan for this block:</p>
+<ul><li><strong>database story:</strong> the <code>persistence/</code> package and <code>schema.sql</code> are Drydock-generated and already on disk, so I write no persistence code. I&#x27;ll add tests that prove the declared <code>books</code> operations through <code>db_session</code>.</li><li><strong>app-shell story:</strong> <code>app_server</code> factory, typed <code>Config</code>, <code>/health</code> blueprint, <code>base.html</code>, <code>testing.web_client()</code>, and the <code>conftest.py</code> fixtures.</li></ul>
+<p>Writing the app shell first.Now the fixtures. The existing <code>conftest.py</code> must be read before I edit it.I referenced <code>Iterator</code> without importing it; fixing that now.Now the tests. Each one acts on the system and reads the result back through a public interface, with no stdout scraping.The <code>web_client</code> import in <code>test_app_shell.py</code> shares a name with the fixture parameter, which is confusing to read. I&#x27;ll alias it, then run the suite.All 25 pass (17 new plus the 8 foundation checks). Before I report, I&#x27;ll confirm the rollback fixture left the store empty of test rows and check the working-tree changes.&lt;reusable-compact filename=&quot;DATABASE.md&quot;&gt;<br>Store: SQLite via generated <code>persistence</code> (DSN: DATABASE_URL &gt; DATABASE_PATH &gt; data/app.db). Schema applied only at DATABASE step, never at startup. Table <code>books</code>: id INTEGER PK autoincrement (ascending id = order added); title TEXT NOT NULL; author TEXT NOT NULL. Ops (<code>db.books.&lt;verb&gt;</code>):</p>
+<ul><li>create(title, author) -&gt; Book(id, title, author)</li><li>get(id) -&gt; Book | None</li><li>list() -&gt; list[Book], ordered id ASC</li><li>delete(id) -&gt; DeletedBook(id)</li></ul>
+<p>Row type: frozen dataclass <code>persistence.schema.Book</code>. Fixtures: <code>persistence.testing.db_session()</code> (rollback), <code>committed_session()</code>.<br>Guardrails: only <code>persistence/</code> touches the store; callers use <code>db.books.&lt;verb&gt;</code>; books ordered id ASC only. &lt;/reusable-compact&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/config.py</li><li>app_server/testing.py</li><li>app_server/routes/<strong>init</strong>.py</li><li>app_server/routes/pages.py</li><li>app_server/templates/base.html</li><li>tests/conftest.py</li><li>tests/test_app_shell.py</li><li>tests/test_books_persistence.py</li></ul>
+<p>SUMMARY:</p>
+<ul><li><strong>database story:</strong> No persistence code written. The generated <code>persistence/</code> package and <code>schema.sql</code> were already on disk from Drydock, and I left them untouched. <code>tests/test_books_persistence.py</code> (7 tests) exercises <code>books.create/get/list/delete</code> through the rollback <code>db_session</code> fixture. It mirrors the four DATABASE.md acceptance assertions and adds boundary cases (distinct ids, <code>get</code> returns None after delete, create visible within the transaction).</li><li><strong>app-shell story:</strong><ul><li><code>create_app()</code> loads a typed <code>Config</code>, opens the store with <code>open_database</code>, stores the handle in <code>app.extensions[&quot;db&quot;]</code>, and registers only the health blueprint. It applies no schema.</li><li><code>app_server/config.py</code> is the only environment reader; it resolves DATABASE_URL &gt; DATABASE_PATH &gt; <code>data/app.db</code>.</li><li><code>GET /health</code> returns 200 with <code>{&quot;status&quot;: &quot;ok&quot;}</code> (in <code>routes/pages.py</code>).</li><li><code>base.html</code> has a title block, a content block, minimal CSS, and no JavaScript.</li><li><code>testing.web_client()</code> returns a testing-mode test client.</li><li><code>tests/test_app_shell.py</code> (10 tests) covers the four appshell acceptance assertions plus the route-set boundary, template title rendering, and config precedence.</li></ul></li><li><strong>Choices I made:</strong><ul><li>I added a <code>db_session</code> fixture to <code>tests/conftest.py</code> alongside <code>web_client</code>, because ARCHITECTURE.md lists both. The story text only names <code>web_client</code>.</li><li><code>Config</code> lives in <code>app_server/config.py</code>, and the health route lives in <code>routes/pages.py</code>.</li></ul></li><li><strong>Test results:</strong> <code>.venv/bin/python -m pytest -q</code> from the application root reports 25 passed (8 foundation, 10 app shell, 7 books). The books tests leave <code>data/app.db</code> with 0 rows, so the rollback isolation holds.</li><li><strong>Not done in this block:</strong> <code>bin/test.sh</code> does not exist yet, so <code>sources/full_test.sh</code> will exit 1 until a later story creates it. That is outside this block&#x27;s scope.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>None for this block.</li></ul></article>
+</main>
+</body>
+</html>

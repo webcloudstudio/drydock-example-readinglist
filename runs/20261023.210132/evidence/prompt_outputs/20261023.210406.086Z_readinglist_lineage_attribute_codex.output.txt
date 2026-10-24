@@ -1,0 +1,11 @@
+<requirement name="provide-test-runner" stories="verification">
+the application provides a POSIX-compatible bin/test.sh
+</requirement>
+<unattached story="architecture"/>
+<unattached story="database"/>
+<unattached story="ui-general"/>
+<unattached story="reading-list"/>
+<unattached story="add-book"/>
+<unattached story="remove-book"/>
+<unattached story="validate-book"/>
+<unattached story="reading-list-screen"/>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE.md">Raw file</a></div></header>
+<article class="doc"><h1>DATABASE: ReadingList</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Persistence stores and typed interfaces for ReadingList.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>persistence.books</td></tr><tr><td>Build Order</td><td>1</td></tr></tbody></table></div>
+<h2>Persistence Boundary</h2>
+<div class="scroll"><table><thead><tr><th>Boundary</th><th>Rule</th></tr></thead><tbody><tr><td>Raw storage access</td><td>Only the generated <code>persistence/</code> package reaches the store.</td></tr><tr><td>Caller dependency</td><td>Features depend on declared access patterns and their DTOs, not on schemas.</td></tr><tr><td>Implementation</td><td>Generated from this file at the DATABASE build step; never written by hand.</td></tr></tbody></table></div>
+<h2>Access Patterns</h2>
+<h3>FEATURE-READING-LIST-001 — List books</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-READING-LIST.md</td></tr><tr><td>Access</td><td>read</td></tr><tr><td>Repository operation</td><td><code>books.list</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: <code>BookListInput</code></p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td></tr></tbody></table></div>
+<p>Output: <code>BookRow[]</code></p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td></tr><tr><td>title</td><td>TEXT</td></tr><tr><td>author</td><td>TEXT</td></tr><tr><td>insertion_order</td><td>INTEGER</td></tr></tbody></table></div>
+<h3>FEATURE-ADD-BOOK-001 — Create a book</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-ADD-BOOK.md</td></tr><tr><td>Access</td><td>write</td></tr><tr><td>Repository operation</td><td><code>books.create</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: <code>BookCreateInput</code></p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>title</td><td>TEXT</td><td>yes</td></tr><tr><td>author</td><td>TEXT</td><td>yes</td></tr><tr><td>insertion_order</td><td>INTEGER</td><td>yes</td></tr></tbody></table></div>
+<p>Output: <code>BookRow</code></p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td></tr><tr><td>title</td><td>TEXT</td></tr><tr><td>author</td><td>TEXT</td></tr><tr><td>insertion_order</td><td>INTEGER</td></tr></tbody></table></div>
+<h3>FEATURE-REMOVE-BOOK-001 — Delete a book</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-REMOVE-BOOK.md</td></tr><tr><td>Access</td><td>write</td></tr><tr><td>Repository operation</td><td><code>books.delete</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: <code>BookDeleteInput</code></p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>yes</td></tr></tbody></table></div>
+<p>Output: <code>DeletedBook</code></p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td></tr></tbody></table></div>
+<h2>Schemas</h2>
+<h2><code>books</code></h2>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER PK</td><td>Stable book identifier.</td></tr><tr><td>title</td><td>TEXT NOT NULL</td><td>Book title.</td></tr><tr><td>author</td><td>TEXT NOT NULL</td><td>Book author.</td></tr><tr><td>insertion_order</td><td>INTEGER NOT NULL UNIQUE</td><td>Monotonic order assigned when the book is added.</td></tr></tbody></table></div>
+<h2>Migrations</h2>
+<div class="scroll"><table><thead><tr><th>Access Pattern</th><th>Revision</th><th>State</th></tr></thead><tbody><tr><td>FEATURE-READING-LIST-001</td><td>MIGRATION-FEATURE-READING-LIST-001</td><td>planned</td></tr><tr><td>FEATURE-ADD-BOOK-001</td><td>MIGRATION-FEATURE-ADD-BOOK-001</td><td>planned</td></tr><tr><td>FEATURE-REMOVE-BOOK-001</td><td>MIGRATION-FEATURE-REMOVE-BOOK-001</td><td>planned</td></tr></tbody></table></div>
+<h2>Config (.env)</h2>
+<div class="scroll"><table><thead><tr><th>Key</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead><tbody><tr><td>DATABASE_URL</td><td>string</td><td>no</td><td>Optional database DSN; overrides <code>DATABASE_PATH</code>.</td></tr><tr><td>DATABASE_PATH</td><td>string</td><td>no</td><td>Optional local database path; defaults to <code>data/app.db</code>.</td></tr></tbody></table></div>
+<h2>File Stores</h2>
+<div class="scroll"><table><thead><tr><th>Store</th><th>Root dir</th><th>Notes</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>No file store.</td></tr></tbody></table></div>
+<h2>External Services</h2>
+<div class="scroll"><table><thead><tr><th>Service</th><th>Wrapper</th><th>Notes</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>No external services.</td></tr></tbody></table></div>
+<h2>External Libraries</h2>
+<div class="scroll"><table><thead><tr><th>Library</th><th>Ownership</th><th>Distribution</th><th>Consumer Contract</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>No external persistence libraries.</td></tr></tbody></table></div>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC database-books-create ===<br>Intent: The books create operation returns the declared book row with the supplied values.</p>
+<p>from persistence.testing import db_session</p>
+<p>title = &quot;The Left Hand of Darkness&quot; author = &quot;Ursula K. Le Guin&quot; insertion_order = 1</p>
+<p>with db_session() as db: row = db.books.create( title=title, author=author, insertion_order=insertion_order, ) assert row.title == title assert row.author == author assert row.insertion_order == insertion_order === END AC database-books-create ===</p>
+<p>=== AC database-books-list ===<br>Intent: The books list operation returns books in insertion order.</p>
+<p>from persistence.testing import db_session</p>
+<p>first_title = &quot;Dune&quot; first_author = &quot;Frank Herbert&quot; second_title = &quot;Kindred&quot; second_author = &quot;Octavia E. Butler&quot;</p>
+<p>with db_session() as db: db.books.create( title=first_title, author=first_author, insertion_order=1, ) db.books.create( title=second_title, author=second_author, insertion_order=2, ) rows = db.books.list()</p>
+<p>assert [row.title for row in rows] == [first_title, second_title] assert [row.author for row in rows] == [first_author, second_author] === END AC database-books-list ===</p>
+<p>=== AC database-books-delete ===<br>Intent: The books delete operation returns the selected identifier and removes that book from subsequent reads.</p>
+<p>from persistence.testing import db_session</p>
+<p>title = &quot;A Wizard of Earthsea&quot; author = &quot;Ursula K. Le Guin&quot;</p>
+<p>with db_session() as db: created = db.books.create( title=title, author=author, insertion_order=1, ) deleted = db.books.delete(id=created.id) assert deleted.id == created.id</p>
+<p>remaining = db.books.list() assert all(row.id != created.id for row in remaining) === END AC database-books-delete ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Empty titles and authors are rejected by the feature validation boundary before persistence.</li><li>Books retain insertion order and are never silently reordered.</li><li>Raw storage access remains encapsulated by the generated persistence package.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/conftest.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/conftest.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/conftest.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Shared pytest configuration for the ReadingList test suite.
+
+Exposes the project root, the in-process web client, and the rollback database session.
+&quot;&quot;&quot;
+
+from collections.abc import Iterator
+from pathlib import Path
+
+import pytest
+from flask import Flask
+from flask.testing import FlaskClient
+
+from app_server import create_app
+from app_server import testing as app_testing
+from app_server.config import Config
+from persistence import testing as persistence_testing
+from persistence.db import Database
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+@pytest.fixture(scope=&quot;session&quot;)
+def project_root() -&gt; Path:
+    &quot;&quot;&quot;Return the application root directory.&quot;&quot;&quot;
+    return PROJECT_ROOT
+
+
+@pytest.fixture
+def web_client() -&gt; FlaskClient:
+    &quot;&quot;&quot;Return a test client for a testing-mode application.&quot;&quot;&quot;
+    return app_testing.web_client()
+
+
+@pytest.fixture
+def store_path(tmp_path: Path) -&gt; Path:
+    &quot;&quot;&quot;Return the path of a store private to this test; the configured application store is never touched.&quot;&quot;&quot;
+    return tmp_path / &quot;books.db&quot;
+
+
+@pytest.fixture
+def fresh_app(store_path: Path, project_root: Path) -&gt; Flask:
+    &quot;&quot;&quot;Return a testing-mode application over an empty store with the generated schema applied.&quot;&quot;&quot;
+    app = create_app(Config(database_dsn=str(store_path)))
+    app.config[&quot;TESTING&quot;] = True
+    app.extensions[&quot;db&quot;].execute_script((project_root / &quot;schema.sql&quot;).read_text(encoding=&quot;utf-8&quot;))
+    return app
+
+
+@pytest.fixture
+def fresh_client(fresh_app: Flask) -&gt; FlaskClient:
+    &quot;&quot;&quot;Return a test client bound to the empty per-test store.&quot;&quot;&quot;
+    return fresh_app.test_client()
+
+
+@pytest.fixture
+def fresh_db(fresh_app: Flask) -&gt; Database:
+    &quot;&quot;&quot;Return the database handle of the empty per-test store.&quot;&quot;&quot;
+    return fresh_app.extensions[&quot;db&quot;]
+
+
+@pytest.fixture
+def db_session() -&gt; Iterator[Database]:
+    &quot;&quot;&quot;Yield the configured store&#x27;s database inside a transaction that always rolls back.&quot;&quot;&quot;
+    with persistence_testing.db_session() as db:
+        yield db
+</pre></article>
+</main>
+</body>
+</html>

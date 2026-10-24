@@ -1,0 +1,310 @@
+=== BEGIN ARTIFACT TOPOLOGY.md ===
+## Declarations
+
+## story foundation
+summary:      Stand up the Python project root, environment, pytest runner, and application skeleton.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   ARCHITECTURE.md
+stack:        python.md
+provides:     create_app
+acceptance:   yes
+instructions: |
+  Create the Python project root with pyproject.toml, a committed uv.lock, the .venv launchers
+  under bin/, and a pytest configuration so that `pytest -q` runs from the application root.
+
+  Create the app_server package with a create_app() factory returning a Flask app, and
+  app_server/testing.py exposing web_client(). Add tests/conftest.py exposing the web_client and
+  db_session fixtures. Do not create bin/test.sh here; the verification story owns it.
+
+## story database
+summary:      Declare and provision the books table and its repository operations.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   DATABASE.md
+stack:        python.md, persistence.md, sqlite.md
+provides:     books.create, books.list, books.get, books.delete
+depends:      foundation
+acceptance:   yes
+instructions: |
+  Implement the DATABASE.md declaration. Drydock generates the persistence package and
+  schema.sql; write no persistence code by hand. Verify every declared books operation through
+  the generated package.
+
+## story web-shell
+summary:      Provide the shared page layout and register the web server wiring in the application factory.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   UI-GENERAL.md
+stack:        python.md, flask.md
+provides:     base layout template
+depends:      foundation, database
+acceptance:   yes
+instructions: |
+  Build the shared base HTML template (page title, main content block, error message region) and
+  wire template and persistence initialization into create_app(). Register no book routes here.
+
+## story add-book
+summary:      Let a reader add a book with a title and an author.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-AddBook.md
+covers:       BOOKS-001
+accepts:      st-002
+context:      DATABASE.md
+stack:        python.md, flask.md
+provides:     POST /books
+consumes:     books.create
+depends:      web-shell, database
+acceptance:   yes
+instructions: |
+  Implement POST /books accepting form fields title and author. A valid submission is stored
+  through db.books.create and answers 303 redirecting to /. Validation of empty fields is owned
+  by the two rejection stories; this story handles valid submissions only.
+
+## story list-books
+summary:      Present the stored books in the order they were added.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-ListBooks.md
+covers:       BOOKS-002
+accepts:      st-003
+context:      DATABASE.md
+stack:        python.md, flask.md
+provides:     GET /books
+consumes:     books.list
+depends:      add-book
+acceptance:   yes
+instructions: |
+  Implement GET /books returning a JSON array of objects with id, title, author, ordered by
+  insertion order (ascending id) via db.books.list. An empty store returns an empty array.
+
+## story remove-book
+summary:      Let a reader remove a book from the list.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-RemoveBook.md
+covers:       BOOKS-003
+accepts:      st-004
+context:      DATABASE.md
+stack:        python.md, flask.md
+provides:     POST /books/{id}/delete
+consumes:     books.get, books.delete
+depends:      add-book
+acceptance:   yes
+instructions: |
+  Implement POST /books/{id}/delete. A known id is deleted and the route answers 303 redirecting
+  to /. An unknown id answers 404. Remaining books keep their relative order.
+
+## story reject-empty-title
+summary:      Reject a submission whose title is empty and report the reason.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-RejectEmptyTitle.md
+covers:       VALID-001
+accepts:      st-005
+context:      DATABASE.md
+stack:        python.md, flask.md
+consumes:     POST /books
+depends:      add-book
+acceptance:   yes
+instructions: |
+  In the POST /books path, reject a missing, empty, or whitespace-only title with status 400 and
+  a non-empty reason. When the request sends Accept: application/json the body is JSON with
+  "error" (the reason) and "field" equal to "title"; otherwise the page is re-rendered with the
+  reason shown. Nothing is stored on rejection.
+
+## story reject-empty-author
+summary:      Reject a submission whose author is empty and report the reason.
+type:         service
+kind:         capability
+phase:        2
+implements:   FEATURE-RejectEmptyAuthor.md
+covers:       VALID-002
+accepts:      st-005
+context:      DATABASE.md
+stack:        python.md, flask.md
+consumes:     POST /books
+depends:      add-book
+acceptance:   yes
+instructions: |
+  In the POST /books path, reject a missing, empty, or whitespace-only author with status 400 and
+  a non-empty reason. When the request sends Accept: application/json the body is JSON with
+  "error" (the reason) and "field" equal to "author"; otherwise the page is re-rendered with the
+  reason shown. Nothing is stored on rejection.
+
+## story screen-reading-list
+summary:      Render the reading list page with the add form, rejection messages, and remove controls.
+type:         service
+kind:         capability
+phase:        2
+implements:   SCREEN-ReadingList.md
+stack:        python.md, flask.md
+provides:     GET /
+consumes:     GET /books, POST /books, POST /books/{id}/delete
+depends:      list-books, remove-book, reject-empty-title, reject-empty-author
+acceptance:   yes
+instructions: |
+  Implement GET / rendering the books in insertion order, an add form (title, author) posting to
+  POST /books, a remove form per book posting to POST /books/{id}/delete, and the rejection
+  reason when a submission is rejected.
+
+## story test-add-book
+summary:      Provide automated pytest tests for adding a book.
+type:         service
+kind:         test harness
+phase:        3
+implements:   FEATURE-AddBookTests.md
+covers:       TEST-001
+accepts:      st-006
+stack:        python.md
+consumes:     POST /books
+depends:      add-book
+acceptance:   yes
+instructions: |
+  Write tests/test_add_book.py with pytest tests covering adding a book and reading it back
+  through GET /books with its title and author.
+
+## story test-list-books
+summary:      Provide automated pytest tests for listing books in the order added.
+type:         service
+kind:         test harness
+phase:        3
+implements:   FEATURE-ListBooksTests.md
+covers:       TEST-002
+accepts:      st-006
+stack:        python.md
+consumes:     GET /books
+depends:      list-books
+acceptance:   yes
+instructions: |
+  Write tests/test_list_books.py covering empty list, one book, and several books returned in the
+  order added.
+
+## story test-remove-book
+summary:      Provide automated pytest tests for removing a book.
+type:         service
+kind:         test harness
+phase:        3
+implements:   FEATURE-RemoveBookTests.md
+covers:       TEST-003
+accepts:      st-006
+stack:        python.md
+consumes:     POST /books/{id}/delete
+depends:      remove-book
+acceptance:   yes
+instructions: |
+  Write tests/test_remove_book.py covering removal of a book, omission on the next read, order of
+  the remaining books, and 404 for an unknown id.
+
+## story test-validation
+summary:      Provide automated pytest tests for rejecting an empty title or author.
+type:         service
+kind:         test harness
+phase:        3
+implements:   FEATURE-ValidationTests.md
+covers:       TEST-004
+accepts:      st-006
+stack:        python.md
+consumes:     POST /books
+depends:      reject-empty-title, reject-empty-author
+acceptance:   yes
+instructions: |
+  Write tests/test_validation.py covering empty and whitespace-only title and author, asserting
+  status 400, a non-empty reason, and that nothing is stored.
+
+## story verification
+summary:      Provide the POSIX bin/test.sh runner and gate on the complete suite.
+type:         feature
+kind:         test harness
+phase:        3
+implements:   VERIFICATION.md
+covers:       TEST-005
+accepts:      st-001, st-006
+stack:        python.md
+depends:      foundation, database, web-shell, add-book, list-books, remove-book, reject-empty-title, reject-empty-author, screen-reading-list, test-add-book, test-list-books, test-remove-book, test-validation
+acceptance:   yes
+instructions: |
+  Create bin/test.sh at the application root: POSIX sh, activates .venv when present, runs
+  `pytest -q` from the application root, and exits non-zero unless every test passes. Run
+  `sh sources/full_test.sh` as the full-suite gate and preserve command, exit code, stdout, and
+  stderr as evidence.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT DECISIONS.json ===
+[
+  {
+    "id": "Q-001",
+    "type": "choice",
+    "severity": "low",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": "add-book",
+    "title": "Response contract for add and remove",
+    "description": "The sources do not state status codes. Options: JSON 201/200 responses, or form-style redirects. The UI is a browser page, so form posts that redirect fit best.",
+    "options": [
+      { "value": "redirect", "label": "303 redirect to / on success; 400 on rejection; 404 on unknown id" },
+      { "value": "json", "label": "201/200 JSON bodies" }
+    ],
+    "system_choice": "redirect"
+  },
+  {
+    "id": "Q-002",
+    "type": "choice",
+    "severity": "low",
+    "blueprint": "FEATURE-RemoveBook.md",
+    "story": "remove-book",
+    "title": "Removal route shape",
+    "description": "Browser forms cannot send DELETE without scripting. Options: DELETE /books/{id}, or POST /books/{id}/delete.",
+    "options": [
+      { "value": "post-delete", "label": "POST /books/{id}/delete" },
+      { "value": "http-delete", "label": "DELETE /books/{id}" }
+    ],
+    "system_choice": "post-delete"
+  },
+  {
+    "id": "Q-003",
+    "type": "choice",
+    "severity": "low",
+    "blueprint": "FEATURE-RejectEmptyTitle.md",
+    "story": "reject-empty-title",
+    "title": "Whitespace-only title or author",
+    "description": "The source says empty is rejected. Whitespace-only text is treated as empty so a blank-looking entry cannot be stored; accepted values are stored trimmed.",
+    "options": [
+      { "value": "reject-whitespace", "label": "Treat whitespace-only as empty" },
+      { "value": "literal-empty", "label": "Reject only zero-length values" }
+    ],
+    "system_choice": "reject-whitespace"
+  },
+  {
+    "id": "Q-004",
+    "type": "choice",
+    "severity": "low",
+    "blueprint": "FEATURE-RejectEmptyAuthor.md",
+    "story": "reject-empty-author",
+    "title": "How the rejection reason is reported",
+    "description": "A reason must always accompany a rejection. Browser requests get the page re-rendered with the reason; requests sending Accept: application/json get a JSON body with error and field.",
+    "options": [
+      { "value": "html-and-json", "label": "Re-rendered page, or JSON {error, field} on Accept: application/json" },
+      { "value": "html-only", "label": "Re-rendered page only" }
+    ],
+    "system_choice": "html-and-json"
+  },
+  {
+    "id": "Q-005",
+    "type": "text",
+    "severity": "low",
+    "blueprint": "DATABASE.md",
+    "story": "database",
+    "title": "Insertion order storage",
+    "description": "Order added is preserved by an autoincrementing integer primary key on books, listed in ascending id order, so no separate position column is needed.",
+    "options": [],
+    "system_choice": "books(id INTEGER PK, title TEXT NOT NULL, author TEXT NOT NULL); list ordered by id ascending."
+  }
+]
+=== END ARTIFACT ===

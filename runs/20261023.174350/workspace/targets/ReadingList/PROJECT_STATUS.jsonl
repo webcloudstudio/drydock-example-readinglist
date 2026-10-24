@@ -1,0 +1,9 @@
+{"label": "INITIALIZED", "result": "pass", "at": "2026-10-23T17:43:53.036+00:00", "detail": "", "command": "drydock init ReadingList", "attempts": 1}
+{"label": "IMPORTED", "result": "pass", "at": "2026-10-23T17:43:59.712+00:00", "detail": "", "command": "drydock import ReadingList", "attempts": 1}
+{"label": "ANALYZED", "result": "pass", "at": "2026-10-23T17:44:20.150+00:00", "detail": "", "command": "drydock analyze ReadingList", "attempts": 1}
+{"label": "PLAN CREATED", "result": "pass", "at": "2026-10-23T17:47:58.330+00:00", "detail": "", "command": "drydock plan ReadingList", "attempts": 1}
+{"label": "BUILDING", "result": "pass", "at": "2026-10-23T17:48:22.827+00:00", "detail": "", "command": "drydock build ReadingList", "attempts": 1}
+{"label": "BUILT", "result": "pass", "at": "2026-10-23T18:08:33.158+00:00", "detail": "", "command": "drydock build ReadingList", "attempts": 1}
+{"label": "SCORE AC", "result": "pass", "at": "2026-10-23T18:09:45.157+00:00", "detail": "", "command": "drydock score ac ReadingList", "attempts": 1}
+{"label": "SCORE RELEASE", "result": "pass", "at": "2026-10-23T18:10:41.234+00:00", "detail": "", "command": "drydock score release ReadingList", "attempts": 1}
+{"state": "SCORE RELEASE", "result": "pass", "at": "2026-10-23T18:10:41.234+00:00", "attempts": 1}

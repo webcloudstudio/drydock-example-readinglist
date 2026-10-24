@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Add Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>A reader adds a book with a title and an author and it is stored.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, UI-GENERAL.md</td></tr><tr><td>Provides</td><td>POST /books</td></tr><tr><td>Consumes</td><td>books.create</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Let a reader add a book to the end of the reading list.</p>
+<h2>Trigger</h2>
+<p>A form post to <code>POST /books</code> with fields <code>title</code> and <code>author</code>.</p>
+<h2>Sequence</h2>
+<ol><li>Read <code>title</code> and <code>author</code> from the form, trimmed of surrounding whitespace.</li><li>Validation of empty values is owned by FEATURE-RejectEmptyTitle.md and FEATURE-RejectEmptyAuthor.md; this feature handles valid submissions.</li><li>Store the book through <code>db.books.create(title=..., author=...)</code>.</li><li>Answer <code>303</code> redirecting to <code>/</code>.</li></ol>
+<h2>Reads</h2>
+<ul><li>None.</li></ul>
+<h2>Writes</h2>
+<ul><li>One new book via <code>books.create</code>.</li></ul>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOKS-001</code> — write: create a book - supplies: <code>title</code>, <code>author</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC add-book-redirects ===<br>Intent: A valid submission is accepted with a 303 redirect.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-add-redirect&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: marker + &quot; title&quot;, &quot;author&quot;: marker + &quot; author&quot;}) assert response.status_code == 303 finally: cleanup() === END AC add-book-redirects ===</p>
+<p>=== AC add-book-round-trip ===<br>Intent: An added book is read back through GET /books with the supplied title and author.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-add-roundtrip&quot; title = marker + &quot; title&quot; author = marker + &quot; author&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 303 listed = client.get(&quot;/books&quot;) assert listed.status_code == 200 ours = [row for row in listed.get_json() if row[&quot;title&quot;] == title] assert len(ours) == 1 assert ours[0][&quot;author&quot;] == author assert ours[0][&quot;id&quot;] is not None finally: cleanup() === END AC add-book-round-trip ===</p>
+<p>=== AC add-book-persists-in-store ===<br>Intent: An added book is present in the configured store when read through the persistence package.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() marker = &quot;ac-add-store&quot; title = marker + &quot; title&quot; author = marker + &quot; author&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 303 with committed_session() as db: rows = [row for row in db.books.list() if row.title == title] assert len(rows) == 1 assert rows[0].author == author finally: cleanup() === END AC add-book-persists-in-store ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>A stored book always has a non-empty title and a non-empty author.</li><li>A newly added book is appended after every existing book.</li></ul></article>
+</main>
+</body>
+</html>

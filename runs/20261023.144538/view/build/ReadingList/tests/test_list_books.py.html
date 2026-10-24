@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_list_books.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_list_books.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_list_books.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;List books: GET /books returns stored books as JSON, in the order they were added.&quot;&quot;&quot;
+
+from pathlib import Path
+
+import pytest
+
+from app_server.book_service import list_books
+from persistence import open_database
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+@pytest.fixture(autouse=True)
+def store(monkeypatch, tmp_path):
+    &quot;&quot;&quot;Point the application at a fresh store per test, so listing starts from a known state.&quot;&quot;&quot;
+    url = f&quot;sqlite:///{tmp_path / &#x27;list-books.db&#x27;}&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, url)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+    with open_database(url) as database:
+        database.execute_script((PROJECT_ROOT / &quot;schema.sql&quot;).read_text())
+    return url
+
+
+def _add(client, title: str, author: str = &quot;List Author&quot;) -&gt; None:
+    assert client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}).status_code == 303
+
+
+def test_get_books_answers_200_with_json(web_client):
+    response = web_client.get(&quot;/books&quot;)
+
+    assert response.status_code == 200
+    assert response.is_json
+
+
+def test_empty_store_lists_empty_array(web_client):
+    assert web_client.get(&quot;/books&quot;).get_json() == []
+
+
+def test_single_book_is_listed_with_id_title_and_author(web_client):
+    _add(web_client, &quot;Dune&quot;, &quot;Frank Herbert&quot;)
+
+    body = web_client.get(&quot;/books&quot;).get_json()
+
+    assert len(body) == 1
+    assert body[0][&quot;title&quot;] == &quot;Dune&quot;
+    assert body[0][&quot;author&quot;] == &quot;Frank Herbert&quot;
+    assert isinstance(body[0][&quot;id&quot;], int)
+
+
+def test_listed_book_carries_exactly_id_title_and_author(web_client):
+    _add(web_client, &quot;Dune&quot;, &quot;Frank Herbert&quot;)
+
+    body = web_client.get(&quot;/books&quot;).get_json()
+
+    assert set(body[0].keys()) == {&quot;id&quot;, &quot;title&quot;, &quot;author&quot;}
+
+
+def test_several_books_are_listed_in_the_order_added(web_client):
+    for title in [&quot;Third-added-last&quot;, &quot;A-first&quot;, &quot;M-second&quot;]:
+        _add(web_client, title)
+
+    body = web_client.get(&quot;/books&quot;).get_json()
+
+    assert [row[&quot;title&quot;] for row in body] == [&quot;Third-added-last&quot;, &quot;A-first&quot;, &quot;M-second&quot;]
+
+
+def test_listed_ids_ascend_across_the_sequence(web_client):
+    for title in [&quot;One&quot;, &quot;Two&quot;, &quot;Three&quot;, &quot;Four&quot;]:
+        _add(web_client, title)
+
+    ids = [row[&quot;id&quot;] for row in web_client.get(&quot;/books&quot;).get_json()]
+
+    assert ids == sorted(ids)
+    assert len(set(ids)) == len(ids)
+
+
+def test_book_added_after_a_listing_appears_at_the_end(web_client):
+    _add(web_client, &quot;First&quot;)
+    web_client.get(&quot;/books&quot;)
+    _add(web_client, &quot;Second&quot;)
+
+    body = web_client.get(&quot;/books&quot;).get_json()
+
+    assert [row[&quot;title&quot;] for row in body] == [&quot;First&quot;, &quot;Second&quot;]
+
+
+def test_repeated_listing_returns_the_same_sequence(web_client):
+    for title in [&quot;Alpha&quot;, &quot;Beta&quot;]:
+        _add(web_client, title)
+
+    first = web_client.get(&quot;/books&quot;).get_json()
+    second = web_client.get(&quot;/books&quot;).get_json()
+
+    assert first == second
+
+
+def test_rejected_submission_is_not_listed(web_client):
+    _add(web_client, &quot;Kept&quot;)
+    assert web_client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Nobody&quot;}).status_code == 400
+
+    body = web_client.get(&quot;/books&quot;).get_json()
+
+    assert [row[&quot;title&quot;] for row in body] == [&quot;Kept&quot;]
+
+
+def test_listing_matches_the_persistence_store_order(web_client, store):
+    for title in [&quot;Store-one&quot;, &quot;Store-two&quot;, &quot;Store-three&quot;]:
+        _add(web_client, title)
+
+    http_ids = [row[&quot;id&quot;] for row in web_client.get(&quot;/books&quot;).get_json()]
+    with open_database(store) as database:
+        store_ids = [row.id for row in database.books.list()]
+
+    assert http_ids == store_ids
+
+
+def test_list_books_service_returns_rows_in_the_order_added(store):
+    with open_database(store) as database:
+        for title in [&quot;Service-one&quot;, &quot;Service-two&quot;]:
+            database.books.create(title=title, author=&quot;Service Author&quot;)
+
+        rows = list_books(database)
+
+    assert [row.title for row in rows] == [&quot;Service-one&quot;, &quot;Service-two&quot;]
+    assert [row.id for row in rows] == sorted(row.id for row in rows)
+
+
+def test_list_books_service_on_empty_store_returns_no_rows(store):
+    with open_database(store) as database:
+        assert list_books(database) == []
+</pre></article>
+</main>
+</body>
+</html>

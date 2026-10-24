@@ -1,0 +1,17 @@
+[project]
+name = "reading-list"
+version = "0.1.0"
+description = "A small personal reading-list web application"
+requires-python = ">=3.11"
+dependencies = [
+    "Flask>=3.1,<4",
+]
+
+[dependency-groups]
+test = [
+    "pytest>=8,<10",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

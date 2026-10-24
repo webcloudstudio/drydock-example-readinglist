@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from DATABASE.md sha256=0bab0628f6130ff0e1c840409170226b73ac94f3a474ecee669f2d01577bbbd7 on 2026-10-23 by drydock build agent --&gt;</p>
+<p>Persistence provides <code>persistence.books</code> with:</p>
+<ul><li><code>list()</code> → ordered <code>BookRow[]</code></li><li><code>create(title, author, insertion_order)</code> → <code>BookRow</code></li><li><code>delete(id)</code> → <code>DeletedBook</code></li></ul>
+<p>Books require non-empty title/author, retain insertion order, and use generated persistence only. Schema: <code>books(id, title, author, insertion_order UNIQUE)</code>.</p></article>
+</main>
+</body>
+</html>

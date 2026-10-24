@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-11.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-11.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-11.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 11 · Service (block-11)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 3644</li><li>execution id: 20261023.151221.415Z-e9ae3d38</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide automated pytest tests for listing books in the order added. (test-list-books) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-ListBooksTests.md#list-tests-file-defines-tests: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-ListBooksTests.md#list-tests-pass: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-ListBooksTests.md#list-order-behavior: python-package=pytest; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-ListBooksTests.md (SP 1259)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE_compact.md (SP 360)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>data/app.db</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): list-tests-file-defines-tests (FEATURE-ListBooksTests.md)</li></ul>
+<p>intent: tests/test_list_books.py exists, parses, defines at least three test functions, and exercises the books route. return code: 0</p>
+<ul><li>GREEN (prepassed): list-tests-pass (FEATURE-ListBooksTests.md)</li></ul>
+<p>intent: The list-books test file passes when run with pytest from the application root. return code: 0 stdout: ............                                                             [100%] 12 passed in 0.33s</p>
+<ul><li>GREEN (prepassed): list-order-behavior (FEATURE-ListBooksTests.md)</li></ul>
+<p>intent: Books added in sequence are returned by GET /books in the order added. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: list-tests-file-defines-tests (FEATURE-ListBooksTests.md)</li></ul>
+<p>intent: tests/test_list_books.py exists, parses, defines at least three test functions, and exercises the books route. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: list-tests-pass (FEATURE-ListBooksTests.md)</li></ul>
+<p>intent: The list-books test file passes when run with pytest from the application root. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0 stdout: ............                                                             [100%] 12 passed in 0.44s</p>
+<ul><li>PASS: list-order-behavior (FEATURE-ListBooksTests.md)</li></ul>
+<p>intent: Books added in sequence are returned by GET /books in the order added. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Agent self-report (advisory)</h2>
+<p>The build agent declared a failure. This is advisory only; the programmatic acceptance above is the authority for this block&#x27;s outcome.</p>
+<ul><li>summary: No files needed writing; the list-books deliverable already existed from block-5 and passes all declared checks.</li><li>detail:</li></ul>
+<p>The step&#x27;s tests (tests/test_list_books.py) were already committed and green, with all three declared acceptance checks and the full suite (141) passing. Nothing was modified, so the contract requires RESULT: FAILED. Before rerunning, decide whether block-11 should be closed as already satisfied; a rerun would reproduce this same result and change nothing.</p>
+<h2>Build summary</h2>
+<p>The project already has a <code>tests/test_list_books.py</code>, and <code>bin/</code> has no <code>test.sh</code>. I&#x27;ll read the existing files before writing anything.The <code>tests/test_list_books.py</code> file already exists and the tree is clean. I&#x27;ll check whether it is tracked and whether it passes, then run the declared acceptance checks.The file is tracked (built in block-5) and its 12 tests pass. Next I&#x27;ll run the three declared acceptance checks from the spec, plus the project suite.The order check failed only because <code>-I</code> ignores <code>PYTHONPATH</code>. I&#x27;ll rerun it with the project root on the path; the script directory holds only my two files, so dropping <code>-I</code> is safe here.RESULT: FAILED</p>
+<p>FILES CHANGED:</p>
+<ul><li>(none; <code>tests/test_list_books.py</code> already existed and was built in block-5, so this step wrote nothing)</li></ul>
+<p>SUMMARY: The test-list-books deliverable is already in place and passes. I did not change any file, so I&#x27;m reporting FAILED per the contract&#x27;s no-files-written rule, not because the behavior is missing. Please decide whether to mark block-11 complete without a rerun, or rerun it after you&#x27;ve reviewed this result.</p>
+<p>Verified in the build directory:</p>
+<ul><li>Declared acceptance checks:<ul><li><code>list-tests-file-defines-tests</code>: PASS (12 <code>test_</code> functions, <code>/books</code> present).</li><li><code>list-tests-pass</code>: PASS (<code>pytest -q tests/test_list_books.py</code>, 12 passed, exit 0).</li><li><code>list-order-behavior</code>: PASS (run as a standalone script against the configured store; it purges its own rows afterwards).</li></ul></li><li>Project suite: <code>pytest -q</code> gives 141 passed, exit 0.</li><li>Coverage in <code>tests/test_list_books.py</code> matches the spec: empty array, one book with <code>id</code>/<code>title</code>/<code>author</code>, several books in insertion order, ascending ids, and listing consistent with the store order.</li><li>Git: the working tree is clean and the file is tracked.</li></ul>
+<p>One deviation from the spec text: the spec asks tests to use unique titles and remove the books they create. The existing tests instead give each test its own temporary SQLite store, which isolates them more strongly and makes cleanup unnecessary. I kept that rather than rewrite working tests.</p>
+<p>Out of scope for this block, but it will matter at the release gate: <code>bin/test.sh</code> does not exist yet, so <code>sources/full_test.sh</code> will fail with the st-001 error until a later block adds it.</p>
+<p>BLOCKERS:</p>
+<ul><li>Nothing blocks the test deliverable. The contract&#x27;s rule for a step that writes no files forces FAILED.</li></ul>
+<p>FAILURE_SUMMARY: No files needed writing; the list-books deliverable already existed from block-5 and passes all declared checks.<br>FAILURE_DETAIL: The step&#x27;s tests (tests/test_list_books.py) were already committed and green, with all three declared acceptance checks and the full suite (141) passing. Nothing was modified, so the contract requires RESULT: FAILED. Before rerunning, decide whether block-11 should be closed as already satisfied; a rerun would reproduce this same result and change nothing.</p></article>
+</main>
+</body>
+</html>

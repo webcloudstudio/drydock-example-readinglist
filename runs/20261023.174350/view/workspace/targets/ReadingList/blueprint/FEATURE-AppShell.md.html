@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-AppShell.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-AppShell.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-AppShell.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: App Shell</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Flask application factory, shared page layout, test client fixture, and health route.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>create_app, app_server.testing.web_client, GET /health</td></tr><tr><td>Consumes</td><td>None</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Provide the runnable Flask application that later features register routes on, plus the shared base template and the in-process test client used by acceptance and pytest.</p>
+<h2>Trigger</h2>
+<p>A WSGI server or test harness calls <code>create_app()</code>.</p>
+<h2>Sequence</h2>
+<ol><li><code>create_app()</code> builds a Flask app and resolves the database DSN (<code>DATABASE_URL</code>, then <code>DATABASE_PATH</code>, then <code>data/app.db</code>).</li><li>It opens the database with <code>open_database(dsn)</code> and keeps the handle for services.</li><li>It registers the book blueprints supplied by later stories; it invents no other routes.</li><li><code>app_server.testing.web_client()</code> creates the app with <code>TESTING = True</code> and returns its test client.</li></ol>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Route</th><th>Behavior</th></tr></thead><tbody><tr><td><code>GET /health</code></td><td>Returns 200 with a small JSON body <code>{&quot;status&quot;: ...}</code>.</td></tr></tbody></table></div>
+<h2>Layout</h2>
+<p><code>app_server/templates/base.html</code> is the shared layout: page title block, content block, minimal inline or static CSS, no JavaScript.</p>
+<h2>Reads</h2>
+<p>None.</p>
+<h2>Writes</h2>
+<p>None.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by DATABASE.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC appshell-factory ===<br>Intent: create_app returns a Flask application.<br>Requires: python-package=flask; scope=test</p>
+<p>from flask import Flask from app_server import create_app</p>
+<p>app = create_app() assert isinstance(app, Flask) === END AC appshell-factory ===</p>
+<p>=== AC appshell-client ===<br>Intent: web_client returns a usable test client for a testing-mode app.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() assert client.application.config[&quot;TESTING&quot;] is True === END AC appshell-client ===</p>
+<p>=== AC appshell-health ===<br>Intent: GET /health is reachable and answers 200 with a JSON body.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/health&quot;) assert response.status_code == 200 assert isinstance(response.get_json(), dict) === END AC appshell-health ===</p>
+<p>=== AC appshell-unknown-route ===<br>Intent: A path no feature declares is absent and answers 404.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/route-nobody-declared&quot;) assert response.status_code == 404 === END AC appshell-unknown-route ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The factory registers only routes declared by Blueprint features.</li><li>The factory reaches the store only through <code>open_database</code>.</li></ul></article>
+</main>
+</body>
+</html>

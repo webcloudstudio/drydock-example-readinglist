@@ -1,0 +1,4 @@
+error: acceptance verification failed for ReadingList: 3 of 22 criteria
+  database-books-create  database  DATABASE.md  — assertion: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+  database-books-list  database  DATABASE.md  — assertion: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order
+  database-books-delete  database  DATABASE.md  — assertion: persistence.db.PersistenceError: FEATURE-ADD-BOOK-001 failed: UNIQUE constraint failed: books.insertion_order

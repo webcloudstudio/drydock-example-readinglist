@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.210339.903Z_readinglist_plan_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.210339.903Z_readinglist_plan_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.210339.903Z_readinglist_plan_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT FEATURE-VALIDATE-BOOK.md ===
+# FEATURE: Validate Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Validates book submissions and returns correction feedback for incomplete entries. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, FEATURE-ADD-BOOK.md |
+| Provides    | validation for POST /books |
+| Consumes    | POST /books, app_server.create_app, persistence.books.list |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The validation boundary protects the reading list from incomplete books. Submissions with an empty title, empty author, or both are rejected before persistence with a client-error response. The form remains usable so the reader can correct and resubmit.
+
+## Workflow
+
+1. Receive title and author form values at `POST /books`.
+2. Reject the submission with HTTP 400 when either required value is empty.
+3. Preserve the submitted values and identify the missing field or fields in the rendered feedback.
+4. Do not create a persistence record for rejected input.
+5. Accept corrected values through the existing add-book workflow.
+
+## Database Interface
+
+- `FEATURE-ADD-BOOK-001` — write: create a book - supplies: `title`, `author`, `insertion_order` - returns: `id`, `title`, `author`, `insertion_order`
+- `FEATURE-READING-LIST-001` — read: list books - supplies: — - returns: `id`, `title`, `author`, `insertion_order`
+
+## Programmatic Acceptance
+
+=== AC validate-book-route ===
+Intent: The book submission route rejects an empty title with a client-error response and does not persist the invalid submission.
+
+from app_server.testing import web_client
+from persistence.testing import db_session
+
+title = &quot;&quot;
+author = &quot;Validation Author&quot;
+
+client = web_client()
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+
+assert response.status_code == 400
+
+with db_session() as db:
+    rows = db.books.list()
+    assert all(row.title != title or row.author != author for row in rows)
+=== END AC validate-book-route ===
+
+=== AC validate-book-author ===
+Intent: The book submission route rejects an empty author with a client-error response and does not persist the invalid submission.
+
+from app_server.testing import web_client
+from persistence.testing import db_session
+
+title = &quot;Validation Title&quot;
+author = &quot;&quot;
+
+client = web_client()
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+
+assert response.status_code == 400
+
+with db_session() as db:
+    rows = db.books.list()
+    assert all(row.title != title or row.author != author for row in rows)
+=== END AC validate-book-author ===
+
+=== AC validate-book-correction ===
+Intent: A reader can correct an invalid submission and successfully add the corrected book.
+
+from app_server.testing import web_client
+
+invalid_title = &quot;&quot;
+invalid_author = &quot;Correctable Author&quot;
+valid_title = &quot;Corrected Title&quot;
+valid_author = &quot;Corrected Author&quot;
+
+client = web_client()
+invalid_response = client.post(
+    &quot;/books&quot;,
+    data={&quot;title&quot;: invalid_title, &quot;author&quot;: invalid_author},
+)
+assert invalid_response.status_code == 400
+
+valid_response = client.post(
+    &quot;/books&quot;,
+    data={&quot;title&quot;: valid_title, &quot;author&quot;: valid_author},
+)
+assert valid_response.status_code == 302
+
+list_response = client.get(&quot;/&quot;)
+assert list_response.status_code == 200
+body = list_response.get_data(as_text=True)
+assert valid_title in body
+assert valid_author in body
+=== END AC validate-book-correction ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Empty titles and authors are rejected before persistence.
+- Validation returns HTTP 400 and keeps the form workflow recoverable.
+- Validation feedback identifies the missing required field or fields.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT SCREEN-ReadingList.md ===
+# SCREEN: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Defines the primary server-rendered screen for maintaining the reading list. |
+| Depends On  | UI-GENERAL.md, FEATURE-READING-LIST.md, FEATURE-ADD-BOOK.md, FEATURE-REMOVE-BOOK.md, FEATURE-VALIDATE-BOOK.md |
+| Provides    | primary reading-list screen |
+| Consumes    | GET /, POST /books, POST /books/&lt;book_id&gt;/delete |
+| Route       | / |
+| Parent      | Main |
+| Main Menu   | Reading List (1) |
+| Sub Menu    | — |
+| Tab Order   | 1 |
+
+## Questions
+
+- None.
+
+## Layout
+
+The primary page contains:
+
+- A page heading and reading-list content region.
+- A form with accessible title and author inputs and a submit control.
+- An ordered list of stored books, showing each title and author.
+- A removal control for each stored book.
+- A clear empty-list state when no books exist.
+- Validation feedback that leaves the form available for correction.
+
+## Interactions
+
+- `GET /` renders the current list in insertion order.
+- `POST /books` submits a new book and returns the updated workflow.
+- `POST /books/&lt;book_id&gt;/delete` removes the selected book and returns the updated list.
+- Invalid submissions remain recoverable through the rendered form and feedback.
+
+## Programmatic Acceptance
+
+=== AC reading-list-screen-load ===
+Intent: The primary reading-list screen is reachable and returns a successful response.
+
+from app_server.testing import web_client
+
+client = web_client()
+response = client.get(&quot;/&quot;)
+
+assert response.status_code == 200
+=== END AC reading-list-screen-load ===
+
+=== AC reading-list-screen-add ===
+Intent: The primary screen accepts a book submission and renders the supplied book after the workflow completes.
+
+from app_server.testing import web_client
+
+title = &quot;Screen Test Title&quot;
+author = &quot;Screen Test Author&quot;
+
+client = web_client()
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code == 302
+
+list_response = client.get(&quot;/&quot;)
+assert list_response.status_code == 200
+body = list_response.get_data(as_text=True)
+assert title in body
+assert author in body
+=== END AC reading-list-screen-add ===
+
+=== AC reading-list-screen-remove ===
+Intent: The primary screen removes a selected book and omits it from the subsequent list response.
+
+from app_server.testing import web_client
+
+title = &quot;Screen Removal Title&quot;
+author = &quot;Screen Removal Author&quot;
+
+client = web_client()
+create_response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+assert create_response.status_code == 302
+
+before_response = client.get(&quot;/&quot;)
+assert before_response.status_code == 200
+before_body = before_response.get_data(as_text=True)
+assert title in before_body
+assert author in before_body
+
+from persistence.testing import db_session
+
+with db_session() as db:
+    rows = db.books.list()
+    selected = next(row for row in rows if row.title == title and row.author == author)
+    book_id = selected.id
+
+delete_response = client.post(f&quot;/books/{book_id}/delete&quot;)
+assert delete_response.status_code == 302
+
+after_response = client.get(&quot;/&quot;)
+assert after_response.status_code == 200
+after_body = after_response.get_data(as_text=True)
+assert title not in after_body
+assert author not in after_body
+=== END AC reading-list-screen-remove ===
+
+## User Acceptance
+
+- The reader can understand whether the list is empty, populated, loading, or showing a validation error.
+- The add form and removal controls are usable from the primary page.
+
+## Guardrails
+
+- The screen never displays books outside the stored insertion order.
+- A removed book is absent on the next list read.
+- The form remains available after validation failure.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-VERIFICATION.md ===
+# FEATURE: Verification
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Provides the complete POSIX automated test runner for the ReadingList application. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, UI-GENERAL.md, FEATURE-READING-LIST.md, FEATURE-ADD-BOOK.md, FEATURE-REMOVE-BOOK.md, FEATURE-VALIDATE-BOOK.md, SCREEN-ReadingList.md |
+| Provides    | bin/test.sh, complete automated test suite |
+| Consumes    | primary reading-list screen, GET /, POST /books, POST /books/&lt;book_id&gt;/delete |
+
+## Questions
+
+- None.
+
+## Verification Contract
+
+`bin/test.sh` is executable from the application root and is POSIX-compatible. It runs the complete automated test suite without filtering. It exits zero only when every automated test passes and preserves the suite&#x27;s standard output and standard error.
+
+The suite covers:
+
+- Adding a valid book.
+- Listing books in insertion order.
+- Removing a selected book.
+- Rejecting an empty title.
+- Rejecting an empty author.
+
+## Programmatic Acceptance
+
+=== AC verification-runner-present ===
+Intent: The delivered application provides an executable test runner at the required path.
+
+from pathlib import Path
+import os
+
+runner = Path(&quot;bin/test.sh&quot;)
+assert runner.is_file()
+assert os.access(runner, os.X_OK)
+=== END AC verification-runner-present ===
+
+=== AC verification-full-suite ===
+Intent: The complete staged release harness runs the delivered test runner successfully.
+Suite: full
+
+import subprocess
+
+result = subprocess.run(
+    [&quot;sh&quot;, &quot;sources/full_test.sh&quot;],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC verification-full-suite ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- `bin/test.sh` remains POSIX-compatible.
+- The runner executes the complete automated suite from the application root.
+- A failing automated test produces a nonzero exit status.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

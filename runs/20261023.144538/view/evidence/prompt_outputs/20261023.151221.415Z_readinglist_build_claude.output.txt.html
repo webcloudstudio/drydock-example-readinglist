@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.151221.415Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.151221.415Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.151221.415Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>The project already has a `tests/test_list_books.py`, and `bin/` has no `test.sh`. I&#x27;ll read the existing files before writing anything.The `tests/test_list_books.py` file already exists and the tree is clean. I&#x27;ll check whether it is tracked and whether it passes, then run the declared acceptance checks.The file is tracked (built in block-5) and its 12 tests pass. Next I&#x27;ll run the three declared acceptance checks from the spec, plus the project suite.The order check failed only because `-I` ignores `PYTHONPATH`. I&#x27;ll rerun it with the project root on the path; the script directory holds only my two files, so dropping `-I` is safe here.RESULT: FAILED
+
+FILES CHANGED:
+- (none; `tests/test_list_books.py` already existed and was built in block-5, so this step wrote nothing)
+
+SUMMARY:
+The test-list-books deliverable is already in place and passes. I did not change any file, so I&#x27;m reporting FAILED per the contract&#x27;s no-files-written rule, not because the behavior is missing. Please decide whether to mark block-11 complete without a rerun, or rerun it after you&#x27;ve reviewed this result.
+
+Verified in the build directory:
+- Declared acceptance checks:
+  - `list-tests-file-defines-tests`: PASS (12 `test_` functions, `/books` present).
+  - `list-tests-pass`: PASS (`pytest -q tests/test_list_books.py`, 12 passed, exit 0).
+  - `list-order-behavior`: PASS (run as a standalone script against the configured store; it purges its own rows afterwards).
+- Project suite: `pytest -q` gives 141 passed, exit 0.
+- Coverage in `tests/test_list_books.py` matches the spec: empty array, one book with `id`/`title`/`author`, several books in insertion order, ascending ids, and listing consistent with the store order.
+- Git: the working tree is clean and the file is tracked.
+
+One deviation from the spec text: the spec asks tests to use unique titles and remove the books they create. The existing tests instead give each test its own temporary SQLite store, which isolates them more strongly and makes cleanup unnecessary. I kept that rather than rewrite working tests.
+
+Out of scope for this block, but it will matter at the release gate: `bin/test.sh` does not exist yet, so `sources/full_test.sh` will fail with the st-001 error until a later block adds it.
+
+BLOCKERS:
+- Nothing blocks the test deliverable. The contract&#x27;s rule for a step that writes no files forces FAILED.
+
+FAILURE_SUMMARY: No files needed writing; the list-books deliverable already existed from block-5 and passes all declared checks.
+FAILURE_DETAIL: The step&#x27;s tests (tests/test_list_books.py) were already committed and green, with all three declared acceptance checks and the full suite (141) passing. Nothing was modified, so the contract requires RESULT: FAILED. Before rerunning, decide whether block-11 should be closed as already satisfied; a rerun would reproduce this same result and change nothing.</pre></article>
+</main>
+</body>
+</html>

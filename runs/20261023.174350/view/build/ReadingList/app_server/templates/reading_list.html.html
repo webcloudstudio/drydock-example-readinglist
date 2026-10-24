@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/templates/reading_list.html</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/templates/reading_list.html</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../build/ReadingList/app_server/templates/reading_list.html">Raw file</a></div></header>
+<article class="doc"><pre>{% extends &quot;base.html&quot; %}
+{% block title %}Reading List{% endblock %}
+{% block content %}
+  &lt;h1&gt;Reading List&lt;/h1&gt;
+
+  {% if error %}
+  &lt;p class=&quot;error&quot; role=&quot;alert&quot;&gt;{{ error }}&lt;/p&gt;
+  {% endif %}
+
+  &lt;form method=&quot;post&quot; action=&quot;{{ url_for(&#x27;pages.add&#x27;) }}&quot;&gt;
+    &lt;label&gt;Title &lt;input type=&quot;text&quot; name=&quot;title&quot; value=&quot;{{ title }}&quot;&gt;&lt;/label&gt;
+    &lt;label&gt;Author &lt;input type=&quot;text&quot; name=&quot;author&quot; value=&quot;{{ author }}&quot;&gt;&lt;/label&gt;
+    &lt;button type=&quot;submit&quot;&gt;Add&lt;/button&gt;
+  &lt;/form&gt;
+
+  {% if books %}
+  &lt;ol&gt;
+    {% for book in books %}
+    &lt;li&gt;
+      &lt;span class=&quot;title&quot;&gt;{{ book.title }}&lt;/span&gt; by &lt;span class=&quot;author&quot;&gt;{{ book.author }}&lt;/span&gt;
+      &lt;form method=&quot;post&quot; action=&quot;{{ url_for(&#x27;pages.remove&#x27;, book_id=book.id) }}&quot;&gt;
+        &lt;button type=&quot;submit&quot;&gt;Remove&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/li&gt;
+    {% endfor %}
+  &lt;/ol&gt;
+  {% else %}
+  &lt;p&gt;No books yet.&lt;/p&gt;
+  {% endif %}
+{% endblock %}
+</pre></article>
+</main>
+</body>
+</html>

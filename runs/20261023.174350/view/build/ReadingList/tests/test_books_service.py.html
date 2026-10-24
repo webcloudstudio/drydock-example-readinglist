@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_books_service.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_books_service.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_books_service.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Book service: add, list, remove, and validate, exercised directly against a per-test store.&quot;&quot;&quot;
+
+import pytest
+
+from app_server.services import books as book_service
+from persistence import Database
+from persistence.schema import Book
+
+
+def test_add_book_returns_stored_book_with_supplied_fields(fresh_db: Database) -&gt; None:
+    book = book_service.add_book(fresh_db, &quot;Dune&quot;, &quot;Frank Herbert&quot;)
+
+    assert isinstance(book, Book)
+    assert isinstance(book.id, int)
+    assert book.title == &quot;Dune&quot;
+    assert book.author == &quot;Frank Herbert&quot;
+
+
+def test_add_book_persists_the_book(fresh_db: Database) -&gt; None:
+    book = book_service.add_book(fresh_db, &quot;Emma&quot;, &quot;Jane Austen&quot;)
+
+    assert fresh_db.books.get(id=book.id) == book
+
+
+def test_add_book_rejects_empty_title_without_storing(fresh_db: Database) -&gt; None:
+    with pytest.raises(ValueError, match=&quot;title&quot;):
+        book_service.add_book(fresh_db, &quot;&quot;, &quot;Jane Austen&quot;)
+
+    assert book_service.list_books(fresh_db) == []
+
+
+def test_list_books_on_empty_store_returns_empty_list(fresh_db: Database) -&gt; None:
+    assert book_service.list_books(fresh_db) == []
+
+
+def test_list_books_returns_books_in_order_added(fresh_db: Database) -&gt; None:
+    added = [book_service.add_book(fresh_db, f&quot;Title {n}&quot;, &quot;A&quot;) for n in range(3)]
+
+    assert book_service.list_books(fresh_db) == added
+
+
+def test_remove_book_returns_true_and_drops_book_from_list(fresh_db: Database) -&gt; None:
+    keep = book_service.add_book(fresh_db, &quot;Keep&quot;, &quot;A&quot;)
+    gone = book_service.add_book(fresh_db, &quot;Gone&quot;, &quot;A&quot;)
+
+    assert book_service.remove_book(fresh_db, gone.id) is True
+
+    assert book_service.list_books(fresh_db) == [keep]
+
+
+def test_remove_book_returns_false_for_unknown_id(fresh_db: Database) -&gt; None:
+    assert book_service.remove_book(fresh_db, 999999) is False
+
+
+def test_remove_book_second_removal_returns_false(fresh_db: Database) -&gt; None:
+    book = book_service.add_book(fresh_db, &quot;Once&quot;, &quot;A&quot;)
+    book_service.remove_book(fresh_db, book.id)
+
+    assert book_service.remove_book(fresh_db, book.id) is False
+
+
+@pytest.mark.parametrize(
+    &quot;title, author&quot;,
+    [(&quot;Dune&quot;, &quot;Frank Herbert&quot;), (&quot;  Dune  &quot;, &quot;  Frank Herbert  &quot;), (&quot;T&quot;, &quot;A&quot;)],
+)
+def test_validate_book_input_accepts_non_blank_text(title: str, author: str) -&gt; None:
+    assert book_service.validate_book_input(title, author) is None
+
+
+@pytest.mark.parametrize(
+    &quot;title, author, field&quot;,
+    [
+        (&quot;&quot;, &quot;A&quot;, &quot;title&quot;),
+        (&quot;   &quot;, &quot;A&quot;, &quot;title&quot;),
+        (None, &quot;A&quot;, &quot;title&quot;),
+        (42, &quot;A&quot;, &quot;title&quot;),
+        (&quot;T&quot;, &quot;&quot;, &quot;author&quot;),
+        (&quot;T&quot;, &quot;\t\n&quot;, &quot;author&quot;),
+        (&quot;T&quot;, None, &quot;author&quot;),
+    ],
+)
+def test_validate_book_input_names_the_offending_field(title, author, field: str) -&gt; None:
+    with pytest.raises(ValueError) as error:
+        book_service.validate_book_input(title, author)
+
+    assert field in str(error.value)
+
+
+def test_validate_book_input_names_both_fields_when_both_are_blank() -&gt; None:
+    with pytest.raises(ValueError) as error:
+        book_service.validate_book_input(&quot;&quot;, &quot;&quot;)
+
+    assert &quot;title&quot; in str(error.value)
+    assert &quot;author&quot; in str(error.value)
+</pre></article>
+</main>
+</body>
+</html>

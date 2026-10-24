@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inputs/DECISIONS.json</title>
+<link rel="stylesheet" href="../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>inputs/DECISIONS.json</h1><div class="filenav"><a href="../../index.html">&larr; Report</a><a href="../../inputs/DECISIONS.json">Raw file</a></div></header>
+<article class="doc"><pre>[
+  {
+    &quot;id&quot;: &quot;Q-001&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;material&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;ARCHITECTURE.md&quot;,
+    &quot;story&quot;: &quot;architecture&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Primary web workflow routes&quot;,
+    &quot;description&quot;: &quot;The source requires a primary web page and add/remove workflows but does not name URL paths. The plan selects conventional server-rendered Flask routes.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;conventional-routes&quot;,
+        &quot;label&quot;: &quot;Use /, /books, and /books/&lt;book_id&gt;/delete&quot;
+      },
+      {
+        &quot;value&quot;: &quot;single-route&quot;,
+        &quot;label&quot;: &quot;Handle all actions on /&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;conventional-routes&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-002&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;material&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-VALIDATE-BOOK.md&quot;,
+    &quot;story&quot;: &quot;validate-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Validation response behavior&quot;,
+    &quot;description&quot;: &quot;The source requires rejection with a clear reason and correction ability but does not specify the HTTP response. The plan keeps the reader on the form with a client-error response.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;render-form-client-error&quot;,
+        &quot;label&quot;: &quot;Render the form with a 400 response&quot;
+      },
+      {
+        &quot;value&quot;: &quot;redirect-with-message&quot;,
+        &quot;label&quot;: &quot;Redirect back with a flash message&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;render-form-client-error&quot;
+  }
+]
+</pre></article>
+</main>
+</body>
+</html>

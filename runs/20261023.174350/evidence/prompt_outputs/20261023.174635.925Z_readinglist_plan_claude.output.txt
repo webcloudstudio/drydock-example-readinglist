@@ -1,0 +1,475 @@
+=== BEGIN ARTIFACT FEATURE-RemoveBook.md ===
+# FEATURE: Remove Book
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Remove a book from the reading list so it never reappears in later reads. |
+| Depends On | FEATURE-AddBook.md, FEATURE-ListBooks.md, DATABASE.md |
+| Provides | DELETE /books/{book_id} |
+| Consumes | books.delete, books.get, GET /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader removes a book they no longer want on their list. Once removed, the book must be absent from every subsequent list read, and the remaining books keep the order in which they were added.
+
+## Trigger
+
+An HTTP `DELETE /books/{book_id}` request, where `book_id` is the integer id returned when the book was added.
+
+## Sequence
+
+1. The route parses `book_id` as an integer. A non-integer id does not match the route and is answered by the framework as an unknown resource (404).
+2. The service looks the book up through `books.get`. If it does not exist, the route answers 404 with a JSON error body.
+3. The service removes the book through `books.delete`.
+4. The route answers 204 with an empty body.
+
+## Routes
+
+| Route | Method | Success | Failure |
+|-------|--------|---------|---------|
+| `/books/{book_id}` | DELETE | 204, empty body | 404 for an unknown id, including a repeat removal of the same id |
+
+## Reads
+
+- `books.get` — confirms the book exists before deletion.
+
+## Writes
+
+- `books.delete` — permanently removes the book row.
+
+## Database Interface
+
+- `FEATURE-BOOK-004` — write: remove a book - supplies: `id` - returns: `id`
+- `FEATURE-BOOK-002` — read: get a book by id - supplies: `id` - returns: `id`
+
+## Operational Behavior
+
+- Removal never alters the ids or relative order of the remaining books.
+- A removed book must not reappear in any later read, including after the application restarts.
+- Removing an already removed id is a no-op on state and answers 404.
+
+## Programmatic Acceptance
+
+=== AC remove-book-deletes ===
+Intent: Removing an added book answers 204 and the book is absent from the next list read.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+title = "ac-remove-" + uuid.uuid4().hex
+author = "ac-remove-author"
+created = client.post("/books", json={"title": title, "author": author})
+assert created.status_code == 201
+book_id = created.get_json()["id"]
+try:
+    before = [b["id"] for b in client.get("/books").get_json()]
+    assert book_id in before
+    removed = client.delete(f"/books/{book_id}")
+    assert removed.status_code == 204
+    after = [b["id"] for b in client.get("/books").get_json()]
+    assert book_id not in after
+finally:
+    client.delete(f"/books/{book_id}")
+=== END AC remove-book-deletes ===
+
+=== AC remove-book-unknown-id ===
+Intent: Removing an id that does not exist answers 404, and removing the same id twice answers 404 the second time.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+title = "ac-remove-twice-" + uuid.uuid4().hex
+created = client.post("/books", json={"title": title, "author": "ac-remove-author"})
+assert created.status_code == 201
+book_id = created.get_json()["id"]
+try:
+    first = client.delete(f"/books/{book_id}")
+    assert first.status_code == 204
+    second = client.delete(f"/books/{book_id}")
+    assert second.status_code == 404
+    existing = [b["id"] for b in client.get("/books").get_json()]
+    unknown_id = max(existing + [book_id]) + 1000000
+    unknown = client.delete(f"/books/{unknown_id}")
+    assert unknown.status_code == 404
+finally:
+    client.delete(f"/books/{book_id}")
+=== END AC remove-book-unknown-id ===
+
+=== AC remove-book-preserves-order ===
+Intent: Removing the middle book leaves the other books in the order they were added.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+token = uuid.uuid4().hex
+ids = []
+try:
+    for n in range(3):
+        resp = client.post("/books", json={"title": f"ac-order-{token}-{n}", "author": "ac-remove-author"})
+        assert resp.status_code == 201
+        ids.append(resp.get_json()["id"])
+    removed = client.delete(f"/books/{ids[1]}")
+    assert removed.status_code == 204
+    listed = [b["id"] for b in client.get("/books").get_json()]
+    mine = [i for i in listed if i in ids]
+    assert mine == [ids[0], ids[2]]
+finally:
+    for book_id in ids:
+        client.delete(f"/books/{book_id}")
+=== END AC remove-book-preserves-order ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- A removed book must never reappear in a later list read.
+- Removal must not change the relative order of the remaining books.
+- A request for an unknown id must not alter stored state.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT SCREEN-ReadingList.md ===
+# SCREEN: Reading List
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Server-rendered page that shows the reading list in the order added, with an add form, error display, and per-book remove buttons. |
+| Depends On | FEATURE-AddBook.md, FEATURE-RejectEmptyFields.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, FEATURE-AppShell.md |
+| Provides | GET /, POST /add, POST /remove/{book_id} |
+| Consumes | GET /books, POST /books, DELETE /books/{book_id} |
+| Route | / |
+| Parent | — |
+| Main Menu | Reading List (1) |
+| Tab Order | — |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The single page of the application. A reader sees their books in the order they were added, adds a book with a title and author, sees a clear error when either is empty, and removes books they no longer want.
+
+## Layout
+
+- Page heading: "Reading List".
+- Add form with a `title` text input, an `author` text input, and an "Add" submit button, posting to `/add`.
+- Error region directly above the form, rendered only when a submission was rejected. It states which field is missing.
+- Ordered list of books, one entry per book showing title and author, in the order added (id ascending).
+- Each entry carries a "Remove" button, a form posting to `/remove/{book_id}`.
+- An empty list renders a short "No books yet" message instead of the list.
+
+## Routes
+
+| Route | Method | Behavior |
+|-------|--------|----------|
+| `/` | GET | Renders the page with all books in the order added; status 200. |
+| `/add` | POST | Form fields `title` and `author`. Valid input stores the book through the book service and redirects 303 to `/`. Empty or whitespace-only title or author re-renders the page with status 400, a visible error message, and nothing stored. |
+| `/remove/{book_id}` | POST | Removes the book through the book service and redirects 303 to `/`. An unknown id also redirects 303 to `/` without changing state. |
+
+The screen calls the same service functions that back `POST /books`, `GET /books`, and `DELETE /books/{book_id}`, so browser and JSON behavior cannot diverge. No client-side JavaScript is used.
+
+## Interactions
+
+1. The reader fills in both fields and submits; the page reloads with the new book at the end of the list.
+2. The reader submits with an empty title or author; the page reloads with an error message and the list unchanged. Entered values are preserved in the form.
+3. The reader presses "Remove" on a book; the page reloads without that book.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC screen-index-renders ===
+Intent: GET / answers 200 and shows an added book's title and author, and GET /books agrees with it on the same book.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+token = uuid.uuid4().hex
+title = "ac-screen-title-" + token
+author = "ac-screen-author-" + token
+created = client.post("/books", json={"title": title, "author": author})
+assert created.status_code == 201
+book_id = created.get_json()["id"]
+try:
+    page = client.get("/")
+    assert page.status_code == 200
+    html = page.get_data(as_text=True)
+    assert title in html
+    assert author in html
+    listed = [b["id"] for b in client.get("/books").get_json()]
+    assert book_id in listed
+finally:
+    client.delete(f"/books/{book_id}")
+=== END AC screen-index-renders ===
+
+=== AC screen-add-form ===
+Intent: POST /add with a title and author redirects 303 and the book then appears on GET / and in GET /books.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+token = uuid.uuid4().hex
+title = "ac-form-title-" + token
+author = "ac-form-author-" + token
+added_ids = []
+try:
+    before = {b["id"] for b in client.get("/books").get_json()}
+    response = client.post("/add", data={"title": title, "author": author})
+    assert response.status_code == 303
+    after = client.get("/books").get_json()
+    added_ids = [b["id"] for b in after if b["id"] not in before]
+    assert len(added_ids) == 1
+    stored = [b for b in after if b["id"] == added_ids[0]][0]
+    assert stored["title"] == title
+    assert stored["author"] == author
+    html = client.get("/").get_data(as_text=True)
+    assert title in html
+finally:
+    for book_id in added_ids:
+        client.delete(f"/books/{book_id}")
+=== END AC screen-add-form ===
+
+=== AC screen-add-rejects-empty ===
+Intent: POST /add with an empty title, an empty author, or whitespace-only values answers 400 and stores nothing.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+token = uuid.uuid4().hex
+valid_title = "ac-reject-title-" + token
+valid_author = "ac-reject-author-" + token
+cases = [
+    {"title": "", "author": valid_author},
+    {"title": valid_title, "author": ""},
+    {"title": "", "author": ""},
+    {"title": "   ", "author": valid_author},
+    {"title": valid_title, "author": "   "},
+]
+before = [b["id"] for b in client.get("/books").get_json()]
+try:
+    for form in cases:
+        response = client.post("/add", data=form)
+        assert response.status_code == 400
+        assert len(response.get_data(as_text=True)) > 0
+    after = [b["id"] for b in client.get("/books").get_json()]
+    assert after == before
+finally:
+    current = client.get("/books").get_json()
+    for book in current:
+        if book["id"] not in before:
+            client.delete(f"/books/{book['id']}")
+=== END AC screen-add-rejects-empty ===
+
+=== AC screen-remove-form ===
+Intent: POST /remove/{book_id} redirects 303 and the book is gone from GET / and GET /books; an unknown id also redirects 303.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+title = "ac-screen-remove-" + uuid.uuid4().hex
+created = client.post("/books", json={"title": title, "author": "ac-screen-author"})
+assert created.status_code == 201
+book_id = created.get_json()["id"]
+try:
+    response = client.post(f"/remove/{book_id}")
+    assert response.status_code == 303
+    listed = [b["id"] for b in client.get("/books").get_json()]
+    assert book_id not in listed
+    html = client.get("/").get_data(as_text=True)
+    assert title not in html
+    again = client.post(f"/remove/{book_id}")
+    assert again.status_code == 303
+finally:
+    client.delete(f"/books/{book_id}")
+=== END AC screen-remove-form ===
+
+=== AC screen-order-added ===
+Intent: GET / presents books in the order they were added.
+Suite: scoped
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+token = uuid.uuid4().hex
+titles = [f"ac-screen-order-{token}-{n}" for n in range(3)]
+ids = []
+try:
+    for title in titles:
+        resp = client.post("/books", json={"title": title, "author": "ac-screen-author"})
+        assert resp.status_code == 201
+        ids.append(resp.get_json()["id"])
+    html = client.get("/").get_data(as_text=True)
+    positions = [html.index(title) for title in titles]
+    assert positions == sorted(positions)
+finally:
+    for book_id in ids:
+        client.delete(f"/books/{book_id}")
+=== END AC screen-order-added ===
+
+## User Acceptance
+
+- The page is readable: the form, the error message, and the book list are visually distinct.
+
+## Guardrails
+
+- Books are never presented in any order other than the order they were added.
+- An empty or whitespace-only title or author is never stored; the reader sees a clear error message.
+- A removed book never reappears on the page.
+- The page uses no client-side JavaScript.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-TestRunner.md ===
+# FEATURE: Test Runner
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Provide a POSIX-compatible bin/test.sh that runs the complete automated suite and exits zero only when every test passes. |
+| Depends On | ARCHITECTURE.md, DATABASE.md, FEATURE-AppShell.md, FEATURE-AddBook.md, FEATURE-RejectEmptyFields.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, SCREEN-ReadingList.md |
+| Provides | bin/test.sh |
+| Consumes | pytest -q |
+
+## Questions
+
+- None.
+
+## Purpose
+
+Give the reader and the build a single dependable command, `sh bin/test.sh`, run from the application root, that executes every automated test and reports success only when all of them pass. This is the terminal verification story: it runs after every implementation story, and its command, exit code, standard output, and standard error are preserved as evidence.
+
+## Trigger
+
+`sh bin/test.sh` from the application root, or `sh sources/full_test.sh`, which dispatches to it.
+
+## Sequence
+
+1. The script changes to the application root (the parent of `bin/`), independent of the caller's working directory.
+2. It activates `.venv` when `.venv/bin/activate` exists; otherwise it uses the interpreter on `PATH`.
+3. It runs `pytest -q`.
+4. It exits with pytest's exit status, so zero means every test passed and any failure, error, or collection problem is non-zero.
+
+## Interfaces
+
+| Interface | Contract |
+|-----------|----------|
+| `bin/test.sh` | POSIX `sh` only: no bashisms, no arrays, no `[[ ]]`. Uses `.` rather than `source`. Does not mask pytest's exit status. |
+
+## Coverage Expectations
+
+The suite under `tests/` contains tests for adding a book, listing books in the order added, removing a book, and rejecting an empty title or author. Each behavior has at least one test.
+
+## Reads
+
+- `tests/` and `.venv` in the application root.
+
+## Writes
+
+- None beyond what pytest itself writes (caches).
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC test-runner-posix-syntax ===
+Intent: bin/test.sh exists and parses as POSIX sh without errors.
+Suite: scoped
+
+import subprocess
+from pathlib import Path
+
+script = Path("bin/test.sh")
+assert script.is_file()
+result = subprocess.run(["sh", "-n", "bin/test.sh"], capture_output=True, text=True)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC test-runner-posix-syntax ===
+
+=== AC test-runner-covers-behaviors ===
+Intent: The test suite contains test modules for the add, list, remove, and rejection behaviors and pytest collects them without error.
+Suite: scoped
+
+import subprocess
+import sys
+from pathlib import Path
+
+tests = sorted(Path("tests").glob("test_*.py"))
+assert len(tests) >= 4
+result = subprocess.run(
+    [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+    capture_output=True, text=True,
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC test-runner-covers-behaviors ===
+
+=== AC test-runner-full-suite ===
+Intent: The Commander-owned entry point sources/full_test.sh dispatches to bin/test.sh and the complete automated suite exits zero.
+Suite: full
+
+import os
+import subprocess
+
+result = subprocess.run(
+    ["sh", "sources/full_test.sh"],
+    capture_output=True, text=True,
+    env={**os.environ},
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC test-runner-full-suite ===
+
+=== AC test-runner-direct ===
+Intent: Running sh bin/test.sh from the application root exits zero.
+Suite: full
+
+import os
+import subprocess
+
+result = subprocess.run(
+    ["sh", "bin/test.sh"],
+    capture_output=True, text=True,
+    env={**os.environ},
+)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC test-runner-direct ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- A test run is never reported as passing unless every automated test passes; the script's exit status is pytest's exit status.
+- The script uses only POSIX sh constructs.
+- The script does not skip, filter, or deselect tests.
+=== END ARTIFACT ===

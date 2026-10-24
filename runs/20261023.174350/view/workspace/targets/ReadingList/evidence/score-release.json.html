@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/score-release.json</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/score-release.json</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/score-release.json">Raw file</a></div></header>
+<article class="doc"><pre>{
+  &quot;schema_version&quot;: 5,
+  &quot;recorded_at&quot;: &quot;2026-10-23T18:10:40+00:00&quot;,
+  &quot;target&quot;: &quot;ReadingList&quot;,
+  &quot;verdict&quot;: &quot;PASSED&quot;,
+  &quot;verdict_line&quot;: &quot;ReadingList: PASSED \u2014 6 of 6&quot;,
+  &quot;statement&quot;: &quot;ReadingList: PASSED \u2014 6 of 6\n\n  st-001  MET       bin/test.sh:1-16 is a #!/bin/sh script that changes to the app root, activates .venv if present, and runs `pytest -q` as its last command; governed gate full: argv `sh sources/full_test.sh`, return_code 0, stdout `117 passed in 2.65s`; sources/full_test.sh:17 execs `sh bin/test.sh`, so the gate&#x27;s exit code is pytest&#x27;s exit code\n  st-002  MET       app_server/routes/pages.py:64-73 /add calls book_service.add_book and redirects to index on success; probe: POST /add {title: Dune, author: Frank Herbert} returned 303 Location /; probe: GET / contained &#x27;Dune&#x27; and &#x27;Frank Herbert&#x27; -&gt; True\n  st-003  MET       persistence/schema.py:36-51 declares the list operation; persistence/sqlite.py orders by insertion, and app_server/services/books.py:29 documents &#x27;in the order it was added&#x27;; probe: page positions of Dune, Emma, Beloved were ascending; probe: GET /books titles returned [&#x27;Dune&#x27;, &#x27;Emma&#x27;, &#x27;Beloved&#x27;]\n  st-004  MET       app_server/routes/pages.py:76-79 /remove/&lt;id&gt; calls remove_book and redirects; probe: POST /remove/&lt;Emma id&gt; returned 303; probe: GET / no longer contains &#x27;Emma&#x27;; GET /books returned [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]\n  st-005  MET       app_server/services/books.py:11-19 validate_book_input rejects blank or non-text title/author with a message naming the field; probe: {title:&#x27;&#x27;, author:&#x27;X&#x27;} -&gt; 400, reason &#x27;title must be non-empty text&#x27;; probe: {title:&#x27;Y&#x27;, author:&#x27;   &#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;; probe: {title:&#x27;Z&#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;; probe: GET /books after rejects still [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]\n  st-006  MET       tests/test_add_book.py: add behavior tests (e.g. test_post_answers_201_with_stored_book_fields); tests/test_list_books.py: test_list_returns_titles_in_the_order_they_were_added; tests/test_remove_book.py: test_removed_book_is_absent_from_next_list_read; tests/test_reject_empty_fields.py: test_blank_or_missing_field_answers_400_with_error_message; governed gate full: 117 passed, return_code 0&quot;,
+  &quot;complete&quot;: true,
+  &quot;governed_gate&quot;: {
+    &quot;name&quot;: &quot;full&quot;,
+    &quot;outcome&quot;: &quot;PASS&quot;,
+    &quot;argv&quot;: [
+      &quot;sh&quot;,
+      &quot;sources/full_test.sh&quot;
+    ],
+    &quot;return_code&quot;: 0,
+    &quot;duration_ms&quot;: 5720,
+    &quot;detail&quot;: &quot;&quot;,
+    &quot;timed_out&quot;: false,
+    &quot;build_identity&quot;: &quot;7e2fe03cfbc2f38e&quot;,
+    &quot;stdout&quot;: &quot;........................................................................ [ 61%]\n.............................................                            [100%]\n117 passed in 2.65s\n&quot;,
+    &quot;stderr&quot;: &quot;&quot;
+  },
+  &quot;criteria&quot;: [
+    {
+      &quot;criterion_id&quot;: &quot;st-001&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;bin/test.sh exists, is a POSIX sh script that runs pytest, and the governed gate `sh sources/full_test.sh` exited 0 with 117 tests passed.&quot;,
+      &quot;evidence&quot;: [
+        &quot;bin/test.sh:1-16 is a #!/bin/sh script that changes to the app root, activates .venv if present, and runs `pytest -q` as its last command&quot;,
+        &quot;governed gate full: argv `sh sources/full_test.sh`, return_code 0, stdout `117 passed in 2.65s`&quot;,
+        &quot;sources/full_test.sh:17 execs `sh bin/test.sh`, so the gate&#x27;s exit code is pytest&#x27;s exit code&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-002&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe POSTed a title and author to /add, got 303 back to /, and the next GET / showed both values; the book also appeared in GET /books.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app_server/routes/pages.py:64-73 /add calls book_service.add_book and redirects to index on success&quot;,
+        &quot;probe: POST /add {title: Dune, author: Frank Herbert} returned 303 Location /&quot;,
+        &quot;probe: GET / contained &#x27;Dune&#x27; and &#x27;Frank Herbert&#x27; -&gt; True&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-003&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe added Dune, Emma, Beloved in that order, and both the rendered page and the JSON list returned them in that order.&quot;,
+      &quot;evidence&quot;: [
+        &quot;persistence/schema.py:36-51 declares the list operation; persistence/sqlite.py orders by insertion, and app_server/services/books.py:29 documents &#x27;in the order it was added&#x27;&quot;,
+        &quot;probe: page positions of Dune, Emma, Beloved were ascending&quot;,
+        &quot;probe: GET /books titles returned [&#x27;Dune&#x27;, &#x27;Emma&#x27;, &#x27;Beloved&#x27;]&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-004&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe removed Emma through /remove/&lt;id&gt;, and the next page read and the next /books read both omitted it while keeping the others.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app_server/routes/pages.py:76-79 /remove/&lt;id&gt; calls remove_book and redirects&quot;,
+        &quot;probe: POST /remove/&lt;Emma id&gt; returned 303&quot;,
+        &quot;probe: GET / no longer contains &#x27;Emma&#x27;; GET /books returned [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-005&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe submitted an empty title, a whitespace-only author, and a missing author; each was rejected with 400 and a reason naming the field, and none was stored.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app_server/services/books.py:11-19 validate_book_input rejects blank or non-text title/author with a message naming the field&quot;,
+        &quot;probe: {title:&#x27;&#x27;, author:&#x27;X&#x27;} -&gt; 400, reason &#x27;title must be non-empty text&#x27;&quot;,
+        &quot;probe: {title:&#x27;Y&#x27;, author:&#x27;   &#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;&quot;,
+        &quot;probe: {title:&#x27;Z&#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;&quot;,
+        &quot;probe: GET /books after rejects still [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]&quot;
+      ]
+    },
+    {
+      &quot;criterion_id&quot;: &quot;st-006&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Automated tests exist for each of the four named behaviors and the full suite passed in the governed gate.&quot;,
+      &quot;evidence&quot;: [
+        &quot;tests/test_add_book.py: add behavior tests (e.g. test_post_answers_201_with_stored_book_fields)&quot;,
+        &quot;tests/test_list_books.py: test_list_returns_titles_in_the_order_they_were_added&quot;,
+        &quot;tests/test_remove_book.py: test_removed_book_is_absent_from_next_list_read&quot;,
+        &quot;tests/test_reject_empty_fields.py: test_blank_or_missing_field_answers_400_with_error_message&quot;,
+        &quot;governed gate full: 117 passed, return_code 0&quot;
+      ]
+    }
+  ],
+  &quot;guardrail_ids&quot;: [],
+  &quot;observations&quot;: [],
+  &quot;blockers&quot;: [],
+  &quot;attestations&quot;: [],
+  &quot;kit_faults&quot;: [],
+  &quot;warnings&quot;: [],
+  &quot;improvements&quot;: [
+    &quot;README does not say how to provision the database before first run. create_app applies no schema, so a fresh DATABASE_URL serves 500 &#x27;no such table: books&#x27; until schema.sql is executed. Add a documented provisioning command (or a CLI step) to the README&#x27;s Setup section.&quot;,
+    &quot;st-001 says &#x27;POSIX-compatible&#x27; but no machine check runs the script under a strict POSIX shell such as dash. Add that check to the suite, or name the shell it must run under.&quot;,
+    &quot;Several criteria (st-002 to st-005) are proven only by the test suite and my probe. Adding an end-to-end test that drives the web form through a real server would make these trials observable without an ephemeral probe.&quot;
+  ],
+  &quot;identities&quot;: {
+    &quot;code&quot;: &quot;555efed7a84706d7c1db04e6cbba21dbf98933e4&quot;,
+    &quot;sea_trials&quot;: &quot;0d1c05649d96f906f963f89c12ad5c9c510e8d13a03b81ebff4efd9b9d691e9f&quot;,
+    &quot;blueprint&quot;: {
+      &quot;ARCHITECTURE.md&quot;: &quot;513564d05020d87c4d59bcbd40b693fe2aae86fabff2f44b9c436731980f5168&quot;,
+      &quot;ARCHITECTURE_compact.md&quot;: &quot;7614f1a820c404cfaeedd71209a63bedc12cb4d0351e8be0cb2be29d951c5648&quot;,
+      &quot;DATABASE.md&quot;: &quot;ba3f2fb135480b34230597f018171e86cdb4992a5e13d7aed20ccb12d8eb8581&quot;,
+      &quot;DATABASE_compact.md&quot;: &quot;8583fbc89e2bb99c6e517fe0b3e92ec0461c5fc136b47d823a728a22cc39458d&quot;,
+      &quot;FEATURE-AddBook.md&quot;: &quot;d048b011738c77dd006b3d3d533f86231f9daa5768b198d854afdae2a6e49060&quot;,
+      &quot;FEATURE-AppShell.md&quot;: &quot;43f5184cbf1a7bf12983459f20271da67574d24e554a4a7818c2e823c4cbf3a2&quot;,
+      &quot;FEATURE-ListBooks.md&quot;: &quot;71524ca3c312a8c0b542203979c9c98f34a26158847e861e75b0662fce8dc42e&quot;,
+      &quot;FEATURE-RejectEmptyFields.md&quot;: &quot;b4cdb6a79e491e602e67e1e396287f8d31b9ad0c97fdb8574edb9ae22b05524c&quot;,
+      &quot;FEATURE-RemoveBook.md&quot;: &quot;1087b4c1ccc51e556f8ede2337cac9802a8ac90d7c8ff91da59c656c7505bd6c&quot;,
+      &quot;FEATURE-TestRunner.md&quot;: &quot;1fdcdbc2e300742f1ee55535319cb4516b949d3b5e1995a8ccf221b3b0178709&quot;,
+      &quot;SCREEN-ReadingList.md&quot;: &quot;39b85e01809b5b8af4c74d04026349f84706184441d2c59520096bfd6e2d4f65&quot;
+    }
+  },
+  &quot;execution_id&quot;: &quot;20261023.180956.202Z-a6a833ce&quot;
+}
+</pre></article>
+</main>
+</body>
+</html>

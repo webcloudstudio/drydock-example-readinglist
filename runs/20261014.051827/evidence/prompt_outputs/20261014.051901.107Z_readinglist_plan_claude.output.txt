@@ -1,0 +1,178 @@
+=== BEGIN ARTIFACT TOPOLOGY.md ===
+## Declarations
+
+## story architecture-foundation
+summary:      Stand up the Python project tree, environment, test runner, and Flask application factory.
+type:         foundational
+kind:         capability
+phase:        1
+implements:   ARCHITECTURE.md
+provides:     create_app, app_server.testing.web_client
+consumes:
+stack:        python.md, flask.md
+accepts:      
+acceptance:   yes
+instructions: |
+  Create pyproject.toml with a committed uv.lock, a .venv created by uv venv, and app_server/__init__.py exposing create_app() -> Flask.
+  Add app_server/testing.py exposing web_client() exactly as the Foundation Contract shows.
+  Register no routes here; the application factory only wires the blueprints and error handlers that later stories add.
+
+## story persistence-foundation
+summary:      Declare the reading-list store and generate the persistence package from DATABASE.md.
+type:         foundational
+kind:         migration
+phase:        1
+implements:   DATABASE.md
+provides:     books.create, books.list, books.get, books.delete
+consumes:
+depends:      architecture-foundation
+stack:        persistence.md, sqlite.md, python.md
+acceptance:   yes
+instructions: |
+  Declare one table, books, with integer primary key, title, author, and insertion ordering by id.
+  Declare access patterns for create, list in insertion order, get by id, and delete by id.
+  Drydock generates persistence/ and schema.sql; do not write SQL or sqlite3 calls by hand.
+
+## story feature-add-book
+summary:      Accept a title and author, store the book, and reject empty fields with a named reason.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-AddBook.md
+covers:       BOOKS-001, BOOKS-002, TEST-001, TEST-004
+accepts:      st-002, st-005
+provides:     POST /books
+consumes:     books.create
+depends:      persistence-foundation, architecture-foundation
+stack:        python.md, flask.md
+acceptance:   yes
+instructions: |
+  Add the POST /books route. A valid title and author are stored through books.create and the book is returned.
+  An empty or whitespace-only title or author is rejected with status 400 and a body naming the failing field (title or author), per AC-001.
+  Pytest covers the add behavior and the rejection behavior.
+
+## story feature-list-books
+summary:      List stored books in the order they were added.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-ListBooks.md
+covers:       BOOKS-003, TEST-002
+accepts:      st-003
+provides:     GET /books
+consumes:     books.list
+depends:      feature-add-book, persistence-foundation
+stack:        python.md, flask.md
+acceptance:   yes
+instructions: |
+  Add the GET /books route returning books through books.list in insertion order.
+  Pytest covers ordering when several books are added.
+
+## story feature-remove-book
+summary:      Remove a book and omit it from the next read; report a missing id without altering the list.
+type:         service
+kind:         capability
+phase:        1
+implements:   FEATURE-RemoveBook.md
+covers:       BOOKS-004, TEST-003
+accepts:      st-004
+provides:     DELETE /books/{id}
+consumes:     books.get, books.delete
+depends:      feature-list-books, persistence-foundation
+stack:        python.md, flask.md
+acceptance:   yes
+instructions: |
+  Add DELETE /books/{id}. A stored id is removed through books.delete and returns 204.
+  An unknown id returns 404 and leaves the list unchanged, per AC-002.
+  Pytest covers the removal and the missing-id behavior.
+
+## story screen-reading-list
+summary:      Serve the reading list page that adds, lists, and removes books.
+type:         service
+kind:         capability
+phase:        1
+implements:   SCREEN-ReadingList.md
+summary:      Serve the reading list page that adds, lists, and removes books.
+provides:     GET /
+consumes:     POST /books, GET /books, DELETE /books/{id}
+depends:      feature-add-book, feature-list-books, feature-remove-book
+stack:        python.md, flask.md
+acceptance:   yes
+instructions: |
+  Render an HTML page at GET / with a form for title and author, the ordered list, and a remove control per book.
+  The page calls the three feature routes; validation errors are shown beside the form.
+
+## story feature-test-runner
+summary:      Provide POSIX bin/test.sh that runs the complete automated suite and is the terminal verification gate.
+type:         feature
+kind:         test harness
+phase:        1
+implements:   FEATURE-TestRunner.md
+covers:       TEST-005
+accepts:      st-001, st-006
+depends:      feature-add-book, feature-list-books, feature-remove-book, screen-reading-list, persistence-foundation, architecture-foundation
+stack:        python.md
+acceptance:   yes
+instructions: |
+  Write bin/test.sh as a POSIX sh script at the application root that runs pytest from .venv and exits with its status.
+  This is the terminal story. Its acceptance runs sh bin/test.sh unfiltered and requires exit zero.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT DECISIONS.json ===
+[
+  {
+    "id": "Q-001",
+    "type": "text",
+    "severity": "low",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": "feature-add-book",
+    "title": "Response contract for empty title or author",
+    "description": "The sources require rejection with a clear message but state no status code.",
+    "options": [],
+    "system_choice": "HTTP 400 with a body naming the failing field (title or author)."
+  },
+  {
+    "id": "Q-002",
+    "type": "text",
+    "severity": "low",
+    "blueprint": "FEATURE-RemoveBook.md",
+    "story": "feature-remove-book",
+    "title": "Response contract for missing id on removal",
+    "description": "AC-002 requires the missing case to be reported without altering the list; no status is stated.",
+    "options": [],
+    "system_choice": "HTTP 404; the list is unchanged. Successful removal returns 204."
+  },
+  {
+    "id": "Q-003",
+    "type": "text",
+    "severity": "low",
+    "blueprint": "DATABASE.md",
+    "story": "persistence-foundation",
+    "title": "Book identifier and ordering",
+    "description": "The sources require insertion order but do not define identifiers.",
+    "options": [],
+    "system_choice": "Integer autoincrement primary key; list ordered by id ascending."
+  },
+  {
+    "id": "Q-004",
+    "type": "text",
+    "severity": "low",
+    "blueprint": "ARCHITECTURE.md",
+    "story": "architecture-foundation",
+    "title": "Persistence and web stack selection",
+    "description": "TECHNOLOGY_STACK.md names Python, Flask, SQLite, and pytest; the Foundation Contract uses app_server and persistence as package names.",
+    "options": [],
+    "system_choice": "Flask app_server package via create_app and web_client; SQLite persistence package via open_database and db_session; pytest as the runner."
+  },
+  {
+    "id": "Q-005",
+    "type": "text",
+    "severity": "low",
+    "blueprint": "FEATURE-TestRunner.md",
+    "story": "feature-test-runner",
+    "title": "Terminal verification gate",
+    "description": "The sources require one terminal full-suite gate. It is the story that depends on every other story.",
+    "options": [],
+    "system_choice": "feature-test-runner is terminal; it runs sh bin/test.sh unfiltered with Suite: full."
+  }
+]
+=== END ARTIFACT ===

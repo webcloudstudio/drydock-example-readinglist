@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/testing.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/testing.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/testing.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Testing entry points for the application.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from flask.testing import FlaskClient
+
+from app_server import create_app
+
+
+def web_client() -&gt; FlaskClient:
+    &quot;&quot;&quot;Return a Flask test client backed by a fresh application instance.&quot;&quot;&quot;
+
+    app = create_app()
+    app.config[&quot;TESTING&quot;] = True
+    return app.test_client()
+</pre></article>
+</main>
+</body>
+</html>

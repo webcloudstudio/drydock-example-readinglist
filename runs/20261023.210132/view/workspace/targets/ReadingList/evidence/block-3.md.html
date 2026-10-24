@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-3.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-3.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-3.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 3 · Foundational (block-3)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 2157</li><li>execution id: 20261023.210648.884Z-a36997d1</li></ul>
+<h2>Stories built</h2>
+<ul><li>Define the shared server-rendered interface patterns. (ui-general) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 601)</li><li>compass: COMPASS.md (SP 551)</li><li>implements: UI-GENERAL.md (SP 507)</li><li>stack: flask.md (SP 451)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/features/reading_list/routes.py</li><li>app_server/static/reading-list.css</li><li>app_server/templates/reading_list/index.html</li><li>instance/readinglist.sqlite3</li><li>tests/test_architecture.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): ui-general-client (UI-GENERAL.md)</li></ul>
+<p>intent: The shared interface is available through the application&#x27;s published testing client. return code: 0</p>
+<ul><li>RED: ui-general-form (UI-GENERAL.md)</li></ul>
+<p>intent: The primary interface accepts the declared book form fields. return code: 1 stderr: Traceback (most recent call last): File &quot;ui-general-form.py&quot;, line 11, in &lt;module&gt; assert response.status_code in (200, 302, 303) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: ui-general-client (UI-GENERAL.md)</li></ul>
+<p>intent: The shared interface is available through the application&#x27;s published testing client. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: ui-general-form (UI-GENERAL.md)</li></ul>
+<p>intent: The primary interface accepts the declared book form fields. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/features/reading_list/routes.py</li><li>app_server/templates/reading_list/index.html</li><li>app_server/static/reading-list.css</li><li>tests/test_architecture.py</li></ul>
+<p>SUMMARY: Implemented the server-rendered reading-list interface with accessible forms, validation feedback, empty state, insertion-order display, add/remove actions, styling, and tests. All tests passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

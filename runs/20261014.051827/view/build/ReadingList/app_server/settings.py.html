@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/settings.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/settings.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/settings.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Runtime settings for the reading list, read when the application is created.&quot;&quot;&quot;
+
+import os
+from pathlib import Path
+
+__all__ = [&quot;DATABASE_ENV&quot;, &quot;DATABASE_EXTENSION&quot;, &quot;PROJECT_ROOT&quot;, &quot;database_dsn&quot;]
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATABASE_ENV = &quot;READINGLIST_DATABASE&quot;
+DATABASE_EXTENSION = &quot;readinglist.database&quot;
+
+
+def database_dsn() -&gt; str:
+    &quot;&quot;&quot;Return the store named by READINGLIST_DATABASE, or the development store under data/.&quot;&quot;&quot;
+    configured = os.environ.get(DATABASE_ENV)
+    if configured:
+        return configured
+    return f&quot;sqlite://{PROJECT_ROOT / &#x27;data&#x27; / &#x27;app.db&#x27;}&quot;
+</pre></article>
+</main>
+</body>
+</html>

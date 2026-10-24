@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/19-score-release.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/19-score-release.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/19-score-release.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+2026-10-23 14:09:56 EDT  Calling CLAUDE/claude-haiku-5-5 (score release)...
+-to-end probe under the
+-002&quot;,
+      &quot;verd
+-73 /add cal
+-51 decl
+-79 /
+-text title/author with
+-empty text&#x27;&quot;,
+        
+-001 says
+  Completed CLAUDE/claude-haiku-5-5 (score release)  rc=0
+
+ReadingList: PASSED — 6 of 6
+
+  st-001  MET       bin/test.sh:1-16 is a #!/bin/sh script that changes to the app root, activates .venv if present, and runs `pytest -q` as its last command; governed gate full: argv `sh sources/full_test.sh`, return_code 0, stdout `117 passed in 2.65s`; sources/full_test.sh:17 execs `sh bin/test.sh`, so the gate&#x27;s exit code is pytest&#x27;s exit code
+  st-002  MET       app_server/routes/pages.py:64-73 /add calls book_service.add_book and redirects to index on success; probe: POST /add {title: Dune, author: Frank Herbert} returned 303 Location /; probe: GET / contained &#x27;Dune&#x27; and &#x27;Frank Herbert&#x27; -&gt; True
+  st-003  MET       persistence/schema.py:36-51 declares the list operation; persistence/sqlite.py orders by insertion, and app_server/services/books.py:29 documents &#x27;in the order it was added&#x27;; probe: page positions of Dune, Emma, Beloved were ascending; probe: GET /books titles returned [&#x27;Dune&#x27;, &#x27;Emma&#x27;, &#x27;Beloved&#x27;]
+  st-004  MET       app_server/routes/pages.py:76-79 /remove/&lt;id&gt; calls remove_book and redirects; probe: POST /remove/&lt;Emma id&gt; returned 303; probe: GET / no longer contains &#x27;Emma&#x27;; GET /books returned [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]
+  st-005  MET       app_server/services/books.py:11-19 validate_book_input rejects blank or non-text title/author with a message naming the field; probe: {title:&#x27;&#x27;, author:&#x27;X&#x27;} -&gt; 400, reason &#x27;title must be non-empty text&#x27;; probe: {title:&#x27;Y&#x27;, author:&#x27;   &#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;; probe: {title:&#x27;Z&#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;; probe: GET /books after rejects still [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]
+  st-006  MET       tests/test_add_book.py: add behavior tests (e.g. test_post_answers_201_with_stored_book_fields); tests/test_list_books.py: test_list_returns_titles_in_the_order_they_were_added; tests/test_remove_book.py: test_removed_book_is_absent_from_next_list_read; tests/test_reject_empty_fields.py: test_blank_or_missing_field_answers_400_with_error_message; governed gate full: 117 passed, return_code 0
+
+Scorecard: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/workspace/targets/ReadingList/SCORECARD.md
+Evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/workspace/targets/ReadingList/evidence/score-release.json
+Target - committed project workspace git store
+</pre></article>
+</main>
+</body>
+</html>

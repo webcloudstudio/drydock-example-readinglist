@@ -1,0 +1,97 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+  ✓ PASS        [1/35]  architecture-manifest          architecture         ARCHITECTURE.md
+  ✓ PASS        [2/35]  architecture-tree              architecture         ARCHITECTURE.md
+  ✓ PASS        [3/35]  architecture-pytest            architecture         ARCHITECTURE.md
+  ✓ PASS        [4/35]  books-create                   database             DATABASE.md
+  ✓ PASS        [5/35]  books-get                      database             DATABASE.md
+  ✓ PASS        [6/35]  books-list                     database             DATABASE.md
+  ✓ PASS        [7/35]  books-delete                   database             DATABASE.md
+  ✓ PASS        [8/35]  appshell-factory               app-shell            FEATURE-AppShell.md
+  ✓ PASS        [9/35]  appshell-client                app-shell            FEATURE-AppShell.md
+  ✓ PASS        [10/35]  appshell-health                app-shell            FEATURE-AppShell.md
+  ✓ PASS        [11/35]  appshell-unknown-route         app-shell            FEATURE-AppShell.md
+  ✓ PASS        [12/35]  addbook-create                 add-book             FEATURE-AddBook.md
+  ✓ PASS        [13/35]  addbook-persisted              add-book             FEATURE-AddBook.md
+  ✓ PASS        [14/35]  addbook-ascending-ids          add-book             FEATURE-AddBook.md
+  ✓ PASS        [15/35]  listbooks-order                list-books           FEATURE-ListBooks.md
+  ✓ PASS        [16/35]  listbooks-fields               list-books           FEATURE-ListBooks.md
+  ✓ PASS        [17/35]  listbooks-reachable            list-books           FEATURE-ListBooks.md
+  ✓ PASS        [18/35]  remove-book-deletes            remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        [19/35]  remove-book-unknown-id         remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        [20/35]  remove-book-preserves-order    remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        [21/35]  reject-empty-title             reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        [22/35]  reject-empty-author            reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        [23/35]  reject-both-empty              reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        [24/35]  reject-whitespace-and-missing  reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        [25/35]  reject-validator               reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        [26/35]  reject-valid-still-accepted    reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        [27/35]  screen-index-renders           screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [28/35]  screen-add-form                screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [29/35]  screen-add-rejects-empty       screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [30/35]  screen-remove-form             screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [31/35]  screen-order-added             screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        [32/35]  test-runner-posix-syntax       test-runner          FEATURE-TestRunner.md
+  ✓ PASS        [33/35]  test-runner-covers-behaviors   test-runner          FEATURE-TestRunner.md
+  ✓ PASS        [34/35]  test-runner-full-suite         test-runner          FEATURE-TestRunner.md
+  ✓ PASS        [35/35]  test-runner-direct             test-runner          FEATURE-TestRunner.md
+
+Acceptance verification: ReadingList  (2026-10-23T18:08:47+00:00)
+  PASS 33   FAIL 0   UNVERIFIED 0   PREPASSED 2   (35 AC)
+
+  ✓ PASS        architecture-manifest          architecture         ARCHITECTURE.md
+  ✓ PASS        architecture-tree              architecture         ARCHITECTURE.md
+  ~ PREPASSED   architecture-pytest            architecture         ARCHITECTURE.md
+  ✓ PASS        books-create                   database             DATABASE.md
+  ✓ PASS        books-get                      database             DATABASE.md
+  ✓ PASS        books-list                     database             DATABASE.md
+  ✓ PASS        books-delete                   database             DATABASE.md
+  ✓ PASS        appshell-factory               app-shell            FEATURE-AppShell.md
+  ✓ PASS        appshell-client                app-shell            FEATURE-AppShell.md
+  ✓ PASS        appshell-health                app-shell            FEATURE-AppShell.md
+  ✓ PASS        appshell-unknown-route         app-shell            FEATURE-AppShell.md
+  ✓ PASS        addbook-create                 add-book             FEATURE-AddBook.md
+  ✓ PASS        addbook-persisted              add-book             FEATURE-AddBook.md
+  ✓ PASS        addbook-ascending-ids          add-book             FEATURE-AddBook.md
+  ✓ PASS        listbooks-order                list-books           FEATURE-ListBooks.md
+  ✓ PASS        listbooks-fields               list-books           FEATURE-ListBooks.md
+  ✓ PASS        listbooks-reachable            list-books           FEATURE-ListBooks.md
+  ✓ PASS        remove-book-deletes            remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        remove-book-unknown-id         remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        remove-book-preserves-order    remove-book          FEATURE-RemoveBook.md
+  ✓ PASS        reject-empty-title             reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        reject-empty-author            reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        reject-both-empty              reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        reject-whitespace-and-missing  reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        reject-validator               reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        reject-valid-still-accepted    reject-empty-fields  FEATURE-RejectEmptyFields.md
+  ✓ PASS        screen-index-renders           screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-add-form                screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-add-rejects-empty       screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-remove-form             screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        screen-order-added             screen-reading-list  SCREEN-ReadingList.md
+  ✓ PASS        test-runner-posix-syntax       test-runner          FEATURE-TestRunner.md
+  ~ PREPASSED   test-runner-covers-behaviors   test-runner          FEATURE-TestRunner.md
+  ✓ PASS        test-runner-full-suite         test-runner          FEATURE-TestRunner.md
+  ✓ PASS        test-runner-direct             test-runner          FEATURE-TestRunner.md
+
+  ~ PREPASSED   architecture-pytest
+        intent: The pytest runner is installed and starts from the application root.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  ~ PREPASSED   test-runner-covers-behaviors
+        intent: The test suite contains test modules for the add, list, remove, and rejection behaviors and pytest collects them without error.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  Run `drydock score ac ReadingList --full` for untruncated output per failure.
+
+
+  Proof coverage: 33 of 35 criteria are proof — green here, and observed red before the work that turned them green.
+    2 are not. Each names a story whose acceptance did not test it.
+
+    PREPASSED  architecture-pytest  architecture  ARCHITECTURE.md
+               green before its block built
+    PREPASSED  test-runner-covers-behaviors  test-runner  FEATURE-TestRunner.md
+               green before its block built
+
+Soundings: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/workspace/targets/ReadingList/SOUNDINGS.md
+Target - committed project workspace git store

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/config.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/config.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/config.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Typed runtime settings. This module is the only reader of the process environment.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import os
+from collections.abc import Mapping
+from dataclasses import dataclass
+
+DEFAULT_DATABASE_PATH = &quot;data/app.db&quot;
+
+
+@dataclass(frozen=True)
+class Config:
+    &quot;&quot;&quot;Settings resolved once at startup. DATABASE_URL overrides DATABASE_PATH.&quot;&quot;&quot;
+
+    database_dsn: str
+
+    @classmethod
+    def load(cls, environ: Mapping[str, str] | None = None) -&gt; &quot;Config&quot;:
+        env = os.environ if environ is None else environ
+        dsn = env.get(&quot;DATABASE_URL&quot;) or env.get(&quot;DATABASE_PATH&quot;) or DEFAULT_DATABASE_PATH
+        return cls(database_dsn=dsn)
+</pre></article>
+</main>
+</body>
+</html>

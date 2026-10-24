@@ -1,0 +1,20 @@
+<reusable-compact filename="DATABASE.md">
+Persistence provides `persistence.books` with:
+
+- `list()` → ordered `BookRow[]`
+- `create(title, author, insertion_order)` → `BookRow`
+- `delete(id)` → `DeletedBook`
+
+Books require non-empty title/author, retain insertion order, and use generated persistence only. Schema: `books(id, title, author, insertion_order UNIQUE)`.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/features/reading_list/routes.py
+
+SUMMARY:
+Implemented centralized ordered book reads for the list and validation workflows. Database regressions and all declared acceptance probes pass. `sh sources/full_test.sh`: 9 passed.
+
+BLOCKERS:
+- None

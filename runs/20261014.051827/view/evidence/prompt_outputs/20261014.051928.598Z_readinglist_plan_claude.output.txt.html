@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261014.051928.598Z_readinglist_plan_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261014.051928.598Z_readinglist_plan_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261014.051928.598Z_readinglist_plan_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT ARCHITECTURE.md ===
+# ARCHITECTURE: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | Application factory, test client, and project layout for the reading list web application. |
+| Depends On  | COMPASS.md |
+| Provides    | create_app, app_server.testing.web_client |
+| Consumes    | |
+
+## Questions
+
+- None.
+
+## Project Layout
+
+- `pyproject.toml` with committed `uv.lock`; the environment is `.venv`, created by `uv venv`.
+- `app_server/__init__.py` exposes `create_app() -&gt; Flask`.
+- `app_server/testing.py` exposes `web_client()`, which returns a Flask test client with `TESTING` enabled.
+- `bin/test.sh` at the application root, written by the terminal story.
+
+## Technology Stack
+
+- Python: implementation language, governed by `python.md`.
+- Flask: web framework, governed by `flask.md`.
+- SQLite: local persistence through the generated `persistence` package, governed by `sqlite.md`.
+- pytest: test runner for the automated suite.
+- HTML/CSS: browser interface, styling unspecified.
+
+## Module Ownership
+
+| Boundary | Owner | Notes |
+|----------|-------|-------|
+| Application factory | `app_server` | Registers blueprints and error handlers added by later stories. |
+| Persistence | `persistence` | Generated from `DATABASE.md`; callers reach it only through services. |
+| Routes | `app_server` feature modules | Call `db.books.&lt;verb&gt;(...)` and never open a connection. |
+
+## Foundation Contract
+
+- package: app_server
+- entry: create_app() -&gt; Flask
+- fixture: web_client
+- fixture_source: app_server/testing.py
+
+`create_app()` registers no routes of its own. It wires only the blueprints and error handlers that feature stories contribute.
+
+## Programmatic Acceptance
+
+=== AC architecture-create-app ===
+Intent: create_app returns a Flask application instance.
+
+from flask import Flask
+from app_server import create_app
+
+app = create_app()
+assert isinstance(app, Flask)
+=== END AC architecture-create-app ===
+
+=== AC architecture-web-client-testing ===
+Intent: web_client returns a test client whose application has TESTING enabled.
+
+from app_server.testing import web_client
+
+client = web_client()
+assert client.application.config[&quot;TESTING&quot;] is True
+=== END AC architecture-web-client-testing ===
+
+=== AC architecture-web-client-unregistered ===
+Intent: web_client answers a path no story registers with 404.
+
+from app_server.testing import web_client
+
+client = web_client()
+response = client.get(&quot;/unregistered-probe-path&quot;)
+assert response.status_code == 404
+=== END AC architecture-web-client-unregistered ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- The application factory must not register routes that no feature story declares.
+- No module outside `persistence` may import `sqlite3`.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT DATABASE.md ===
+# DATABASE: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | Persistence contract for the reading list: one books table and its access patterns. |
+| Depends On  | ARCHITECTURE.md |
+| Provides    | books.create, books.list, books.get, books.delete |
+
+## Questions
+
+- None.
+
+## Access Patterns
+
+### FEATURE-BOOKS-001 — Create a book
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-AddBook.md |
+| Access | write |
+| Repository operation | `books.create` |
+| Compatibility | rebuild |
+
+Input: BookCreate
+
+| Field | Type | Notes |
+|-------|------|-------|
+| title | TEXT | Non-empty after trimming. |
+| author | TEXT | Non-empty after trimming. |
+
+Output: Book
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Assigned on insert. |
+| title | TEXT | |
+| author | TEXT | |
+
+### FEATURE-BOOKS-002 — List books in insertion order
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-ListBooks.md |
+| Access | read |
+| Repository operation | `books.list` |
+| Compatibility | rebuild |
+
+Input: BookListRequest
+
+| Field | Type | Notes |
+|-------|------|-------|
+| (none) | — | The operation takes no input fields. |
+
+Output: Book
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Ordered ascending. |
+| title | TEXT | |
+| author | TEXT | |
+
+### FEATURE-BOOKS-003 — Retrieve a book by id
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-RemoveBook.md |
+| Access | read |
+| Repository operation | `books.get` |
+| Compatibility | rebuild |
+
+Input: BookId
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | |
+
+Output: Book
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | |
+| title | TEXT | |
+| author | TEXT | |
+
+### FEATURE-BOOKS-004 — Delete a book by id
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-RemoveBook.md |
+| Access | write |
+| Repository operation | `books.delete` |
+| Compatibility | rebuild |
+
+Input: BookId
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | |
+
+Output: BookId
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | The id that was removed. |
+
+## Schema
+
+## `books`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER PK | Autoincrement; list order is ascending id. |
+| title | TEXT NOT NULL | |
+| author | TEXT NOT NULL | |
+
+## Programmatic Acceptance
+
+- None. Drydock owns SQLite schema construction and connectivity invariants deterministically.
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- The `books` table must not store an empty title or author.
+- Callers must not write SQL; they reach storage only through the generated `books.&lt;verb&gt;` operations.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-AddBook.md ===
+# FEATURE: Add Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | Accept a title and author, store the book, and reject an empty title or author. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md |
+| Provides    | POST /books |
+| Consumes    | books.create |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader adds a book with a title and an author. An empty title or author is rejected with a clear error.
+
+## Route
+
+`POST /books` accepts a JSON body with `title` and `author`.
+
+- A valid submission is stored through `books.create` and returns status 201 with the stored book as JSON: `id`, `title`, `author`.
+- An empty or whitespace-only `title` returns status 400 with JSON `{&quot;field&quot;: &quot;title&quot;}`.
+- An empty or whitespace-only `author` returns status 400 with JSON `{&quot;field&quot;: &quot;author&quot;}`.
+- A rejected submission is not stored.
+
+## Database Interface
+
+- `FEATURE-BOOKS-001` — write: create a book - supplies: `title`, `author` - returns: `id`, `title`, `author`
+
+## Programmatic Acceptance
+
+=== AC add-book-stores-valid ===
+Intent: A valid submission returns 201 with the stored book&#x27;s title and author.
+
+import uuid
+from app_server.testing import web_client
+
+title = uuid.uuid4().hex
+author = uuid.uuid4().hex
+client = web_client()
+response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author})
+assert response.status_code == 201
+body = response.get_json()
+assert body[&quot;title&quot;] == title
+assert body[&quot;author&quot;] == author
+assert isinstance(body[&quot;id&quot;], int)
+=== END AC add-book-stores-valid ===
+
+=== AC add-book-rejects-empty-title ===
+Intent: An empty title returns 400 and names the title field.
+
+import uuid
+from app_server.testing import web_client
+
+author = uuid.uuid4().hex
+client = web_client()
+response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: author})
+assert response.status_code == 400
+assert response.get_json()[&quot;field&quot;] == &quot;title&quot;
+=== END AC add-book-rejects-empty-title ===
+
+=== AC add-book-rejects-empty-author ===
+Intent: An empty author returns 400 and names the author field.
+
+import uuid
+from app_server.testing import web_client
+
+title = uuid.uuid4().hex
+client = web_client()
+response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;})
+assert response.status_code == 400
+assert response.get_json()[&quot;field&quot;] == &quot;author&quot;
+=== END AC add-book-rejects-empty-author ===
+
+=== AC add-book-rejects-whitespace-title ===
+Intent: A whitespace-only title is treated as empty and returns 400.
+
+import uuid
+from app_server.testing import web_client
+
+author = uuid.uuid4().hex
+client = web_client()
+response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: author})
+assert response.status_code == 400
+assert response.get_json()[&quot;field&quot;] == &quot;title&quot;
+=== END AC add-book-rejects-whitespace-title ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Never accept an empty title or an empty author.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-ListBooks.md ===
+# FEATURE: List Books
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | Return stored books in the order they were added. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md |
+| Provides    | GET /books |
+| Consumes    | books.list |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader views the books in the order they were added.
+
+## Route
+
+`GET /books` returns status 200 with a JSON array of books, each with `id`, `title`, and `author`. The array is ordered by ascending `id`, which is insertion order.
+
+## Database Interface
+
+- `FEATURE-BOOKS-002` — read: list books in insertion order - supplies: none - returns: `id`, `title`, `author`
+
+## Programmatic Acceptance
+
+=== AC list-books-returns-ok ===
+Intent: GET /books returns status 200 with a JSON array.
+
+from app_server.testing import web_client
+
+client = web_client()
+response = client.get(&quot;/books&quot;)
+assert response.status_code == 200
+assert isinstance(response.get_json(), list)
+=== END AC list-books-returns-ok ===
+
+=== AC list-books-insertion-order ===
+Intent: Books added in sequence are listed in the order they were added.
+
+import uuid
+from app_server.testing import web_client
+
+author = uuid.uuid4().hex
+first = uuid.uuid4().hex
+second = uuid.uuid4().hex
+third = uuid.uuid4().hex
+client = web_client()
+for title in (first, second, third):
+    added = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author})
+    assert added.status_code == 201
+listing = client.get(&quot;/books&quot;)
+assert listing.status_code == 200
+titles = [book[&quot;title&quot;] for book in listing.get_json() if book[&quot;title&quot;] in (first, second, third)]
+assert titles == [first, second, third]
+=== END AC list-books-insertion-order ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Never present books in an order other than the order they were added.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-RemoveBook.md ===
+# FEATURE: Remove Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | Remove a book so it is omitted from the next read; report a missing id without altering the list. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md, FEATURE-ListBooks.md |
+| Provides    | DELETE /books/{id} |
+| Consumes    | books.get, books.delete |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader removes a book from the list.
+
+## Route
+
+`DELETE /books/{id}`
+
+- A stored id is removed through `books.delete` and returns status 204.
+- An id that is not in the list returns status 404 and leaves the list unchanged.
+- A removed book is absent from the next `GET /books`.
+
+## Database Interface
+
+- `FEATURE-BOOKS-003` — read: retrieve a book by id - supplies: `id` - returns: `id`, `title`, `author`
+- `FEATURE-BOOKS-004` — write: delete a book by id - supplies: `id` - returns: `id`
+
+## Programmatic Acceptance
+
+=== AC remove-book-deletes ===
+Intent: A removed book returns status 204 and is absent from the next list read.
+
+import uuid
+from app_server.testing import web_client
+
+author = uuid.uuid4().hex
+client = web_client()
+added = client.post(&quot;/books&quot;, json={&quot;title&quot;: uuid.uuid4().hex, &quot;author&quot;: author})
+assert added.status_code == 201
+book_id = added.get_json()[&quot;id&quot;]
+deleted = client.delete(f&quot;/books/{book_id}&quot;)
+assert deleted.status_code == 204
+listing = client.get(&quot;/books&quot;)
+assert listing.status_code == 200
+assert book_id not in [book[&quot;id&quot;] for book in listing.get_json()]
+=== END AC remove-book-deletes ===
+
+=== AC remove-book-missing-id ===
+Intent: Removing an id that is not in the list returns 404 and leaves the list unchanged.
+
+import uuid
+from app_server.testing import web_client
+
+author = uuid.uuid4().hex
+client = web_client()
+added = client.post(&quot;/books&quot;, json={&quot;title&quot;: uuid.uuid4().hex, &quot;author&quot;: author})
+assert added.status_code == 201
+book_id = added.get_json()[&quot;id&quot;]
+assert client.delete(f&quot;/books/{book_id}&quot;).status_code == 204
+before = [book[&quot;id&quot;] for book in client.get(&quot;/books&quot;).get_json()]
+repeated = client.delete(f&quot;/books/{book_id}&quot;)
+assert repeated.status_code == 404
+after = [book[&quot;id&quot;] for book in client.get(&quot;/books&quot;).get_json()]
+assert after == before
+=== END AC remove-book-missing-id ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Removing a missing id must not alter the list.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

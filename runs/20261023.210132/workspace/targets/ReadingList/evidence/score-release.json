@@ -1,0 +1,106 @@
+{
+  "schema_version": 5,
+  "recorded_at": "2026-10-23T21:16:06+00:00",
+  "target": "ReadingList",
+  "verdict": "PASSED",
+  "verdict_line": "ReadingList: PASSED \u2014 6 of 6",
+  "statement": "ReadingList: PASSED \u2014 6 of 6\n\n  st-001  MET       governed gate full returned 0 with 18 passing tests; bin/test.sh:1-12\n  st-002  MET       probe: POST /books succeeded and GET / contained the submitted title; app_server/features/reading_list/routes.py:25-40\n  st-003  MET       probe: First Probe Book appeared before Second Probe Book; app_server/features/reading_list/routes.py:17-22\n  st-004  MET       probe: POST /books/<id>/delete succeeded and the removed title was absent from GET /; app_server/features/reading_list/routes.py:43-50\n  st-005  MET       probe: empty title and whitespace-only author both returned 400 with required-field messages; app_server/features/reading_list/routes.py:29-34\n  st-006  MET       tests/test_verification_runner.py:17-80; tests/test_reading_list_screen.py:38-88; governed gate full passed",
+  "complete": true,
+  "governed_gate": {
+    "name": "full",
+    "outcome": "PASS",
+    "argv": [
+      "sh",
+      "sources/full_test.sh"
+    ],
+    "return_code": 0,
+    "duration_ms": 4916,
+    "detail": "",
+    "timed_out": false,
+    "build_identity": "3ba9a6fc64636198",
+    "stdout": "..................                                                       [100%]\n",
+    "stderr": ""
+  },
+  "criteria": [
+    {
+      "criterion_id": "st-001",
+      "verdict": "MET",
+      "rationale": "The supplied full gate passed and bin/test.sh is a POSIX executable invoking pytest.",
+      "evidence": [
+        "governed gate full returned 0 with 18 passing tests",
+        "bin/test.sh:1-12"
+      ]
+    },
+    {
+      "criterion_id": "st-002",
+      "verdict": "MET",
+      "rationale": "The ephemeral probe successfully submitted a book and found it on the next list read.",
+      "evidence": [
+        "probe: POST /books succeeded and GET / contained the submitted title",
+        "app_server/features/reading_list/routes.py:25-40"
+      ]
+    },
+    {
+      "criterion_id": "st-003",
+      "verdict": "MET",
+      "rationale": "The ephemeral probe confirmed books were displayed in insertion order.",
+      "evidence": [
+        "probe: First Probe Book appeared before Second Probe Book",
+        "app_server/features/reading_list/routes.py:17-22"
+      ]
+    },
+    {
+      "criterion_id": "st-004",
+      "verdict": "MET",
+      "rationale": "The ephemeral probe removed a selected book and confirmed it was absent from the next read.",
+      "evidence": [
+        "probe: POST /books/<id>/delete succeeded and the removed title was absent from GET /",
+        "app_server/features/reading_list/routes.py:43-50"
+      ]
+    },
+    {
+      "criterion_id": "st-005",
+      "verdict": "MET",
+      "rationale": "The ephemeral probe confirmed empty title and author submissions return 400 responses with field-specific reasons.",
+      "evidence": [
+        "probe: empty title and whitespace-only author both returned 400 with required-field messages",
+        "app_server/features/reading_list/routes.py:29-34"
+      ]
+    },
+    {
+      "criterion_id": "st-006",
+      "verdict": "MET",
+      "rationale": "Automated tests cover adding, insertion ordering, removal, and rejecting empty title and author.",
+      "evidence": [
+        "tests/test_verification_runner.py:17-80",
+        "tests/test_reading_list_screen.py:38-88",
+        "governed gate full passed"
+      ]
+    }
+  ],
+  "guardrail_ids": [],
+  "observations": [],
+  "blockers": [],
+  "attestations": [],
+  "kit_faults": [],
+  "warnings": [],
+  "improvements": [],
+  "identities": {
+    "code": "08eb9a0fc8f4dcb4425ba8f9ad0ae5e4de5c61dd",
+    "sea_trials": "0d1c05649d96f906f963f89c12ad5c9c510e8d13a03b81ebff4efd9b9d691e9f",
+    "blueprint": {
+      "ARCHITECTURE.md": "b6aaa721727d6d785b4ddbf830818102584f78446b4f2e57ba1bfddb1dfa554a",
+      "ARCHITECTURE_compact.md": "9debdaade4762c69b0ede9ce1269bfcd5c548c90c1dc214d3457f3cc86c413a2",
+      "DATABASE.md": "0bab0628f6130ff0e1c840409170226b73ac94f3a474ecee669f2d01577bbbd7",
+      "DATABASE_compact.md": "232477bf2e9d073cc69c80cbf7d3fe1e0744a54952f55e7806f26a0701a36cef",
+      "FEATURE-ADD-BOOK.md": "4f0a0049b4a12ee66194bf88e1a80527706bcaac981164e9b84698ebf64b16ee",
+      "FEATURE-READING-LIST.md": "869e7a401e9a11dc9d93974b7e8bacd0ed77a95a2a5e51c968e0dbc73ec68c35",
+      "FEATURE-REMOVE-BOOK.md": "61778c0517fc3c78608e367450e801d3173dc569769718cd94577cd31d80cf88",
+      "FEATURE-VALIDATE-BOOK.md": "45a2fdea982a272ce49fd3bce8a04ff3c98559767c19186bfeecafc915cd7c6e",
+      "FEATURE-VERIFICATION.md": "96f43a6006bc8aa865e4127e1e20a470709a060bba6168dba7a788bcf6c7247c",
+      "SCREEN-ReadingList.md": "b442ee2a69c9b9e5c92a3899500b1e0f3fd028c7fe5c8cff4df3990771bcbbfb",
+      "UI-GENERAL.md": "6f2477b3375daecce60509d945b2cf8af28b9aa47a32173449c94fcf6a00196c"
+    }
+  },
+  "execution_id": "20261023.211537.447Z-31f2e099"
+}

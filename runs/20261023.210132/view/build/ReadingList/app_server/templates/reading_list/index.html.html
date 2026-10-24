@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/templates/reading_list/index.html</title>
+<link rel="stylesheet" href="../../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/templates/reading_list/index.html</h1><div class="filenav"><a href="../../../../../../index.html">&larr; Report</a><a href="../../../../../../build/ReadingList/app_server/templates/reading_list/index.html">Raw file</a></div></header>
+<article class="doc"><pre>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;Reading List&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;{{ url_for(&#x27;static&#x27;, filename=&#x27;reading-list.css&#x27;) }}&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;main class=&quot;page-shell&quot;&gt;
+  &lt;header class=&quot;page-header&quot;&gt;&lt;p class=&quot;eyebrow&quot;&gt;ReadingList&lt;/p&gt;&lt;h1&gt;Books to read&lt;/h1&gt;&lt;p class=&quot;intro&quot;&gt;Keep track of the books you want to discover next.&lt;/p&gt;&lt;/header&gt;
+  &lt;section class=&quot;panel&quot; aria-labelledby=&quot;add-book-heading&quot;&gt;&lt;h2 id=&quot;add-book-heading&quot;&gt;Add a book&lt;/h2&gt;
+    &lt;form method=&quot;post&quot; action=&quot;{{ url_for(&#x27;reading_list.add_book&#x27;) }}&quot; novalidate&gt;
+      &lt;div class=&quot;form-grid&quot;&gt;
+        &lt;div class=&quot;field {% if errors.title %}field-error{% endif %}&quot;&gt;&lt;label for=&quot;title&quot;&gt;Title&lt;/label&gt;&lt;input id=&quot;title&quot; name=&quot;title&quot; type=&quot;text&quot; value=&quot;{{ form.title|default(&#x27;&#x27;) }}&quot; required {% if errors.title %}aria-invalid=&quot;true&quot; {% endif %}aria-describedby=&quot;title-help{% if errors.title %} title-error{% endif %}&quot;&gt;&lt;span id=&quot;title-help&quot; class=&quot;help&quot;&gt;The book&#x27;s title&lt;/span&gt;{% if errors.title %}&lt;span id=&quot;title-error&quot; class=&quot;error&quot; role=&quot;alert&quot;&gt;{{ errors.title }}&lt;/span&gt;{% endif %}&lt;/div&gt;
+        &lt;div class=&quot;field {% if errors.author %}field-error{% endif %}&quot;&gt;&lt;label for=&quot;author&quot;&gt;Author&lt;/label&gt;&lt;input id=&quot;author&quot; name=&quot;author&quot; type=&quot;text&quot; value=&quot;{{ form.author|default(&#x27;&#x27;) }}&quot; required {% if errors.author %}aria-invalid=&quot;true&quot; {% endif %}aria-describedby=&quot;author-help{% if errors.author %} author-error{% endif %}&quot;&gt;&lt;span id=&quot;author-help&quot; class=&quot;help&quot;&gt;Who wrote it?&lt;/span&gt;{% if errors.author %}&lt;span id=&quot;author-error&quot; class=&quot;error&quot; role=&quot;alert&quot;&gt;{{ errors.author }}&lt;/span&gt;{% endif %}&lt;/div&gt;
+      &lt;/div&gt;&lt;button type=&quot;submit&quot;&gt;Add to reading list&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+  &lt;section class=&quot;list-section&quot; aria-labelledby=&quot;list-heading&quot;&gt;&lt;div class=&quot;section-heading&quot;&gt;&lt;h2 id=&quot;list-heading&quot;&gt;Your reading list&lt;/h2&gt;{% if books %}&lt;span class=&quot;count&quot;&gt;{{ books|length }} book{% if books|length != 1 %}s{% endif %}&lt;/span&gt;{% endif %}&lt;/div&gt;
+    {% if books %}&lt;ol class=&quot;book-list&quot;&gt;{% for book in books %}&lt;li class=&quot;book-card&quot;&gt;&lt;div&gt;&lt;h3&gt;{{ book.title }}&lt;/h3&gt;&lt;p&gt;{{ book.author }}&lt;/p&gt;&lt;/div&gt;&lt;form method=&quot;post&quot; action=&quot;{{ url_for(&#x27;reading_list.delete_book&#x27;, book_id=book.id) }}&quot;&gt;&lt;button class=&quot;button-secondary&quot; type=&quot;submit&quot; aria-label=&quot;Remove {{ book.title }}&quot;&gt;Remove&lt;/button&gt;&lt;/form&gt;&lt;/li&gt;{% endfor %}&lt;/ol&gt;
+    {% else %}&lt;div class=&quot;empty-state&quot;&gt;&lt;h3&gt;Your list is empty&lt;/h3&gt;&lt;p&gt;Add a book above to start your reading list.&lt;/p&gt;&lt;/div&gt;{% endif %}
+  &lt;/section&gt;
+&lt;/main&gt;&lt;/body&gt;&lt;/html&gt;
+</pre></article>
+</main>
+</body>
+</html>

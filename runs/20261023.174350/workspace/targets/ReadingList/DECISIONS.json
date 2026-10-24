@@ -1,0 +1,122 @@
+[
+  {
+    "id": "Q-001",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-RejectEmptyFields.md",
+    "story": "reject-empty-fields",
+    "status": "recommended",
+    "archived": false,
+    "title": "Whitespace-only title or author",
+    "description": "The source rejects empty values and is silent on whitespace-only input. Options: treat whitespace-only as empty, or accept it. Treating it as empty is the narrowest reading of a reader-facing 'empty'.",
+    "options": [
+      {
+        "value": "reject-whitespace",
+        "label": "Strip and reject whitespace-only values"
+      },
+      {
+        "value": "accept-whitespace",
+        "label": "Reject only zero-length values"
+      }
+    ],
+    "system_choice": "reject-whitespace"
+  },
+  {
+    "id": "Q-002",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-RejectEmptyFields.md",
+    "story": "reject-empty-fields",
+    "status": "recommended",
+    "archived": false,
+    "title": "Response contract for rejected submissions",
+    "description": "The source gives no status code or error channel. Chosen: POST /books returns 400 with a JSON error body; the HTML form route re-renders the page with status 400 and a visible message.",
+    "options": [
+      {
+        "value": "400",
+        "label": "400 Bad Request"
+      },
+      {
+        "value": "422",
+        "label": "422 Unprocessable Entity"
+      }
+    ],
+    "system_choice": "400"
+  },
+  {
+    "id": "Q-003",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-RemoveBook.md",
+    "story": "remove-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Response for removal",
+    "description": "The source gives no removal response contract. Chosen: DELETE /books/{book_id} returns 204 on success and 404 for an unknown id.",
+    "options": [
+      {
+        "value": "204-404",
+        "label": "204 on success, 404 for unknown id"
+      },
+      {
+        "value": "204-always",
+        "label": "204 even for unknown id"
+      }
+    ],
+    "system_choice": "204-404"
+  },
+  {
+    "id": "Q-004",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "SCREEN-ReadingList.md",
+    "story": "screen-reading-list",
+    "status": "recommended",
+    "archived": false,
+    "title": "Browser form routes versus JSON API",
+    "description": "Browser forms cannot issue DELETE, so the screen provides POST /add and POST /remove/{book_id} over the same services as the JSON routes. Server-rendered HTML with no client-side JavaScript was chosen as the narrowest interface.",
+    "options": [
+      {
+        "value": "server-rendered-forms",
+        "label": "Server-rendered forms, no JavaScript"
+      },
+      {
+        "value": "fetch-js",
+        "label": "Client-side fetch against the JSON API"
+      }
+    ],
+    "system_choice": "server-rendered-forms"
+  },
+  {
+    "id": "build-feature-rejectemptyfields.md-validation-error-message-format",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-RejectEmptyFields.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Validation error message format",
+    "description": "Missing, non-string, or whitespace-only fields produce 'title must be non-empty text' (or 'title and author must be non-empty text' when both fail). This names the field and is human-readable, as the spec requires. Acceptable, or should the wording change on replan?",
+    "options": [],
+    "system_choice": "Missing, non-string, or whitespace-only fields produce 'title must be non-empty text' (or 'title and author must be non-empty text' when both fail). This names the field and is human-readable, as the spec requires. Acceptable, or should the wording change on replan?"
+  },
+  {
+    "id": "build-feature-testrunner.md-how-bin/test.sh-behavior-is-tested",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-TestRunner.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "How bin/test.sh behavior is tested",
+    "description": "The runner tests copy the real bin/test.sh into a temporary application root and run it with a stub pytest first on PATH. Running the real script from inside pytest would recurse. Is that acceptable?",
+    "options": [],
+    "system_choice": "The runner tests copy the real bin/test.sh into a temporary application root and run it with a stub pytest first on PATH. Running the real script from inside pytest would recurse. Is that acceptable?"
+  }
+]

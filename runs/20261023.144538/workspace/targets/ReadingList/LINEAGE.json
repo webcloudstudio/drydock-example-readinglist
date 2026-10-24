@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "import": {
+    "root": "/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/sources",
+    "format": "markdown"
+  },
+  "sources": {
+    "full_test.sh": {
+      "state": "current",
+      "versions": [
+        {
+          "commit": "5f24018",
+          "date": "2026-10-23",
+          "hash": "d4b7169755d1b5e6bf7a2a8a452d916a27904219951cacaf9cf1edb7f50f7aa2",
+          "release": "",
+          "state": "consumed",
+          "via": "plan",
+          "ticket": null,
+          "requirements": [
+            {
+              "name": "provide-test-runner",
+              "text": "the application provides a POSIX-compatible bin/test.sh",
+              "stories": [
+                "verification"
+              ]
+            },
+            {
+              "name": "automated-tests-pass",
+              "text": "exits zero when every automated test passes.",
+              "stories": [
+                "test-add-book",
+                "test-list-books",
+                "test-remove-book",
+                "test-validation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "reading-list.md": {
+      "state": "current",
+      "versions": [
+        {
+          "commit": "5f24018",
+          "date": "2026-10-23",
+          "hash": "1b61badf71d1b0f24f23ba0873e4fed00b20b5ff927d05b4a4eede34aa515a58",
+          "release": "",
+          "state": "consumed",
+          "via": "plan",
+          "ticket": null,
+          "requirements": [
+            {
+              "name": "add-remove-books",
+              "text": "The reader can add a book with a title and author, view the books in the order added,\nand remove a book.",
+              "stories": [
+                "database",
+                "add-book",
+                "list-books",
+                "remove-book",
+                "screen-reading-list"
+              ]
+            },
+            {
+              "name": "reject-empty-fields",
+              "text": "An empty title or author is rejected with a clear error message.",
+              "stories": [
+                "reject-empty-title",
+                "reject-empty-author"
+              ]
+            },
+            {
+              "name": "automated-tests-per-behavior",
+              "text": "The application includes automated tests for each behavior.",
+              "stories": [
+                "test-add-book",
+                "test-list-books",
+                "test-remove-book",
+                "test-validation"
+              ]
+            },
+            {
+              "name": "posix-test-runner",
+              "text": "The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete\nautomated test suite from the application root. `sh bin/test.sh` exits zero only when every test\npasses. The final build story runs this command after every implementation story and preserves its\ncommand, exit code, standard output, and standard error as evidence.",
+              "stories": [
+                "verification"
+              ]
+            },
+            {
+              "name": "web-application",
+              "text": "Build a web application that keeps a list of books to read.",
+              "stories": [
+                "foundation",
+                "web-shell"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status
+
+  Target          /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList
+  Name            ReadingList
+  Phase           Loop
+  State           7 closed/implemented
+  Metadata        built · complete
+  Sources         2 imported · 7 authored blueprint files
+  Analysis        Ready · 9 stories · 0 questions · 0 blockers
+  Blueprint       ✗  1 errors · 0 warnings
+    ✗  METADATA fields: short_description not set in METADATA.md
+       → Set `short_description:` in ReadingList/METADATA.md to one line describing the project, or run `drydock analyze ReadingList` to have one proposed from the sources.
+  Plan            7 closed/implemented
+  Frontier        (none)
+  Workflow        5 steps
+                  Initialize         complete at 2026-10-14T05:18:28.380+00:00
+                  Import             complete at 2026-10-14T05:18:32.420+00:00
+                  Analyze            complete at 2026-10-14T05:18:50.371+00:00
+                  Plan               complete at 2026-10-14T05:21:16.030+00:00
+                  Build              complete at 2026-10-14T05:33:00.274+00:00
+  Next step       drydock refit ReadingList BOTH <Scope> <Change>

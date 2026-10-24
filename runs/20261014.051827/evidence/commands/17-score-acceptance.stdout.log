@@ -1,0 +1,51 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+  ✓ PASS        [1/15]  architecture-create-app               architecture-foundation  ARCHITECTURE.md
+  ✓ PASS        [2/15]  architecture-web-client-testing       architecture-foundation  ARCHITECTURE.md
+  ✓ PASS        [3/15]  architecture-web-client-unregistered  architecture-foundation  ARCHITECTURE.md
+  ✓ PASS        [4/15]  add-book-stores-valid                 feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        [5/15]  add-book-rejects-empty-title          feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        [6/15]  add-book-rejects-empty-author         feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        [7/15]  add-book-rejects-whitespace-title     feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        [8/15]  list-books-returns-ok                 feature-list-books       FEATURE-ListBooks.md
+  ✓ PASS        [9/15]  list-books-insertion-order            feature-list-books       FEATURE-ListBooks.md
+  ✓ PASS        [10/15]  remove-book-deletes                   feature-remove-book      FEATURE-RemoveBook.md
+  ✓ PASS        [11/15]  remove-book-missing-id                feature-remove-book      FEATURE-RemoveBook.md
+  ✓ PASS        [12/15]  screen-get-root                       screen-reading-list      SCREEN-ReadingList.md
+  ✓ PASS        [13/15]  screen-add-list-remove                screen-reading-list      SCREEN-ReadingList.md
+  ✓ PASS        [14/15]  test-runner-posix-syntax              feature-test-runner      FEATURE-TestRunner.md
+  ✓ PASS        [15/15]  test-runner-full-suite                feature-test-runner      FEATURE-TestRunner.md
+
+Acceptance verification: ReadingList  (2026-10-14T05:33:15+00:00)
+  PASS 14   FAIL 0   UNVERIFIED 0   PREPASSED 1   (15 AC)
+
+  ✓ PASS        architecture-create-app               architecture-foundation  ARCHITECTURE.md
+  ✓ PASS        architecture-web-client-testing       architecture-foundation  ARCHITECTURE.md
+  ✓ PASS        architecture-web-client-unregistered  architecture-foundation  ARCHITECTURE.md
+  ✓ PASS        add-book-stores-valid                 feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        add-book-rejects-empty-title          feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        add-book-rejects-empty-author         feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        add-book-rejects-whitespace-title     feature-add-book         FEATURE-AddBook.md
+  ✓ PASS        list-books-returns-ok                 feature-list-books       FEATURE-ListBooks.md
+  ✓ PASS        list-books-insertion-order            feature-list-books       FEATURE-ListBooks.md
+  ✓ PASS        remove-book-deletes                   feature-remove-book      FEATURE-RemoveBook.md
+  ✓ PASS        remove-book-missing-id                feature-remove-book      FEATURE-RemoveBook.md
+  ✓ PASS        screen-get-root                       screen-reading-list      SCREEN-ReadingList.md
+  ~ PREPASSED   screen-add-list-remove                screen-reading-list      SCREEN-ReadingList.md
+  ✓ PASS        test-runner-posix-syntax              feature-test-runner      FEATURE-TestRunner.md
+  ✓ PASS        test-runner-full-suite                feature-test-runner      FEATURE-TestRunner.md
+
+  ~ PREPASSED   screen-add-list-remove
+        intent: The routes the page calls add, list, and remove a book, and an unknown id returns 404.
+        green at this block's baseline too, before its code existed — confirm the criterion exercises the story's work
+
+  Run `drydock score ac ReadingList --full` for untruncated output per failure.
+
+
+  Proof coverage: 14 of 15 criteria are proof — green here, and observed red before the work that turned them green.
+    1 are not. Each names a story whose acceptance did not test it.
+
+    PREPASSED  screen-add-list-remove  screen-reading-list  SCREEN-ReadingList.md
+               green before its block built
+
+Soundings: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/SOUNDINGS.md
+Target - committed project workspace git store

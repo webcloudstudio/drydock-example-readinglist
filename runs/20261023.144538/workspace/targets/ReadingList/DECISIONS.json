@@ -1,0 +1,360 @@
+[
+  {
+    "id": "Q-001",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": "add-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Response contract for add and remove",
+    "description": "The sources do not state status codes. Options: JSON 201/200 responses, or form-style redirects. The UI is a browser page, so form posts that redirect fit best.",
+    "options": [
+      {
+        "value": "redirect",
+        "label": "303 redirect to / on success; 400 on rejection; 404 on unknown id"
+      },
+      {
+        "value": "json",
+        "label": "201/200 JSON bodies"
+      }
+    ],
+    "system_choice": "redirect"
+  },
+  {
+    "id": "Q-002",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-RemoveBook.md",
+    "story": "remove-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Removal route shape",
+    "description": "Browser forms cannot send DELETE without scripting. Options: DELETE /books/{id}, or POST /books/{id}/delete.",
+    "options": [
+      {
+        "value": "post-delete",
+        "label": "POST /books/{id}/delete"
+      },
+      {
+        "value": "http-delete",
+        "label": "DELETE /books/{id}"
+      }
+    ],
+    "system_choice": "post-delete"
+  },
+  {
+    "id": "Q-003",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-RejectEmptyTitle.md",
+    "story": "reject-empty-title",
+    "status": "recommended",
+    "archived": false,
+    "title": "Whitespace-only title or author",
+    "description": "The source says empty is rejected. Whitespace-only text is treated as empty so a blank-looking entry cannot be stored; accepted values are stored trimmed.",
+    "options": [
+      {
+        "value": "reject-whitespace",
+        "label": "Treat whitespace-only as empty"
+      },
+      {
+        "value": "literal-empty",
+        "label": "Reject only zero-length values"
+      }
+    ],
+    "system_choice": "reject-whitespace"
+  },
+  {
+    "id": "Q-004",
+    "type": "choice",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "FEATURE-RejectEmptyAuthor.md",
+    "story": "reject-empty-author",
+    "status": "recommended",
+    "archived": false,
+    "title": "How the rejection reason is reported",
+    "description": "A reason must always accompany a rejection. Browser requests get the page re-rendered with the reason; requests sending Accept: application/json get a JSON body with error and field.",
+    "options": [
+      {
+        "value": "html-and-json",
+        "label": "Re-rendered page, or JSON {error, field} on Accept: application/json"
+      },
+      {
+        "value": "html-only",
+        "label": "Re-rendered page only"
+      }
+    ],
+    "system_choice": "html-and-json"
+  },
+  {
+    "id": "Q-005",
+    "type": "text",
+    "severity": "low",
+    "origin": "plan",
+    "blueprint": "DATABASE.md",
+    "story": "database",
+    "status": "recommended",
+    "archived": false,
+    "title": "Insertion order storage",
+    "description": "Order added is preserved by an autoincrementing integer primary key on books, listed in ascending id order, so no separate position column is needed.",
+    "options": [],
+    "system_choice": "books(id INTEGER PK, title TEXT NOT NULL, author TEXT NOT NULL); list ordered by id ascending."
+  },
+  {
+    "id": "build-architecture.md-db_session-fixture-import-timing",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "ARCHITECTURE.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "db_session fixture import timing",
+    "description": "The conftest db_session fixture imports persistence.testing inside the fixture body, because the generated persistence package does not exist until the DATABASE step. Options were a top-level import, which breaks collection now, or a lazy import, which I chose. Is that acceptable?",
+    "options": [],
+    "system_choice": "The conftest db_session fixture imports persistence.testing inside the fixture body, because the generated persistence package does not exist until the DATABASE step. Options were a top-level import, which breaks collection now, or a lazy import, which I chose. Is that acceptable?"
+  },
+  {
+    "id": "build-feature-addbook.md-empty-or-absent-title/author-on-post-/books",
+    "type": "text",
+    "severity": "material",
+    "origin": "build",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Empty or absent title/author on POST /books",
+    "description": "Rejection stories own validation, but COMPASS forbids storing empty values. I refuse with 400 and the reason rendered in the base.html alert region, and store nothing. Is that acceptable, or should the rejection stories own the response shape and this should only refuse without rendering?",
+    "options": [],
+    "system_choice": "Rejection stories own validation, but COMPASS forbids storing empty values. I refuse with 400 and the reason rendered in the base.html alert region, and store nothing. Is that acceptable, or should the rejection stories own the response shape and this should only refuse without rendering?"
+  },
+  {
+    "id": "build-feature-addbooktests.md-store-used-by-the-round-trip-tests",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-AddBookTests.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Store used by the round-trip tests",
+    "description": "The new tests run against the configured store (DATABASE_URL or data/app.db), as the spec's web_client and committed_session guidance describes. Each test removes only the books it created. The existing FEATURE-AddBook tests keep their isolated temp store. Is a shared configured store acceptable, or should these tests move to an isolated store?",
+    "options": [],
+    "system_choice": "The new tests run against the configured store (DATABASE_URL or data/app.db), as the spec's web_client and committed_session guidance describes. Each test removes only the books it created. The existing FEATURE-AddBook tests keep their isolated temp store. Is a shared configured store acceptable, or should these tests move to an isolated store?"
+  },
+  {
+    "id": "build-feature-listbooks.md-ordering-enforced-in-service,-not-the-store",
+    "type": "text",
+    "severity": "material",
+    "origin": "build",
+    "blueprint": "FEATURE-ListBooks.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Ordering enforced in service, not the store",
+    "description": "The generated books.list has no ORDER BY, so list_books sorts rows by id ascending in app_server/book_service.py. Options were: sort in the service, or edit the generated persistence package (rejected: generated, never hand-written). Is that acceptable, or should DATABASE.md's generator add an ORDER BY on the list operation at replan?",
+    "options": [],
+    "system_choice": "The generated books.list has no ORDER BY, so list_books sorts rows by id ascending in app_server/book_service.py. Options were: sort in the service, or edit the generated persistence package (rejected: generated, never hand-written). Is that acceptable, or should DATABASE.md's generator add an ORDER BY on the list operation at replan?"
+  },
+  {
+    "id": "build-feature-rejectemptytitle.md-json-rejection-for-an-empty-author-and-the-accept-rule",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-RejectEmptyTitle.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "JSON rejection for an empty author and the Accept rule",
+    "description": "The spec defines the JSON body only for the title. I return field \"author\" for an empty author, since the same JSON shape fits, and I choose JSON only when the client's preferred media type is exactly application/json, so */* and browser Accept headers keep the HTML response. Is that acceptable, or should author rejections omit the JSON field?",
+    "options": [],
+    "system_choice": "The spec defines the JSON body only for the title. I return field \"author\" for an empty author, since the same JSON shape fits, and I choose JSON only when the client's preferred media type is exactly application/json, so */* and browser Accept headers keep the HTML response. Is that acceptable, or should author rejections omit the JSON field?"
+  },
+  {
+    "id": "build-feature-removebooktests.md-dropped-service-level-and-store-read-tests-from-tests/test_remove_book.py",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-RemoveBookTests.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Dropped service-level and store-read tests from tests/test_remove_book.py",
+    "description": "The earlier module called remove_book and read database.books directly, which the spec's guardrail forbids (\"Tests reach removal only through the public HTTP routes, never through the store\"). I removed those four tests and rewrote the rest to use HTTP only. Is that acceptable, or should service-level coverage live in a separate module?",
+    "options": [],
+    "system_choice": "The earlier module called remove_book and read database.books directly, which the spec's guardrail forbids (\"Tests reach removal only through the public HTTP routes, never through the store\"). I removed those four tests and rewrote the rest to use HTTP only. Is that acceptable, or should service-level coverage live in a separate module?"
+  },
+  {
+    "id": "build-screen-readinglist.md-rejected-html-submission-response",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "SCREEN-ReadingList.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Rejected HTML submission response",
+    "description": "The spec says a rejected submission re-renders the page with the reason. I render the full reading list page (alert region, add form, and current books) with the 400 status, instead of the bare base layout the route used before. Is that acceptable?",
+    "options": [],
+    "system_choice": "The spec says a rejected submission re-renders the page with the reason. I render the full reading list page (alert region, add form, and current books) with the 400 status, instead of the bare base layout the route used before. Is that acceptable?"
+  },
+  {
+    "id": "build-skip-feature-addbook.md-add-book-persists-in-store",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": "add-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: add-book-persists-in-store",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave add-book-persists-in-store untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-addbook.md-add-book-redirects",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": "add-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: add-book-redirects",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave add-book-redirects untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-addbook.md-add-book-round-trip",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-AddBook.md",
+    "story": "add-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: add-book-round-trip",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave add-book-round-trip untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-listbooks.md-list-books-matches-store",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-ListBooks.md",
+    "story": "list-books",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: list-books-matches-store",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave list-books-matches-store untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-listbooks.md-list-books-ok",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-ListBooks.md",
+    "story": "list-books",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: list-books-ok",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave list-books-ok untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-listbooks.md-list-books-order-added",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-ListBooks.md",
+    "story": "list-books",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: list-books-order-added",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave list-books-order-added untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-rejectemptytitle.md-reject-title-empty-json",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-RejectEmptyTitle.md",
+    "story": "reject-empty-title",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: reject-title-empty-json",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave reject-title-empty-json untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-rejectemptytitle.md-reject-title-missing",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-RejectEmptyTitle.md",
+    "story": "reject-empty-title",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: reject-title-missing",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave reject-title-missing untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-skip-feature-rejectemptytitle.md-reject-title-whitespace",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "FEATURE-RejectEmptyTitle.md",
+    "story": "reject-empty-title",
+    "status": "recommended",
+    "archived": false,
+    "title": "Acceptance skipped: reject-title-whitespace",
+    "description": "excluded check: ERROR malformed",
+    "options": [],
+    "system_choice": "Leave reject-title-whitespace untested until its acceptance setup is repaired; do not treat it as passed."
+  },
+  {
+    "id": "build-ui-general.md-settings-module-and-store-configuration",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "UI-GENERAL.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Settings module and store configuration",
+    "description": "I added app_server/settings.py with a typed Settings dataclass to centralize the store DSN, reading DATABASE_URL, then DATABASE_PATH, then data/app.db, which mirrors persistence/testing.py. I also kept the Database handle in app.extensions['database'] rather than as a module global. Is that acceptable, or should it change on replan?",
+    "options": [],
+    "system_choice": "I added app_server/settings.py with a typed Settings dataclass to centralize the store DSN, reading DATABASE_URL, then DATABASE_PATH, then data/app.db, which mirrors persistence/testing.py. I also kept the Database handle in app.extensions['database'] rather than as a module global. Is that acceptable, or should it change on replan?"
+  },
+  {
+    "id": "build-verification.md-venv-activation-under-set--u",
+    "type": "text",
+    "severity": "low",
+    "origin": "build",
+    "blueprint": "VERIFICATION.md",
+    "story": null,
+    "status": "recommended",
+    "archived": false,
+    "title": "Venv activation under set -u",
+    "description": "The runner sources .venv/bin/activate with set -u relaxed around it, because the activate script references OSTYPE, which is unset under dash. Alternative was prepending .venv/bin to PATH without sourcing. Sourcing keeps the activation the spec describes. Is that acceptable?",
+    "options": [],
+    "system_choice": "The runner sources .venv/bin/activate with set -u relaxed around it, because the activate script references OSTYPE, which is unset under dash. Alternative was prepending .venv/bin to PATH without sourcing. Sourcing keeps the activation the spec describes. Is that acceptable?"
+  }
+]

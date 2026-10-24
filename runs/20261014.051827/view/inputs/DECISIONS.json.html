@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inputs/DECISIONS.json</title>
+<link rel="stylesheet" href="../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>inputs/DECISIONS.json</h1><div class="filenav"><a href="../../index.html">&larr; Report</a><a href="../../inputs/DECISIONS.json">Raw file</a></div></header>
+<article class="doc"><pre>[
+  {
+    &quot;id&quot;: &quot;Q-001&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: &quot;feature-add-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Response contract for empty title or author&quot;,
+    &quot;description&quot;: &quot;The sources require rejection with a clear message but state no status code.&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;HTTP 400 with a body naming the failing field (title or author).&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-002&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RemoveBook.md&quot;,
+    &quot;story&quot;: &quot;feature-remove-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Response contract for missing id on removal&quot;,
+    &quot;description&quot;: &quot;AC-002 requires the missing case to be reported without altering the list; no status is stated.&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;HTTP 404; the list is unchanged. Successful removal returns 204.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-003&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;DATABASE.md&quot;,
+    &quot;story&quot;: &quot;persistence-foundation&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Book identifier and ordering&quot;,
+    &quot;description&quot;: &quot;The sources require insertion order but do not define identifiers.&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Integer autoincrement primary key; list ordered by id ascending.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-004&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;ARCHITECTURE.md&quot;,
+    &quot;story&quot;: &quot;architecture-foundation&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Persistence and web stack selection&quot;,
+    &quot;description&quot;: &quot;TECHNOLOGY_STACK.md names Python, Flask, SQLite, and pytest; the Foundation Contract uses app_server and persistence as package names.&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Flask app_server package via create_app and web_client; SQLite persistence package via open_database and db_session; pytest as the runner.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-005&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-TestRunner.md&quot;,
+    &quot;story&quot;: &quot;feature-test-runner&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Terminal verification gate&quot;,
+    &quot;description&quot;: &quot;The sources require one terminal full-suite gate. It is the story that depends on every other story.&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;feature-test-runner is terminal; it runs sh bin/test.sh unfiltered with Suite: full.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-addbook.md-database-location-for-create_app&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Database location for create_app&quot;,
+    &quot;description&quot;: &quot;No spec names a DSN. create_app() reads READINGLIST_DATABASE and defaults to data/app.db under the project root. Tests redirect it to a temp store via an autouse fixture. Acceptance checks that call web_client() outside pytest write to data/app.db. Is that acceptable, or should the default become a temp store?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;No spec names a DSN. create_app() reads READINGLIST_DATABASE and defaults to data/app.db under the project root. Tests redirect it to a temp store via an autouse fixture. Acceptance checks that call web_client() outside pytest write to data/app.db. Is that acceptable, or should the default become a temp store?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-addbook.md-trim-before-storing&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Trim before storing&quot;,
+    &quot;description&quot;: &quot;Title and author are trimmed before storage and the trimmed values are returned, following DATABASE.md&#x27;s non-empty-after-trimming rule. Is that acceptable?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Title and author are trimmed before storage and the trimmed values are returned, following DATABASE.md&#x27;s non-empty-after-trimming rule. Is that acceptable?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-listbooks.md-ordering-guarantee&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-ListBooks.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Ordering guarantee&quot;,
+    &quot;description&quot;: &quot;The DATABASE spec says ascending id, but the shipped SELECT has no ORDER BY. I sort by id in list_books so ordering does not depend on the engine. Is that acceptable?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The DATABASE spec says ascending id, but the shipped SELECT has no ORDER BY. I sort by id in list_books so ordering does not depend on the engine. Is that acceptable?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-removebook.md-404-response-body&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RemoveBook.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;404 response body&quot;,
+    &quot;description&quot;: &quot;The spec requires status 404 but no body. I return {\&quot;id\&quot;: &lt;requested id&gt;} so the caller can see which id was missing, mirroring the 400 responses that name the offending field. Is that acceptable, or should the body be empty?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The spec requires status 404 but no body. I return {\&quot;id\&quot;: &lt;requested id&gt;} so the caller can see which id was missing, mirroring the 400 responses that name the offending field. Is that acceptable, or should the body be empty?&quot;
+  }
+]
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,82 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: architecture
+git: baseline ReadingList f1cbcc400496
+git: baseline ReadingList 67eeee4bdf7a
+
+BLOCK block-1  name="Block 1 · Foundational"  calls_max=7
+  story=architecture  "Establish the Flask application structure and module boundaries."
+
+  [call 1/7]  kind=initial  llm=codex/gpt-5.6-luna
+    result=ok  rc=0  execution=20261023.210502.052Z-4d83d2d4
+    acceptance=2/2
+git: block-1 | python.md, ARCHITECTURE.md | call=1 | app=a6a41897869d target=058ee14b02d3
+
+  DONE  story=architecture  state=closed/implemented  execution=20261023.210502.052Z-4d83d2d4  elapsed=1m34s
+git: block-1 | python.md, ARCHITECTURE.md | step_completed | app=unchanged target=b848881e9e50
+
+  DONE  story=database  state=closed/implemented  elapsed=2.5s
+git: block-2 | DATABASE.md | step_completed | app=45071cced36e target=5c8f8f76a4ee
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-3  name="Block 3 · Foundational"  calls_max=7
+  story=ui-general  "Define the shared server-rendered interface patterns."
+
+  [call 1/7]  kind=initial  llm=codex/gpt-5.6-luna
+    result=ok  rc=0  execution=20261023.210648.884Z-a36997d1
+    acceptance=2/2
+git: block-3 | UI-GENERAL.md | call=1 | app=11012a30d6cd target=9abded416a96
+
+  DONE  story=ui-general  state=closed/implemented  execution=20261023.210648.884Z-a36997d1  elapsed=1m38s
+git: block-3 | UI-GENERAL.md | step_completed | app=unchanged target=33ef3844d9dc
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+WARNING: persistence_compact.md is stale (persistence.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/persistence.md
+
+BLOCK block-4  name="Block 4 · Service"  calls_max=7
+  story=reading-list  "Serve the ordered reading-list view."
+  story=add-book  "Add a valid book to the reading list."
+  story=remove-book  "Remove a selected book from the reading list."
+  story=validate-book  "Reject incomplete book submissions with correction feedback."
+
+  [call 1/7]  kind=initial  llm=codex/gpt-5.6-luna
+    result=ok  rc=0  execution=20261023.210837.317Z-0f9e54ab
+    acceptance=10/10
+git: block-4 | FEATURE-READING-LIST.md, FEATURE-ADD-BOOK.md, FEATURE-REMOVE-BOOK.md, FEATURE-VALIDATE-BOOK.md | call=1 | app=f22c60df7a76 target=0296e03f9dff
+
+  [call 2/7]  kind=repair(1/6)  llm=codex/gpt-5.6-luna
+    result=ok  rc=0  execution=20261023.211018.519Z-310bad70
+    acceptance=10/10
+git: block-4 | FEATURE-READING-LIST.md, FEATURE-ADD-BOOK.md, FEATURE-REMOVE-BOOK.md, FEATURE-VALIDATE-BOOK.md | call=2 | app=1e718f13500e target=391de2821c7d
+
+  DONE  story=reading-list  state=closed/implemented  execution=20261023.211018.519Z-310bad70  elapsed=3m15s
+git: block-4 | FEATURE-READING-LIST.md, FEATURE-ADD-BOOK.md, FEATURE-REMOVE-BOOK.md, FEATURE-VALIDATE-BOOK.md | step_completed | app=unchanged target=41fcdf8b4aa3
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-5  name="Block 5 · Service"  calls_max=7
+  story=reading-list-screen  "Assemble the primary reading-list page and interactions."
+
+  [call 1/7]  kind=initial  llm=codex/gpt-5.6-luna
+    result=ok  rc=0  execution=20261023.211144.220Z-18305c12
+    acceptance=3/3
+git: block-5 | SCREEN-ReadingList.md | call=1 | app=db09c2ad2db4 target=312d99e4dc5e
+
+  DONE  story=reading-list-screen  state=closed/implemented  execution=20261023.211144.220Z-18305c12  elapsed=1m29s
+git: block-5 | SCREEN-ReadingList.md | step_completed | app=unchanged target=f5872b2e40bb
+
+BLOCK block-6  name="Block 6 · Service"  calls_max=7
+  story=verification  "Provide the complete POSIX automated test runner."
+
+  [call 1/7]  kind=initial  llm=codex/gpt-5.6-luna
+    result=ok  rc=0  execution=20261023.211318.384Z-a94affec
+    acceptance=2/2
+git: block-6 | FEATURE-VERIFICATION.md | call=1 | app=4fc0f160b3d5 target=63197ea2cd92
+
+  DONE  story=verification  state=closed/implemented  execution=20261023.211318.384Z-a94affec  elapsed=1m33s
+git: block-6 | FEATURE-VERIFICATION.md | step_completed | app=unchanged target=ad83e2b7a6b0
+git: build complete ReadingList 08eb9a0fc8f4
+git: build complete ReadingList 83e99c8c6f8f
+
+result: 9 built, 0 failed, 0 unchanged
+elapsed: 10 minutes 7 seconds
+Target - committed project workspace git store

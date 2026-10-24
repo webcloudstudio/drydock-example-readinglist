@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-TestRunner.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-TestRunner.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-TestRunner.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Test Runner</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Provide a POSIX-compatible bin/test.sh that runs the complete automated suite and exits zero only when every test passes.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AppShell.md, FEATURE-AddBook.md, FEATURE-RejectEmptyFields.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, SCREEN-ReadingList.md</td></tr><tr><td>Provides</td><td>bin/test.sh</td></tr><tr><td>Consumes</td><td>pytest -q</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Give the reader and the build a single dependable command, <code>sh bin/test.sh</code>, run from the application root, that executes every automated test and reports success only when all of them pass. This is the terminal verification story: it runs after every implementation story, and its command, exit code, standard output, and standard error are preserved as evidence.</p>
+<h2>Trigger</h2>
+<p><code>sh bin/test.sh</code> from the application root, or <code>sh sources/full_test.sh</code>, which dispatches to it.</p>
+<h2>Sequence</h2>
+<ol><li>The script changes to the application root (the parent of <code>bin/</code>), independent of the caller&#x27;s working directory.</li><li>It activates <code>.venv</code> when <code>.venv/bin/activate</code> exists; otherwise it uses the interpreter on <code>PATH</code>.</li><li>It runs <code>pytest -q</code>.</li><li>It exits with pytest&#x27;s exit status, so zero means every test passed and any failure, error, or collection problem is non-zero.</li></ol>
+<h2>Interfaces</h2>
+<div class="scroll"><table><thead><tr><th>Interface</th><th>Contract</th></tr></thead><tbody><tr><td><code>bin/test.sh</code></td><td>POSIX <code>sh</code> only: no bashisms, no arrays, no <code>[[ ]]</code>. Uses <code>.</code> rather than <code>source</code>. Does not mask pytest&#x27;s exit status.</td></tr></tbody></table></div>
+<h2>Coverage Expectations</h2>
+<p>The suite under <code>tests/</code> contains tests for adding a book, listing books in the order added, removing a book, and rejecting an empty title or author. Each behavior has at least one test.</p>
+<h2>Reads</h2>
+<ul><li><code>tests/</code> and <code>.venv</code> in the application root.</li></ul>
+<h2>Writes</h2>
+<ul><li>None beyond what pytest itself writes (caches).</li></ul>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC test-runner-posix-syntax ===<br>Intent: bin/test.sh exists and parses as POSIX sh without errors.<br>Suite: scoped</p>
+<p>import subprocess from pathlib import Path</p>
+<p>script = Path(&quot;bin/test.sh&quot;) assert script.is_file() result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC test-runner-posix-syntax ===</p>
+<p>=== AC test-runner-covers-behaviors ===<br>Intent: The test suite contains test modules for the add, list, remove, and rejection behaviors and pytest collects them without error.<br>Suite: scoped</p>
+<p>import subprocess import sys from pathlib import Path</p>
+<p>tests = sorted(Path(&quot;tests&quot;).glob(&quot;test_*.py&quot;)) assert len(tests) &gt;= 4 result = subprocess.run( [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;--collect-only&quot;, &quot;-q&quot;], capture_output=True, text=True, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC test-runner-covers-behaviors ===</p>
+<p>=== AC test-runner-full-suite ===<br>Intent: The Commander-owned entry point sources/full_test.sh dispatches to bin/test.sh and the complete automated suite exits zero.<br>Suite: full</p>
+<p>import os import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;sources/full_test.sh&quot;], capture_output=True, text=True, env={**os.environ}, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC test-runner-full-suite ===</p>
+<p>=== AC test-runner-direct ===<br>Intent: Running sh bin/test.sh from the application root exits zero.<br>Suite: full</p>
+<p>import os import subprocess</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True, env={**os.environ}, ) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC test-runner-direct ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>A test run is never reported as passing unless every automated test passes; the script&#x27;s exit status is pytest&#x27;s exit status.</li><li>The script uses only POSIX sh constructs.</li><li>The script does not skip, filter, or deselect tests.</li></ul></article>
+</main>
+</body>
+</html>

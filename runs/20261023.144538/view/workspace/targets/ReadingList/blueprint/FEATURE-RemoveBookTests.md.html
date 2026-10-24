@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBookTests.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBookTests.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-RemoveBookTests.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Remove Book Tests</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Automated pytest tests that prove removing a book omits it on the next read, preserves the order of the rest, and answers 404 for an unknown id.</td></tr><tr><td>Depends On</td><td>FEATURE-RemoveBook.md, FEATURE-AddBook.md, FEATURE-ListBooks.md, ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>tests/test_remove_book.py</td></tr><tr><td>Consumes</td><td>POST /books/{id}/delete, POST /books, GET /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The Reading List guardrail &quot;Never ship a behavior without an automated test covering it&quot; applies to removal. This specification governs the project&#x27;s own pytest module <code>tests/test_remove_book.py</code>, written by the build agent beside the finished code against observed output. It exercises removal only through the public HTTP interface.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-RemoveBook.md.</li></ul>
+<h2>Test Module</h2>
+<p><code>tests/test_remove_book.py</code> uses the <code>web_client</code> fixture from <code>tests/conftest.py</code> and covers one behavior per test, each named for the behavior:</p>
+<div class="scroll"><table><thead><tr><th>Behavior</th><th>Expectation</th></tr></thead><tbody><tr><td>Removed book is omitted</td><td>After <code>POST /books/{id}/delete</code> answers 303, <code>GET /books</code> no longer lists that id.</td></tr><tr><td>Other books remain</td><td>Removing one of several books leaves the others listed.</td></tr><tr><td>Remaining order preserved</td><td>The remaining books keep their relative order of addition.</td></tr><tr><td>Unknown id</td><td><code>POST /books/{id}/delete</code> for an id that does not exist answers 404.</td></tr><tr><td>Repeat removal</td><td>Removing the same id twice answers 303 then 404.</td></tr></tbody></table></div>
+<p>Each test creates the books it needs through <code>POST /books</code>, reads ids back from <code>GET /books</code>, and removes the books it created before finishing, so tests do not depend on each other&#x27;s residue.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC remove-tests-module-passes ===<br>Intent: The remove-book pytest module exists and every test in it passes against the built application.<br>Suite: scoped<br>Requires: executable=python3; scope=test</p>
+<p>import subprocess import sys from pathlib import Path</p>
+<p>import app_server</p>
+<p>module = Path(&quot;tests/test_remove_book.py&quot;) assert module.is_file() result = subprocess.run( [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;-q&quot;, str(module)], capture_output=True, text=True, ) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC remove-tests-module-passes ===</p>
+<p>=== AC remove-omits-on-next-read ===<br>Intent: A removed book is absent from GET /books on the next read.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;AC-rmtests-omit&quot;</p>
+<p>def owned(): return [b for b in client.get(&quot;/books&quot;).get_json() if b[&quot;title&quot;].startswith(marker)]</p>
+<p>def cleanup(): for b in owned(): client.post(f&quot;/books/{b[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: title = marker + &quot;-one&quot; author = &quot;Remove Author&quot; created = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert created.status_code == 303 found = owned() assert len(found) == 1 book_id = found[0][&quot;id&quot;] removed = client.post(f&quot;/books/{book_id}/delete&quot;) assert removed.status_code == 303 assert book_id not in [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] finally: cleanup() === END AC remove-omits-on-next-read ===</p>
+<p>=== AC remove-preserves-order ===<br>Intent: Removing the middle book leaves the other two listed in the order they were added.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;AC-rmtests-order&quot;</p>
+<p>def owned(): return [b for b in client.get(&quot;/books&quot;).get_json() if b[&quot;title&quot;].startswith(marker)]</p>
+<p>def cleanup(): for b in owned(): client.post(f&quot;/books/{b[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: titles = [marker + &quot;-a&quot;, marker + &quot;-b&quot;, marker + &quot;-c&quot;] for t in titles: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: t, &quot;author&quot;: &quot;Order Author&quot;}).status_code == 303 before = owned() assert [b[&quot;title&quot;] for b in before] == titles middle = before[1] assert client.post(f&quot;/books/{middle[&#x27;id&#x27;]}/delete&quot;).status_code == 303 after = owned() assert [b[&quot;id&quot;] for b in after] == [before[0][&quot;id&quot;], before[2][&quot;id&quot;]] finally: cleanup() === END AC remove-preserves-order ===</p>
+<p>=== AC remove-unknown-id-404 ===<br>Intent: Removing an id that does not exist answers 404.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() existing = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] unknown_id = max(existing, default=0) + 100000 assert unknown_id not in existing response = client.post(f&quot;/books/{unknown_id}/delete&quot;) assert response.status_code == 404 === END AC remove-unknown-id-404 ===</p>
+<p>=== AC remove-twice-second-404 ===<br>Intent: Removing the same book twice succeeds once and then answers 404.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;AC-rmtests-twice&quot;</p>
+<p>def owned(): return [b for b in client.get(&quot;/books&quot;).get_json() if b[&quot;title&quot;].startswith(marker)]</p>
+<p>def cleanup(): for b in owned(): client.post(f&quot;/books/{b[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: marker, &quot;author&quot;: &quot;Twice Author&quot;}).status_code == 303 found = owned() assert len(found) == 1 book_id = found[0][&quot;id&quot;] assert client.post(f&quot;/books/{book_id}/delete&quot;).status_code == 303 assert client.post(f&quot;/books/{book_id}/delete&quot;).status_code == 404 finally: cleanup() === END AC remove-twice-second-404 ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Tests reach removal only through the public HTTP routes, never through the store.</li><li>Tests create and remove only the books they own and never reset the store.</li></ul></article>
+</main>
+</body>
+</html>

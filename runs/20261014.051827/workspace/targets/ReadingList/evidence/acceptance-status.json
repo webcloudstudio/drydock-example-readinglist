@@ -1,0 +1,109 @@
+{
+  "criteria": {
+    "add-book-rejects-empty-author": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "f72505b1f8e26d5c8ebddbe4d9b13d2cdac1b6069fc20e57407981794418f2a9",
+      "updated_at": "2026-10-14T05:23:50+00:00",
+      "detail": ""
+    },
+    "add-book-rejects-empty-title": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "dca3202271e4166fc6e8386135bb83160b580d19df120c12fd69bb5e293cb5e8",
+      "updated_at": "2026-10-14T05:23:50+00:00",
+      "detail": ""
+    },
+    "add-book-rejects-whitespace-title": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "7d18be6b8f898741645a6e883e16d0b493ad2c6f74b8873953b34261adc4d6b0",
+      "updated_at": "2026-10-14T05:23:50+00:00",
+      "detail": ""
+    },
+    "add-book-stores-valid": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "bc8695d95e1236fce1a6b936ad2a68dc3d4ad16f12d3e511fc7de4bb5b27eae3",
+      "updated_at": "2026-10-14T05:23:50+00:00",
+      "detail": ""
+    },
+    "architecture-create-app": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "5743f1c6b7c0756800d5a311482a192eff938bd514b88d7d6306aa7873da4ae3",
+      "updated_at": "2026-10-14T05:21:42+00:00",
+      "detail": ""
+    },
+    "architecture-web-client-testing": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "935acbf6d7a82e452f8d4150ebc64cb9beb3368b633b14da7f93b8999f3c1efe",
+      "updated_at": "2026-10-14T05:21:42+00:00",
+      "detail": ""
+    },
+    "architecture-web-client-unregistered": {
+      "status": "VALID",
+      "error_code": "product-missing",
+      "code_sha256": "5d1c3ce82a6f767b31332ce1c88383c17dc41b56cc4025889e34824aa84fbd1a",
+      "updated_at": "2026-10-14T05:21:42+00:00",
+      "detail": ""
+    },
+    "list-books-insertion-order": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "cddfefb57210a4dba9189593b8008d7ab318b68e48dcec57cde5cef225e7405c",
+      "updated_at": "2026-10-14T05:26:24+00:00",
+      "detail": ""
+    },
+    "list-books-returns-ok": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "8474f5f37d9d4ffc42ba14a9470f8a643f5cf66639ed554f4f96bd3de0b32830",
+      "updated_at": "2026-10-14T05:26:24+00:00",
+      "detail": ""
+    },
+    "remove-book-deletes": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "f34f251faee1ee59eefab74058e692558bb6d2c38e3ffe475892f6b3c7bbc482",
+      "updated_at": "2026-10-14T05:26:24+00:00",
+      "detail": ""
+    },
+    "remove-book-missing-id": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "82b34febd41aae81eb89bdb3362aa8520c7f3559065a1a511e49e3c50a1c0e03",
+      "updated_at": "2026-10-14T05:26:24+00:00",
+      "detail": ""
+    },
+    "screen-add-list-remove": {
+      "status": "VALID",
+      "error_code": "existing-behavior",
+      "code_sha256": "6a0d0cd860f84bde9551cbc30d57ff50f1e7c286bba1bb03183b14bc10167fa6",
+      "updated_at": "2026-10-14T05:28:27+00:00",
+      "detail": ""
+    },
+    "screen-get-root": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "cbc1f95ad9d92aa2f7e37ecc212a76b9c7e5468f79358359714be806acce3ac6",
+      "updated_at": "2026-10-14T05:28:27+00:00",
+      "detail": ""
+    },
+    "test-runner-full-suite": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "696fd224b59d413765ae51d92ab7cac0a41691d99097acca395ead6964996bf6",
+      "updated_at": "2026-10-14T05:30:49+00:00",
+      "detail": ""
+    },
+    "test-runner-posix-syntax": {
+      "status": "VALID",
+      "error_code": "baseline-red",
+      "code_sha256": "1a2ba0894836987098aef6050508799eb2d3cdfcb21503e2f39e92323fc19506",
+      "updated_at": "2026-10-14T05:30:49+00:00",
+      "detail": ""
+    }
+  }
+}

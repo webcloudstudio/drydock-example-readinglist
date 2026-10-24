@@ -1,0 +1,124 @@
+{
+  "schema_version": 5,
+  "recorded_at": "2026-10-23T15:24:52+00:00",
+  "target": "ReadingList",
+  "verdict": "PASSED",
+  "verdict_line": "ReadingList: PASSED \u2014 6 of 6",
+  "statement": "ReadingList: PASSED \u2014 6 of 6\n\n  st-001  MET       bin/test.sh:1-11 is `#!/bin/sh` with `set -eu` and ends in `exec pytest -q`; governed gate full: outcome PASS, return_code 0, stdout '191 passed in 9.87s'\n  st-002  MET       app_server/books.py:create_book POST /books calls add_book and redirects 303; probe: add status 303 Location '/'; probe: GET /books returned [{'title': 'Dune', 'author': 'Frank Herbert', ...}]; probe: GET / page contains 'Dune' and 'Frank Herbert'; tests/test_add_book.py round-trip tests pass in the gate\n  st-003  MET       app_server/book_service.py:list_books returns sorted(..., key=id); probe: list returned Dune (id 1) then Emma (id 2); tests/test_list_books.py:58 test_several_books_are_listed_in_the_order_added passes in the gate\n  st-004  MET       app_server/books.py:delete_book POST /books/<int:book_id>/delete calls remove_book then 303; probe: after remove, GET /books returned ['Emma']; tests/test_remove_book.py:64 test_removed_book_is_absent_from_the_next_listing passes in the gate\n  st-005  MET       app_server/book_service.py:add_book raises BookRejected('rejected: title is empty' / 'rejected: author is empty') before any write; probe: empty title, HTML -> 400, alert region and 'rejected: title is empty' present; probe: blank author, JSON Accept -> 400 {'error': 'rejected: author is empty', 'field': 'author'}; tests/test_reject_empty_title.py and test_reject_empty_author.py assert nothing is stored; they pass in the gate\n  st-006  MET       tests/test_add_book.py; tests/test_list_books.py (order-added tests at lines 58 and 117); tests/test_remove_book.py; tests/test_reject_empty_title.py; tests/test_reject_empty_author.py; governed gate full: 191 passed, return_code 0",
+  "complete": true,
+  "governed_gate": {
+    "name": "full",
+    "outcome": "PASS",
+    "argv": [
+      "sh",
+      "sources/full_test.sh"
+    ],
+    "return_code": 0,
+    "duration_ms": 12484,
+    "detail": "",
+    "timed_out": false,
+    "build_identity": "808c93e91fb75462",
+    "stdout": "........................................................................ [ 37%]\n........................................................................ [ 75%]\n...............................................                          [100%]\n191 passed in 9.87s\n",
+    "stderr": ""
+  },
+  "criteria": [
+    {
+      "criterion_id": "st-001",
+      "verdict": "MET",
+      "rationale": "bin/test.sh exists as a POSIX sh script that runs pytest, and the pinned governed gate `sh sources/full_test.sh` exited 0 with 191 passed.",
+      "evidence": [
+        "bin/test.sh:1-11 is `#!/bin/sh` with `set -eu` and ends in `exec pytest -q`",
+        "governed gate full: outcome PASS, return_code 0, stdout '191 passed in 9.87s'"
+      ]
+    },
+    {
+      "criterion_id": "st-002",
+      "verdict": "MET",
+      "rationale": "Probe POSTed a title and author through the real app over a fresh store; the submission redirected with 303 and the book was listed and rendered on the page.",
+      "evidence": [
+        "app_server/books.py:create_book POST /books calls add_book and redirects 303",
+        "probe: add status 303 Location '/'",
+        "probe: GET /books returned [{'title': 'Dune', 'author': 'Frank Herbert', ...}]",
+        "probe: GET / page contains 'Dune' and 'Frank Herbert'",
+        "tests/test_add_book.py round-trip tests pass in the gate"
+      ]
+    },
+    {
+      "criterion_id": "st-003",
+      "verdict": "MET",
+      "rationale": "Probe added Dune then Emma and the listing returned them oldest first; list_books sorts by ascending id rather than relying on an unordered select.",
+      "evidence": [
+        "app_server/book_service.py:list_books returns sorted(..., key=id)",
+        "probe: list returned Dune (id 1) then Emma (id 2)",
+        "tests/test_list_books.py:58 test_several_books_are_listed_in_the_order_added passes in the gate"
+      ]
+    },
+    {
+      "criterion_id": "st-004",
+      "verdict": "MET",
+      "rationale": "Probe removed the first book via POST /books/<id>/delete and the next GET /books no longer contained it, while the other book remained.",
+      "evidence": [
+        "app_server/books.py:delete_book POST /books/<int:book_id>/delete calls remove_book then 303",
+        "probe: after remove, GET /books returned ['Emma']",
+        "tests/test_remove_book.py:64 test_removed_book_is_absent_from_the_next_listing passes in the gate"
+      ]
+    },
+    {
+      "criterion_id": "st-005",
+      "verdict": "MET",
+      "rationale": "Probe submitted an empty title and an empty author (blank whitespace); both were refused with 400 and a reason naming the field, and the reason appears in the page alert region for HTML requests.",
+      "evidence": [
+        "app_server/book_service.py:add_book raises BookRejected('rejected: title is empty' / 'rejected: author is empty') before any write",
+        "probe: empty title, HTML -> 400, alert region and 'rejected: title is empty' present",
+        "probe: blank author, JSON Accept -> 400 {'error': 'rejected: author is empty', 'field': 'author'}",
+        "tests/test_reject_empty_title.py and test_reject_empty_author.py assert nothing is stored; they pass in the gate"
+      ]
+    },
+    {
+      "criterion_id": "st-006",
+      "verdict": "MET",
+      "rationale": "Test files exist for each named behavior (add, list in order, remove, reject empty title, reject empty author), and all 191 collected tests pass in the governed gate.",
+      "evidence": [
+        "tests/test_add_book.py",
+        "tests/test_list_books.py (order-added tests at lines 58 and 117)",
+        "tests/test_remove_book.py",
+        "tests/test_reject_empty_title.py",
+        "tests/test_reject_empty_author.py",
+        "governed gate full: 191 passed, return_code 0"
+      ]
+    }
+  ],
+  "guardrail_ids": [],
+  "observations": [],
+  "blockers": [],
+  "attestations": [],
+  "kit_faults": [],
+  "warnings": [],
+  "improvements": [
+    "The round-trip tests in tests/test_add_book.py (and the other web tests that use committed_session) write to the configured shared store and clean up by deleting their own titles. Give them an isolated store per test, as the fixtures in test_add_book.py already do for their first half, so a failed run cannot leave rows behind in data/app.db.",
+    "st-006 is judged by file names and the green suite rather than by a mapping from each named behavior to a test ID. Add a short traceability note in README.md mapping each criterion to its test file so that future reviews can confirm coverage without searching."
+  ],
+  "identities": {
+    "code": "5328e99f1f8cfb1ae02b75a2f796bab546f80e6a",
+    "sea_trials": "0d1c05649d96f906f963f89c12ad5c9c510e8d13a03b81ebff4efd9b9d691e9f",
+    "blueprint": {
+      "ARCHITECTURE.md": "64951a517fa03e92d5fbc2753f072d3a1dbea94a3337305d0f5655584717a101",
+      "ARCHITECTURE_compact.md": "a9fcec3955a63fc74fe09ecf518a205cae21a7a1db0f00944d5cb2843b5d60fc",
+      "DATABASE.md": "0c992bebfe25d4b01148234e73a2399496f30823a0bd5058073fc5f205515438",
+      "DATABASE_compact.md": "2aac30f3f1208f952a4c98b4715caeccc14e10650fc98d36dd9be3a53710337f",
+      "FEATURE-AddBook.md": "04243a5752a204f16758a9a890e57680eeac0b70df9035085ec56fde37810a20",
+      "FEATURE-AddBookTests.md": "8404e0ad74ea864f83e2faaf5236f75b3790378ca1cf402125ada7cad5f534a5",
+      "FEATURE-ListBooks.md": "481280f8a6ef8bc61688626eb59eac273a9d402d0e2143d8fd6b8daa1e722d87",
+      "FEATURE-ListBooksTests.md": "b48a3ff1cf1008409ad4f393d69d9a0f1ad3f3f54e95cd47c050f76ca182036b",
+      "FEATURE-RejectEmptyAuthor.md": "61832269c640cedb089ddbb8cbdb2a1a75e1ebf66636e01980cdddfb8ea964f5",
+      "FEATURE-RejectEmptyTitle.md": "c710bf3b25e29586ccf7df77b69c72eaeaa26b6c78c75ce7f2bfb968f10f0113",
+      "FEATURE-RemoveBook.md": "c2359beb34423bf7b26106c846e3f131dfcfa23f62943eb1eb8b82bcca31891a",
+      "FEATURE-RemoveBookTests.md": "17774f74adceab9a8c84fb62e5d099b0f47f80abc152183cb8fbdc39c9679228",
+      "FEATURE-ValidationTests.md": "62400e7c6546fe35304d8297100e0c1e5403ce9d2e50ffe4b839f6aeef7acc19",
+      "SCREEN-ReadingList.md": "595d65875ba970686c3251275d444087e89d688239bb96b88607f69af10c90e6",
+      "UI-GENERAL.md": "83f5087e024a7643971553c406995bcb3a2f60a413e2bf66d48ab36a62293f03",
+      "VERIFICATION.md": "b7f4365d80733f8ee156694769571cbcb7f1abfa75860ef33af55342267bf11c"
+    }
+  },
+  "execution_id": "20261023.152418.545Z-038d22b5"
+}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Reading List{% endblock %}
+{% block content %}
+  <h1>Reading List</h1>
+
+  {% if error %}
+  <p class="error" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('pages.add') }}">
+    <label>Title <input type="text" name="title" value="{{ title }}"></label>
+    <label>Author <input type="text" name="author" value="{{ author }}"></label>
+    <button type="submit">Add</button>
+  </form>
+
+  {% if books %}
+  <ol>
+    {% for book in books %}
+    <li>
+      <span class="title">{{ book.title }}</span> by <span class="author">{{ book.author }}</span>
+      <form method="post" action="{{ url_for('pages.remove', book_id=book.id) }}">
+        <button type="submit">Remove</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p>No books yet.</p>
+  {% endif %}
+{% endblock %}

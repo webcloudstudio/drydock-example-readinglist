@@ -1,0 +1,48 @@
+[
+  {
+    "id": "Q-001",
+    "type": "choice",
+    "severity": "material",
+    "origin": "plan",
+    "blueprint": "ARCHITECTURE.md",
+    "story": "architecture",
+    "status": "recommended",
+    "archived": false,
+    "title": "Primary web workflow routes",
+    "description": "The source requires a primary web page and add/remove workflows but does not name URL paths. The plan selects conventional server-rendered Flask routes.",
+    "options": [
+      {
+        "value": "conventional-routes",
+        "label": "Use /, /books, and /books/<book_id>/delete"
+      },
+      {
+        "value": "single-route",
+        "label": "Handle all actions on /"
+      }
+    ],
+    "system_choice": "conventional-routes"
+  },
+  {
+    "id": "Q-002",
+    "type": "choice",
+    "severity": "material",
+    "origin": "plan",
+    "blueprint": "FEATURE-VALIDATE-BOOK.md",
+    "story": "validate-book",
+    "status": "recommended",
+    "archived": false,
+    "title": "Validation response behavior",
+    "description": "The source requires rejection with a clear reason and correction ability but does not specify the HTTP response. The plan keeps the reader on the form with a client-error response.",
+    "options": [
+      {
+        "value": "render-form-client-error",
+        "label": "Render the form with a 400 response"
+      },
+      {
+        "value": "redirect-with-message",
+        "label": "Redirect back with a flash message"
+      }
+    ],
+    "system_choice": "render-form-client-error"
+  }
+]

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-1.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-1.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-1.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 1 · Foundational (block-1)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 4028</li><li>execution id: 20261023.174856.568Z-ce58b2b0</li></ul>
+<h2>Stories built</h2>
+<ul><li>Stand up the Python project tree, environment, dependency manifest, and pytest runner. (architecture) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>ARCHITECTURE.md#architecture-manifest: executable=python3; scope=test; authorization=existing Target environment</li><li>ARCHITECTURE.md#architecture-pytest: python-package=pytest; scope=test; authorization=existing Target environment</li></ul>
+<h2>Reusable compacts</h2>
+<ul><li>ARCHITECTURE_compact.md</li></ul>
+<h2>Stacked context</h2>
+<ul><li>implements: python.md (SP 1166)</li><li>compass: COMPASS.md (SP 895)</li><li>implements: ARCHITECTURE.md (SP 1812)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>.gitignore</li><li>pyproject.toml</li><li>tests/conftest.py</li><li>tests/test_project_foundation.py</li><li>uv.lock</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>UNVERIFIED: architecture-manifest (ARCHITECTURE.md)</li></ul>
+<p>intent: pyproject.toml parses and declares Flask and pytest as dependencies. return code: 1 error: unverified acceptance: the assertion raised FileNotFoundError ([Errno 2] No such file or directory: &#x27;pyproject.toml&#x27;) in its own frame, before reaching the code under test. This is a fault in the acceptance kit or its environment, not a defect in the build. stderr: Traceback (most recent call last): File &quot;architecture-manifest.py&quot;, line 4, in &lt;module&gt; with open(Path(&quot;pyproject.toml&quot;), &quot;rb&quot;) as handle: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>FileNotFoundError: [Errno 2] No such file or directory: &#x27;pyproject.toml&#x27;</p>
+<ul><li>RED: architecture-tree (ARCHITECTURE.md)</li></ul>
+<p>intent: The lockfile, tests directory, and conftest exist at the application root. return code: 1 stderr: Traceback (most recent call last): File &quot;architecture-tree.py&quot;, line 3, in &lt;module&gt; assert Path(&quot;uv.lock&quot;).is_file() ^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>GREEN (prepassed): architecture-pytest (ARCHITECTURE.md)</li></ul>
+<p>intent: The pytest runner is installed and starts from the application root. return code: 0 stdout: pytest 9.0.3</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: architecture-manifest (ARCHITECTURE.md)</li></ul>
+<p>intent: pyproject.toml parses and declares Flask and pytest as dependencies. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: uv sync --locked succeeded return code: 0</p>
+<ul><li>PASS: architecture-tree (ARCHITECTURE.md)</li></ul>
+<p>intent: The lockfile, tests directory, and conftest exist at the application root. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: uv sync --locked succeeded return code: 0</p>
+<ul><li>PASS: architecture-pytest (ARCHITECTURE.md)</li></ul>
+<p>intent: The pytest runner is installed and starts from the application root. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/build/ReadingList/.venv/bin/python provisioning: uv sync --locked succeeded return code: 0 stdout: pytest 9.1.1</p>
+<h2>Build summary</h2>
+<p>The suite passes, but the Flask check uses a deprecated <code>__version__</code> attribute and <code>importorskip</code> could silently skip. I&#x27;ll tighten that test.&lt;reusable-compact filename=&quot;ARCHITECTURE.md&quot;&gt;<br>Project: ReadingList (Flask, SQLite via generated <code>persistence</code>, pytest). Python &gt;=3.11.<br>Layout: <code>pyproject.toml</code> + <code>uv.lock</code> (deps: flask&gt;=3.1,&lt;4; dev group: pytest&gt;=9,&lt;10); <code>.venv</code> via <code>uv venv</code>; <code>app_server/__init__.py</code> exposes <code>create_app() -&gt; Flask</code>; <code>app_server/testing.py</code> exposes <code>web_client()</code>; <code>app_server/routes/{books.py,pages.py}</code>; <code>app_server/services/books.py</code> exposes <code>add_book</code>, <code>list_books</code>, <code>remove_book</code>, <code>validate_book_input</code>; <code>app_server/templates/</code>; <code>persistence/</code> generated from <code>DATABASE.md</code>; <code>tests/conftest.py</code> exposes <code>web_client</code> and <code>db_session</code> fixtures; <code>bin/test.sh</code> POSIX runner.<br>Rules: routes call services only; services call <code>db.&lt;table&gt;.&lt;verb&gt;(...)</code>; only <code>persistence</code> touches SQLite; books ordered by id ascending; rejected input -&gt; 400; unknown book removal -&gt; 404; server-rendered HTML forms, no client JS.<br>Config: <code>DATABASE_URL</code> &gt; <code>DATABASE_PATH</code> &gt; <code>data/app.db</code>.<br>Test command: <code>pytest -q</code> from application root. &lt;/reusable-compact&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>.gitignore</li><li>pyproject.toml</li><li>uv.lock</li><li>tests/conftest.py</li><li>tests/test_project_foundation.py</li></ul>
+<p>SUMMARY: Stood up the Python foundation in the build directory:</p>
+<ul><li><code>pyproject.toml</code>: <code>requires-python &gt;=3.11</code>; runtime dependency <code>flask&gt;=3.1,&lt;4</code>; dev group <code>pytest&gt;=9,&lt;10</code>; <code>[tool.uv] package = false</code>; <code>[tool.pytest.ini_options]</code> with <code>testpaths = [&quot;tests&quot;]</code> and <code>pythonpath = [&quot;.&quot;]</code> so <code>pytest -q</code> runs from the application root.</li><li>Package names verified on PyPI before adding (flask 3.1.3, pytest 9.1.1).</li><li><code>uv.lock</code> generated with <code>uv lock</code>; <code>.venv</code> created with <code>uv venv --python 3.12</code> and populated with <code>uv sync</code>. <code>.venv</code> is git-ignored.</li><li><code>tests/conftest.py</code>: session fixture <code>project_root</code>. The <code>web_client</code> and <code>db_session</code> fixtures are left for the app and persistence stories.</li><li><code>tests/test_project_foundation.py</code>: 8 tests that read the manifest, lockfile, and tests layout back from disk, check the Flask import and version, and check the interpreter version.</li><li><code>.gitignore</code>: <code>.venv/</code>, <code>__pycache__/</code>, <code>.pytest_cache/</code>, <code>.env</code>, <code>data/</code>.</li></ul>
+<p>Verification:</p>
+<ul><li><code>.venv/bin/python -m pytest -q</code>: 8 passed, exit 0.</li><li><code>.venv/bin/python -m pytest --version</code>: pytest 9.1.1, exit 0.</li><li>The three <code>architecture-*</code> acceptance checks, run in-process: all pass.</li><li>Choice: I did not create <code>app_server/</code>, <code>bin/test.sh</code>, or <code>.env.example</code>. Those belong to later stories. Because of that, <code>sources/full_test.sh</code> will report failure until <code>bin/test.sh</code> exists. That is expected for this block.</li><li><code>sources/</code> was not touched. Nothing was committed.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>None for this block.</li></ul></article>
+</main>
+</body>
+</html>

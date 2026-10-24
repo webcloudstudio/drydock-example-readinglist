@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-7.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-7.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-7.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 7 · Service (block-7)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5312</li><li>execution id: 20261023.150337.906Z-8f3bd51e</li></ul>
+<h2>Stories built</h2>
+<ul><li>Reject a submission whose title is empty and report the reason. (reject-empty-title) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-RejectEmptyTitle.md#reject-title-empty-json: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-RejectEmptyTitle.md#reject-title-whitespace: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-RejectEmptyTitle.md#reject-title-missing: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-RejectEmptyTitle.md#reject-title-html: python-package=pytest; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-RejectEmptyTitle.md (SP 2153)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE_compact.md (SP 360)</li><li>stack: flask.md (SP 691)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/book_service.py</li><li>app_server/books.py</li><li>tests/test_reject_empty_title.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>UNVERIFIED: reject-title-empty-json (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: An empty title on POST /books answers 400 with a non-empty reason naming the title field and stores nothing. return code: 1 error: malformed check: the assertion itself raised TypeError (&#x27;NoneType&#x27; object is not subscriptable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification. stderr: --- drydock: values at failure --- body = None --- drydock: end values --- Traceback (most recent call last): File &quot;reject-title-empty-json.py&quot;, line 29, in &lt;module&gt; assert isinstance(body[&quot;error&quot;], str) ~~~~^^^^^^^^^<br>TypeError: &#x27;NoneType&#x27; object is not subscriptable</p>
+<ul><li>UNVERIFIED: reject-title-whitespace (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: A whitespace-only title is treated as empty, rejected with 400, and nothing is stored. return code: 1 error: malformed check: the assertion itself raised TypeError (&#x27;NoneType&#x27; object is not subscriptable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification. stderr: --- drydock: values at failure --- body = None --- drydock: end values --- Traceback (most recent call last): File &quot;reject-title-whitespace.py&quot;, line 29, in &lt;module&gt; assert body[&quot;error&quot;].strip() ~~~~^^^^^^^^^<br>TypeError: &#x27;NoneType&#x27; object is not subscriptable</p>
+<ul><li>UNVERIFIED: reject-title-missing (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: A POST /books with no title field at all is rejected with 400 and nothing is stored. return code: 1 error: malformed check: the assertion itself raised TypeError (&#x27;NoneType&#x27; object is not subscriptable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification. stderr: --- drydock: values at failure --- body = None --- drydock: end values --- Traceback (most recent call last): File &quot;reject-title-missing.py&quot;, line 29, in &lt;module&gt; assert body[&quot;error&quot;].strip() ~~~~^^^^^^^^^<br>TypeError: &#x27;NoneType&#x27; object is not subscriptable</p>
+<ul><li>GREEN (prepassed): reject-title-html (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: A browser submission with an empty title is answered 400 with a re-rendered page and nothing is stored. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>UNVERIFIED: reject-title-empty-json (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: An empty title on POST /books answers 400 with a non-empty reason naming the title field and stores nothing. provisioning: not required error: excluded check: ERROR malformed</p>
+<ul><li>UNVERIFIED: reject-title-whitespace (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: A whitespace-only title is treated as empty, rejected with 400, and nothing is stored. provisioning: not required error: excluded check: ERROR malformed</p>
+<ul><li>UNVERIFIED: reject-title-missing (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: A POST /books with no title field at all is rejected with 400 and nothing is stored. provisioning: not required error: excluded check: ERROR malformed</p>
+<ul><li>PASS: reject-title-html (FEATURE-RejectEmptyTitle.md)</li></ul>
+<p>intent: A browser submission with an empty title is answered 400 with a re-rendered page and nothing is stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>I&#x27;ll start by inspecting the build working directory and the git state.The project already has AddBook, ListBooks, and RemoveBook code. Next I&#x27;ll read the existing route, service, and test code this feature extends.The existing code already rejects an empty title with a reason and status 400. What&#x27;s missing is the JSON path (<code>error</code> plus <code>field</code>). I&#x27;ll check the persistence testing helpers and get a baseline test run before editing.Baseline is 75 passing. The plan:</p>
+<ul><li>Add a <code>field</code> to <code>BookRejected</code> so the route can report which field failed.</li><li>Return JSON <code>{error, field}</code> when the client&#x27;s preferred type is exactly <code>application/json</code>. Browser and no-header requests keep the HTML re-render.</li><li>Add tests in the project&#x27;s existing style and run the four declared acceptance scripts against the real store.</li></ul>
+<p>I&#x27;ll check where <code>BookRejected</code> is used first.Only the service and the route use <code>BookRejected</code>, so adding a field is contained. I&#x27;ll make the service change first.Next, the route. It needs to choose JSON only when the client asks for exactly <code>application/json</code>, so browser and no-header requests keep the HTML response.Now the tests. I&#x27;ll follow <code>test_add_book.py</code>&#x27;s isolated-store fixture and read state back through the persistence layer. The JSON checks parse the body rather than matching text.The suite is green at 94 (75 existing plus 19 new). Next I&#x27;ll run the four declared acceptance scripts verbatim from the spec, against the configured store (<code>data/app.db</code>), passing each through stdin so no scratch file is written.All four acceptance scripts pass. I&#x27;ll confirm the working-tree changes are limited to this block&#x27;s files.Block 7 (<code>reject-empty-title</code>) is built. All 94 tests pass and the four declared acceptance scripts pass.</p>
+<p>The existing AddBook code already rejected an empty title with a reason and status 400. The gap was the JSON response, so this block adds that and the tests.</p>
+<p>Changes:</p>
+<ul><li><strong><code>app_server/book_service.py</code></strong>: <code>BookRejected</code> now carries a <code>field</code> (<code>&quot;title&quot;</code> or <code>&quot;author&quot;</code>) alongside the reason.</li><li><strong><code>app_server/books.py</code></strong>: a refused <code>POST /books</code> returns <code>{&quot;error&quot;: reason, &quot;field&quot;: ...}</code> with status 400 when the client&#x27;s preferred type is exactly <code>application/json</code>. Browser headers, <code>*/*</code>, and no <code>Accept</code> header still get the HTML page with the reason in the alert region.</li><li><strong><code>tests/test_reject_empty_title.py</code></strong> (new): 19 tests covering the JSON and HTML rejection paths, whitespace and missing titles, the stored-nothing check, and the service-level field. They use the same isolated temp store as <code>test_add_book.py</code>.</li></ul>
+<p>Choices I made that the spec didn&#x27;t settle:</p>
+<ul><li>An empty author over JSON reports <code>field: &quot;author&quot;</code>. The spec only covers the title.</li><li>JSON is chosen only on an exact <code>application/json</code> preference, not on <code>*/*</code>, so browsers keep getting HTML.</li></ul>
+<p>Verification:</p>
+<ul><li><code>.venv/bin/python -m pytest -q</code>: 94 passed (75 existing plus 19 new).</li><li>The four declared acceptance scripts (<code>reject-title-empty-json</code>, <code>reject-title-whitespace</code>, <code>reject-title-missing</code>, <code>reject-title-html</code>) each passed when run verbatim against the configured store, <code>data/app.db</code>. Each script purges its own marker rows.</li><li>I did not run <code>sources/full_test.sh</code>, because no criterion in this block invokes the staged suite.</li></ul>
+<p>Outside this block: <code>COMPASS.md</code> requires <code>bin/test.sh</code> at the application root, and it does not exist yet. <code>sources/full_test.sh</code> will fail until a later block provides it.</p>
+<p>&lt;blueprint-decisions&gt; [{&quot;spec&quot;:&quot;FEATURE-RejectEmptyTitle.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;JSON rejection for an empty author and the Accept rule&quot;,&quot;decision&quot;:&quot;The spec defines the JSON body only for the title. I return field \&quot;author\&quot; for an empty author, since the same JSON shape fits, and I choose JSON only when the client&#x27;s preferred media type is exactly application/json, so <em>/</em> and browser Accept headers keep the HTML response. Is that acceptable, or should author rejections omit the JSON field?&quot;}] &lt;/blueprint-decisions&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/book_service.py</li><li>app_server/books.py</li><li>tests/test_reject_empty_title.py</li></ul>
+<p>SUMMARY: Block 7 (reject-empty-title) adds a JSON rejection contract to the existing POST /books path. Title rejection already existed as a 400 HTML re-render with a reason; this block adds <code>{error, field}</code> JSON when the client asks for application/json, and records the failing field on BookRejected. Test run: pytest 94 passed (75 existing + 19 new). Declared acceptance scripts reject-title-empty-json, reject-title-whitespace, reject-title-missing, and reject-title-html each passed when run verbatim against data/app.db. sources/full_test.sh was not invoked because no criterion in this block declares it. Note for later blocks: COMPASS requires bin/test.sh at the application root; it does not exist yet.</p></article>
+</main>
+</body>
+</html>

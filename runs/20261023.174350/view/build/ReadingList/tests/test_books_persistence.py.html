@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_books_persistence.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_books_persistence.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_books_persistence.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Books persistence: the declared repository operations, read back through the public interface.&quot;&quot;&quot;
+
+from persistence import Database
+
+
+def test_create_returns_stored_book_with_supplied_fields(db_session: Database) -&gt; None:
+    row = db_session.books.create(title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+
+    assert row.id is not None
+    assert row.title == &quot;Dune&quot;
+    assert row.author == &quot;Frank Herbert&quot;
+
+
+def test_create_assigns_distinct_ids(db_session: Database) -&gt; None:
+    first = db_session.books.create(title=&quot;First&quot;, author=&quot;A&quot;)
+    second = db_session.books.create(title=&quot;Second&quot;, author=&quot;A&quot;)
+
+    assert first.id != second.id
+
+
+def test_get_reads_back_created_book(db_session: Database) -&gt; None:
+    created = db_session.books.create(title=&quot;Emma&quot;, author=&quot;Jane Austen&quot;)
+
+    fetched = db_session.books.get(id=created.id)
+
+    assert fetched.id == created.id
+    assert fetched.title == &quot;Emma&quot;
+    assert fetched.author == &quot;Jane Austen&quot;
+
+
+def test_get_returns_none_for_unknown_id(db_session: Database) -&gt; None:
+    created = db_session.books.create(title=&quot;Gone&quot;, author=&quot;A&quot;)
+    db_session.books.delete(id=created.id)
+
+    assert db_session.books.get(id=created.id) is None
+
+
+def test_list_returns_books_in_order_added(db_session: Database) -&gt; None:
+    titles = [&quot;ac-list-first&quot;, &quot;ac-list-second&quot;, &quot;ac-list-third&quot;]
+    created_ids = [db_session.books.create(title=t, author=&quot;ac-list-author&quot;).id for t in titles]
+
+    listed_ids = [row.id for row in db_session.books.list()]
+
+    mine = [i for i in listed_ids if i in created_ids]
+    assert mine == created_ids
+
+
+def test_delete_removes_book_from_next_list(db_session: Database) -&gt; None:
+    keep = db_session.books.create(title=&quot;ac-delete-keep&quot;, author=&quot;ac-delete-author&quot;)
+    gone = db_session.books.create(title=&quot;ac-delete-gone&quot;, author=&quot;ac-delete-author&quot;)
+
+    db_session.books.delete(id=gone.id)
+
+    listed_ids = [row.id for row in db_session.books.list()]
+    assert gone.id not in listed_ids
+    assert keep.id in listed_ids
+
+
+def test_created_book_is_visible_in_the_same_transaction(db_session: Database) -&gt; None:
+    before = {row.id for row in db_session.books.list()}
+
+    created = db_session.books.create(title=&quot;Visible&quot;, author=&quot;A&quot;)
+
+    after = {row.id for row in db_session.books.list()}
+    assert after == before | {created.id}
+</pre></article>
+</main>
+</body>
+</html>

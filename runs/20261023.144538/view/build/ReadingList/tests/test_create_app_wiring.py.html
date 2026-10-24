@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_create_app_wiring.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_create_app_wiring.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_create_app_wiring.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Application factory wiring: template folder, persistence store, and no book routes.&quot;&quot;&quot;
+
+import sqlite3
+from pathlib import Path
+
+from persistence import Database
+from app_server import create_app
+from app_server.settings import DEFAULT_DATABASE_PATH, Settings
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def test_create_app_template_folder_is_app_server_templates():
+    app = create_app()
+
+    assert Path(app.jinja_loader.searchpath[0]).resolve() == (
+        PROJECT_ROOT / &quot;app_server&quot; / &quot;templates&quot;
+    ).resolve()
+
+
+def test_create_app_exposes_database_opened_from_configured_store(monkeypatch, tmp_path):
+    store = tmp_path / &quot;wired.db&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, f&quot;sqlite:///{store}&quot;)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+
+    app = create_app()
+
+    assert isinstance(app.extensions[&quot;database&quot;], Database)
+
+
+def test_create_app_does_not_create_store_file_at_startup(monkeypatch, tmp_path):
+    store = tmp_path / &quot;lazy.db&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, f&quot;sqlite:///{store}&quot;)
+
+    create_app()
+
+    assert not store.exists()
+
+
+def test_create_app_database_round_trips_through_configured_store(monkeypatch, tmp_path):
+    store = tmp_path / &quot;roundtrip.db&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, f&quot;sqlite:///{store}&quot;)
+    app = create_app()
+    db = app.extensions[&quot;database&quot;]
+    db.execute_script((PROJECT_ROOT / &quot;schema.sql&quot;).read_text())
+
+    created = db.books.create(title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+    fetched = db.books.get(id=created.id)
+
+    assert fetched == created
+    assert store.is_file()
+    with sqlite3.connect(store) as connection:
+        assert connection.execute(&#x27;SELECT title, author FROM &quot;books&quot;&#x27;).fetchall() == [
+            (&quot;Dune&quot;, &quot;Frank Herbert&quot;)
+        ]
+
+
+def test_create_app_registers_only_book_routes_beside_static():
+    app = create_app()
+
+    endpoints = {rule.endpoint for rule in app.url_map.iter_rules()}
+
+    assert endpoints == {
+        &quot;static&quot;,
+        &quot;books.index&quot;,
+        &quot;books.create_book&quot;,
+        &quot;books.get_books&quot;,
+        &quot;books.delete_book&quot;,
+    }
+
+
+def test_settings_default_store_path_when_no_environment_override(monkeypatch):
+    monkeypatch.delenv(&quot;DATABASE_URL&quot;, raising=False)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+
+    assert Settings.from_environment().database_url == DEFAULT_DATABASE_PATH
+
+
+def test_settings_prefer_database_url_over_database_path(monkeypatch):
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, &quot;sqlite:///from-url.db&quot;)
+    monkeypatch.setenv(&quot;DATABASE_PATH&quot;, &quot;from-path.db&quot;)
+
+    assert Settings.from_environment().database_url == &quot;sqlite:///from-url.db&quot;
+
+
+def test_settings_fall_back_to_database_path_when_url_absent(monkeypatch):
+    monkeypatch.delenv(&quot;DATABASE_URL&quot;, raising=False)
+    monkeypatch.setenv(&quot;DATABASE_PATH&quot;, &quot;from-path.db&quot;)
+
+    assert Settings.from_environment().database_url == &quot;from-path.db&quot;
+
+
+def test_settings_treat_empty_database_url_as_absent(monkeypatch):
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, &quot;&quot;)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+
+    assert Settings.from_environment().database_url == DEFAULT_DATABASE_PATH
+</pre></article>
+</main>
+</body>
+</html>

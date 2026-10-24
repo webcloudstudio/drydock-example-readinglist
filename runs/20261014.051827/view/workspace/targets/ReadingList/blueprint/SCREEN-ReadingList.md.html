@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md">Raw file</a></div></header>
+<article class="doc"><h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261014 V1</td></tr><tr><td>Description</td><td>The reading list page where a reader adds, views, and removes books.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md</td></tr><tr><td>Provides</td><td>GET /</td></tr><tr><td>Consumes</td><td>POST /books, GET /books, DELETE /books/{id}</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>—</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Sub Menu</td><td>—</td></tr><tr><td>Tab Order</td><td>—</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The single page of the application. A reader submits a title and author, sees the ordered list, and removes a book.</p>
+<h2>Layout</h2>
+<ul><li>A form with a title field and an author field, and a submit control.</li><li>An ordered list of books, in the order returned by <code>GET /books</code>.</li><li>A remove control beside each book.</li><li>Validation errors from a rejected submission are shown beside the form, naming the failing field.</li></ul>
+<h2>Interactions</h2>
+<ul><li>Submitting the form calls <code>POST /books</code>. On status 201 the list is reloaded. On status 400 the error for the field named in the response is shown.</li><li>The page loads the list by calling <code>GET /books</code>.</li><li>Activating a remove control calls <code>DELETE /books/{id}</code> for that book. On status 204 the list is reloaded.</li></ul>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md, FEATURE-ListBooks.md, and FEATURE-RemoveBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC screen-get-root ===<br>Intent: GET / returns status 200 with an HTML page.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 assert response.mimetype == &quot;text/html&quot; === END AC screen-get-root ===</p>
+<p>=== AC screen-add-list-remove ===<br>Intent: The routes the page calls add, list, and remove a book, and an unknown id returns 404.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() title = uuid.uuid4().hex author = uuid.uuid4().hex added = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert added.status_code == 201 book_id = added.get_json()[&quot;id&quot;] listing = client.get(&quot;/books&quot;) assert listing.status_code == 200 assert book_id in [book[&quot;id&quot;] for book in listing.get_json()] removed = client.delete(f&quot;/books/{book_id}&quot;) assert removed.status_code == 204 assert client.delete(&quot;/books/999999999&quot;).status_code == 404 === END AC screen-add-list-remove ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The page must not present a book in an order other than the order returned by <code>GET /books</code>.</li><li>The page must not offer a submit control that sends an empty title or author.</li></ul></article>
+</main>
+</body>
+</html>

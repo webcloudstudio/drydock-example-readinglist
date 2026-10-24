@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-13.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-13.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-13.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 13 · Service (block-13)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5086</li><li>execution id: 20261023.151653.150Z-aa70569b</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide automated pytest tests for rejecting an empty title or author. (test-validation) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-ValidationTests.md#validation-tests-module-passes: executable=python3; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-ValidationTests.md (SP 2684)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE_compact.md (SP 360)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>data/app.db</li><li>tests/test_validation.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: validation-tests-module-passes (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: The validation pytest module exists and every test in it passes against the built application. return code: 1 stderr: --- drydock: values at failure --- module = PosixPath(&#x27;tests/test_validation.py&#x27;) --- drydock: end values --- Traceback (most recent call last): File &quot;validation-tests-module-passes.py&quot;, line 8, in &lt;module&gt; assert module.is_file() ^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>GREEN (prepassed): validation-empty-title-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: An empty title is rejected with 400, a non-empty reason, the title field named, and nothing stored. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-blank-title-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A whitespace-only title is rejected with 400 and a non-empty reason, and nothing is stored. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-missing-title-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A submission with no title field is rejected with 400 and a non-empty reason. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-empty-author-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: An empty author is rejected with 400, a non-empty reason, the author field named, and nothing stored. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-blank-author-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A whitespace-only author is rejected with 400 and a non-empty reason, and nothing is stored. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-missing-author-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A submission with no author field is rejected with 400 and a non-empty reason. return code: 0</p>
+<ul><li>GREEN (prepassed): validation-browser-rejection-has-body (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A rejected browser submission answers 400 with a non-empty page that reports the rejection. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: validation-tests-module-passes (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: The validation pytest module exists and every test in it passes against the built application. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0 stdout: ................................................                         [100%] 48 passed in 1.11s</p>
+<ul><li>PASS: validation-empty-title-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: An empty title is rejected with 400, a non-empty reason, the title field named, and nothing stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-blank-title-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A whitespace-only title is rejected with 400 and a non-empty reason, and nothing is stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-missing-title-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A submission with no title field is rejected with 400 and a non-empty reason. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-empty-author-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: An empty author is rejected with 400, a non-empty reason, the author field named, and nothing stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-blank-author-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A whitespace-only author is rejected with 400 and a non-empty reason, and nothing is stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-missing-author-rejected (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A submission with no author field is rejected with 400 and a non-empty reason. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validation-browser-rejection-has-body (FEATURE-ValidationTests.md)</li></ul>
+<p>intent: A rejected browser submission answers 400 with a non-empty page that reports the rejection. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>I&#x27;ll start by inspecting the build directory and the staged sources.The build directory already has the application. Next I&#x27;ll read the existing tests, the app code, and the test runner so the new module follows their conventions.The sibling <code>test_reject_empty_author.py</code> isolates each test in its own SQLite store and applies <code>schema.sql</code>. Before I decide between that and the spec&#x27;s <code>web_client</code> fixture, I&#x27;ll check how settings resolve the store and whether the schema is auto-applied.The spec&#x27;s <code>web_client</code> fixture reads <code>DATABASE_URL</code> when it creates the app, so I can keep the sibling isolation pattern and still use that fixture. Each test gets its own provisioned SQLite file, so rejections never touch <code>data/app.db</code>. I&#x27;ll write the module now.Now I&#x27;ll run the new module through the project&#x27;s venv, then the full project suite to confirm nothing else broke.All 48 new tests pass, and the full suite passes at 185. Next I&#x27;ll run each declared acceptance criterion from the spec as a standalone script, the way the harness does, with the module-level script copies kept in a scratch directory outside the build tree.All eight criteria exit 0. Last, I&#x27;ll confirm which files changed in the build tree.RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>tests/test_validation.py</li></ul>
+<p>SUMMARY: Added <code>tests/test_validation.py</code>, which covers the FEATURE-ValidationTests spec. It runs eight rejected submissions (empty, whitespace-only, and missing title; empty, whitespace-only, and missing author) through <code>POST /books</code>. Each test reads its outcome back through the public interface (the HTTP status, the parsed JSON body, and <code>GET /books</code>). The tests check the status code, a non-empty <code>error</code>, the named <code>field</code>, that the stored list is unchanged after a rejection, and that a browser-style rejection returns 400 with a non-empty page.</p>
+<p>Choices I made:</p>
+<ul><li>Each test gets its own SQLite store, provisioned from <code>schema.sql</code>, following the sibling reject-empty modules. The <code>web_client</code> fixture reads <code>DATABASE_URL</code> at creation, so it uses that store and never touches <code>data/app.db</code>.</li><li>The &quot;stored list unchanged&quot; check seeds one book first, so a rejection that wrongly stored a row would be caught.</li><li>Assertions check status, presence of a reason, and field name, never the reason&#x27;s wording, per the spec&#x27;s guardrail.</li></ul>
+<p>Verification:</p>
+<ul><li><code>.venv/bin/python -m pytest -q tests/test_validation.py</code>: 48 passed, exit 0.</li><li><code>.venv/bin/python -m pytest -q</code> (full project suite): 185 passed, exit 0.</li><li>All eight declared acceptance criteria from the spec, run as standalone scripts with the project venv: each exits 0.</li><li><code>git status</code> shows only <code>tests/test_validation.py</code> as new. I did not run <code>git add</code> or commit.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>None.</li></ul></article>
+</main>
+</body>
+</html>

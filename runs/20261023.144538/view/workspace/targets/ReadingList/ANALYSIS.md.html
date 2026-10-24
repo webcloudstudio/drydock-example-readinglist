@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/ANALYSIS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/ANALYSIS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/ANALYSIS.md">Raw file</a></div></header>
+<article class="doc"><h1>Blueprint Analysis: ReadingList</h1>
+<h2>Commander Expectations</h2>
+<ul><li>assert the product lets a reader add a book with a title and an author</li><li>assert the product shows books in the order they were added</li><li>assert the product lets a reader remove a book</li><li>assert an empty title or author is rejected with a clear error message</li><li>assert the application includes automated tests for each behavior</li><li>assert the completed application provides a POSIX-compatible <code>bin/test.sh</code> that runs the complete automated test suite from the application root and exits zero only when every test passes</li></ul>
+<h2>Crew</h2>
+<div class="scroll"><table><thead><tr><th>Crew</th><th>Charge</th></tr></thead><tbody><tr><td>Commander</td><td>Defines intent and decides what done means.</td></tr><tr><td>Team Lead</td><td>Confirms epic completeness and stakeholder expectations.</td></tr><tr><td>Planning Crew</td><td>Authors atomic specifications and the ordered Manifest.</td></tr><tr><td>Shipyard Crew</td><td>Builds the tickets without synchronous Commander access.</td></tr></tbody></table></div>
+<h2>Story List</h2>
+<h3>Feature: Book List Management</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>BOOKS-001</td><td>Add a book with title and author</td><td>A reader submits a title and an author and the book is stored and shown in the list</td></tr><tr><td>BOOKS-002</td><td>List books in the order added</td><td>Books are presented in the order they were added</td></tr><tr><td>BOOKS-003</td><td>Remove a book from the list</td><td>After a reader removes a book, it is omitted from the list on the next read</td></tr></tbody></table></div>
+<h3>Feature: Input Validation</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>VALID-001</td><td>Reject a submission with an empty title</td><td>A submission with an empty title is rejected and the reason is reported</td></tr><tr><td>VALID-002</td><td>Reject a submission with an empty author</td><td>A submission with an empty author is rejected and the reason is reported</td></tr></tbody></table></div>
+<h3>Feature: Test Coverage and Verification</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>TEST-001</td><td>Provide automated tests for adding a book</td><td>Automated tests exist for adding a book</td></tr><tr><td>TEST-002</td><td>Provide automated tests for listing books in order added</td><td>Automated tests exist for listing books in the order added</td></tr><tr><td>TEST-003</td><td>Provide automated tests for removing a book</td><td>Automated tests exist for removing a book</td></tr><tr><td>TEST-004</td><td>Provide automated tests for rejecting an empty title or author</td><td>Automated tests exist for rejecting an empty title or author</td></tr><tr><td>TEST-005</td><td>Provide POSIX-compatible <code>bin/test.sh</code> runner</td><td><code>sh bin/test.sh</code> runs the complete automated test suite from the application root and exits zero only when every test passes</td></tr></tbody></table></div>
+<h2>Story Guidance</h2>
+<p>Named stories planning must produce. Authoritative record: <code>STORY_GUIDANCE.json</code>.</p>
+<p>None.</p>
+<h2>Surfaced Acceptance Criteria</h2>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story ID</th><th>Criterion</th></tr></thead><tbody><tr><td>AC-001</td><td>BOOKS-001</td><td>The stored book is shown in the list with its title and author</td></tr><tr><td>AC-002</td><td>BOOKS-002</td><td>Books appear in the order they were added</td></tr><tr><td>AC-003</td><td>BOOKS-003</td><td>A removed book does not appear in the list on the next read</td></tr><tr><td>AC-004</td><td>VALID-001</td><td>An empty title is rejected and the rejection reason is reported to the reader</td></tr><tr><td>AC-005</td><td>VALID-002</td><td>An empty author is rejected and the rejection reason is reported to the reader</td></tr><tr><td>AC-006</td><td>TEST-005</td><td><code>bin/test.sh</code> is located at the application root and is executed with <code>sh</code></td></tr></tbody></table></div>
+<h2>Source Inventory</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Content kind</th><th>Disposition</th><th>Reason</th></tr></thead><tbody><tr><td><code>sources/full_test.sh</code></td><td>code</td><td>analyzed</td><td>readable UTF-8</td></tr><tr><td><code>sources/reading-list.md</code></td><td>markdown</td><td>analyzed</td><td>readable UTF-8</td></tr></tbody></table></div>
+<h2>Relationship Model</h2>
+<div class="scroll"><table><thead><tr><th>Source or group</th><th>Relationship type</th><th>Related source or group</th><th>Evidence</th><th>Delivery implication</th></tr></thead><tbody><tr><td>sources/reading-list.md</td><td>dependency</td><td>sources/full_test.sh</td><td><code>full_test.sh</code> requires <code>bin/test.sh</code>, which <code>reading-list.md</code> names as a product requirement</td><td><code>bin/test.sh</code> must exist as a deliverable before the terminal verification story can pass</td></tr><tr><td>sources/reading-list.md</td><td>instruction-to-test</td><td>BOOKS-001, BOOKS-002, BOOKS-003, VALID-001, VALID-002</td><td>&quot;includes automated tests for each behavior&quot;</td><td>Each behavior story has a paired test story</td></tr><tr><td>sources/full_test.sh</td><td>test-kit-to-implementation</td><td>bin/test.sh (application root)</td><td>Dispatcher runs <code>sh bin/test.sh</code> from application root</td><td>Terminal verification gates on the full suite</td></tr></tbody></table></div>
+<h2>Source Roles</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Role</th><th>Plan disposition</th><th>Build disposition</th></tr></thead><tbody><tr><td>sources/reading-list.md</td><td>author intent</td><td>compass</td><td>none</td></tr><tr><td>sources/full_test.sh</td><td>conformance harness</td><td>context</td><td>stage</td></tr></tbody></table></div>
+<h2>Planning Instructions</h2>
+<h3>Delivery Shape</h3>
+<p>The system is a web application that stores an ordered list of books to read. Inputs are a reader&#x27;s submitted title and author, and removal requests. Outputs are the rendered book list and rejection messages. Required execution flow: the application accepts submissions, validates non-empty title and author, persists the book, lists books in insertion order, and deletes on removal. The application root must contain <code>bin/test.sh</code>, which runs the complete automated test suite.</p>
+<h3>Story Realization Map</h3>
+<ul><li>BOOKS-001: sources/reading-list.md (add with title and author). Requires capability and persistence. Tests in TEST-001.</li><li>BOOKS-002: sources/reading-list.md (view in order added). Requires capability. Tests in TEST-002.</li><li>BOOKS-003: sources/reading-list.md (remove). Requires capability and persistence. Tests in TEST-003.</li><li>VALID-001: sources/reading-list.md (empty title rejected with clear error). Requires capability. Tests in TEST-004.</li><li>VALID-002: sources/reading-list.md (empty author rejected with clear error). Requires capability. Tests in TEST-004.</li><li>TEST-001 through TEST-004: test harness coverage for behaviors, sources/reading-list.md.</li><li>TEST-005: sources/full_test.sh and sources/reading-list.md (<code>bin/test.sh</code> POSIX runner). Requires test harness and acceptance contract.</li></ul>
+<h3>Test and Acceptance Strategy</h3>
+<p>Focused story tests run per behavior story and are bounded to the slice each story owns (<code>Suite: scoped</code>). The terminal verification story TEST-005 depends on every implementation story and declares <code>Suite: full</code>, running <code>sh sources/full_test.sh</code> from the application root with the full unfiltered suite. Sea Trial st-001 is the project-level proof gate for the complete suite.</p>
+<h3>Sequencing and Dependencies</h3>
+<ul><li>Build BOOKS-001 before BOOKS-002 and BOOKS-003, since listing and removal operate on stored books.</li><li>VALID-001 and VALID-002 depend on BOOKS-001 (submission path).</li><li>TEST-001 through TEST-004 follow their behavior stories.</li><li>TEST-005 follows all implementation and test stories and gates the final build story.</li></ul>
+<h3>Source Conflicts and Gaps</h3>
+<ul><li>None. The sources do not state a persistence mechanism, UI framework, or language. These are resolved through TECHNOLOGY_STACK.md proposals and do not block planning.</li></ul>
+<h2>Analysis Notes</h2>
+<p>generated: 2026-10-23 blueprint: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/blueprint</p>
+<p>Quality: Ready blockers: 0 questions: 0 features: 3 stories: 10 stack: not declared display_name: not proposed short_description: not proposed</p>
+<p>Ambiguous signals: project type detected as <code>web</code> from &quot;web application&quot; in sources; no screen detail given.</p></article>
+</main>
+</body>
+</html>

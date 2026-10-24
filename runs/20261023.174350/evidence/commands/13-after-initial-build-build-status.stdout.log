@@ -1,0 +1,22 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Next: (no actionable steps — all done or blocked)
+
+Blueprint: ReadingList
+Target: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/workspace/targets/ReadingList
+Rows: <state> <type>  <Name>  [<id>]   — pass [<id>] to --step
+Block: Build Block 1 · Foundational  [block-1]   — [built] story Stand up the Python project tree, environment, dependency manifest, and pytest runner.  [architecture] — complete
+
+Block: Build Block 2 · Foundational  [block-2]   — 2/2 stories complete
+  [built]   story  Declare the books table and its repository operations.  [database]
+  [built]   story  Provide the Flask application factory, shared page layout, and web_client test fixture.  [app-shell]
+
+Block: Build Block 3 · Service  [block-3]   — 4/4 stories complete
+  [built]   story  Add a book with a title and author and persist it.  [add-book]
+  [built]   story  List books in the order they were added.  [list-books]
+  [built]   story  Remove a book so it no longer appears in the list.  [remove-book]
+  [built]   story  Reject a submission with an empty title or author with a clear error.  [reject-empty-fields]
+Block: Build Block 4 · Service  [block-4]   — [built] story Render the reading list page with an add form, error display, and remove buttons.  [screen-reading-list] — complete
+Block: Build Block 5 · Feature  [block-5]   — [built] story Provide bin/test.sh and prove the complete suite passes end to end.  [test-runner] — complete
+
+Steps: 9 total — 0 done, 9 built (await verify), 0 in review, 0 pending, 0 blocked by questions, 0 failed (0% complete)
+Buildable now: (none)

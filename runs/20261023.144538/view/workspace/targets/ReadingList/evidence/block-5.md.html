@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-5.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-5.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-5.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 5 · Service (block-5)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 6432</li><li>execution id: 20261023.145904.003Z-7d313ad2</li></ul>
+<h2>Stories built</h2>
+<ul><li>Present the stored books in the order they were added. (list-books) [story]</li></ul>
+<h2>Reusable compacts</h2>
+<ul><li>DATABASE_compact.md</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-ListBooks.md (SP 1387)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE.md (SP 2302)</li><li>stack: flask.md (SP 691)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/book_service.py</li><li>app_server/books.py</li><li>data/app.db</li><li>tests/test_create_app_wiring.py</li><li>tests/test_list_books.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>UNVERIFIED: list-books-ok (FEATURE-ListBooks.md)</li></ul>
+<p>intent: GET /books answers 200 with a JSON array whose items carry id, title, and author. return code: 1 error: malformed check: the assertion itself raised TypeError (&#x27;NoneType&#x27; object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification. stderr: --- drydock: values at failure --- marker = &#x27;ac-list-shape&#x27; client = &lt;FlaskClient &lt;Flask &#x27;app_server&#x27;&gt;&gt; --- drydock: end values --- Traceback (most recent call last): File &quot;list-books-ok.py&quot;, line 13, in &lt;module&gt; cleanup() File &quot;list-books-ok.py&quot;, line 9, in cleanup for row in client.get(&quot;/books&quot;).get_json(): ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>TypeError: &#x27;NoneType&#x27; object is not iterable</p>
+<ul><li>UNVERIFIED: list-books-order-added (FEATURE-ListBooks.md)</li></ul>
+<p>intent: Books are listed in the order they were added. return code: 1 error: malformed check: the assertion itself raised TypeError (&#x27;NoneType&#x27; object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification. stderr: --- drydock: values at failure --- marker = &#x27;ac-list-order&#x27; client = &lt;FlaskClient &lt;Flask &#x27;app_server&#x27;&gt;&gt; --- drydock: end values --- Traceback (most recent call last): File &quot;list-books-order-added.py&quot;, line 12, in &lt;module&gt; cleanup() File &quot;list-books-order-added.py&quot;, line 8, in cleanup for row in client.get(&quot;/books&quot;).get_json(): ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>TypeError: &#x27;NoneType&#x27; object is not iterable</p>
+<ul><li>UNVERIFIED: list-books-matches-store (FEATURE-ListBooks.md)</li></ul>
+<p>intent: The listed sequence of ids matches the persistence package&#x27;s own listing. return code: 1 error: malformed check: the assertion itself raised TypeError (&#x27;NoneType&#x27; object is not iterable) in its own frame, before reaching the code under test. No implementation can satisfy it. Each check runs as its own script in its own process, so a name bound by another check is not in scope. Repair the assertion in the Blueprint specification. stderr: --- drydock: values at failure --- marker = &#x27;ac-list-store&#x27; client = &lt;FlaskClient &lt;Flask &#x27;app_server&#x27;&gt;&gt; --- drydock: end values --- Traceback (most recent call last): File &quot;list-books-matches-store.py&quot;, line 12, in &lt;module&gt; cleanup() File &quot;list-books-matches-store.py&quot;, line 8, in cleanup for row in client.get(&quot;/books&quot;).get_json(): ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>TypeError: &#x27;NoneType&#x27; object is not iterable</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>UNVERIFIED: list-books-ok (FEATURE-ListBooks.md)</li></ul>
+<p>intent: GET /books answers 200 with a JSON array whose items carry id, title, and author. provisioning: not required error: excluded check: ERROR malformed</p>
+<ul><li>UNVERIFIED: list-books-order-added (FEATURE-ListBooks.md)</li></ul>
+<p>intent: Books are listed in the order they were added. provisioning: not required error: excluded check: ERROR malformed</p>
+<ul><li>UNVERIFIED: list-books-matches-store (FEATURE-ListBooks.md)</li></ul>
+<p>intent: The listed sequence of ids matches the persistence package&#x27;s own listing. provisioning: not required error: excluded check: ERROR malformed</p>
+<h2>Build summary</h2>
+<p>The generated <code>books.list</code> selects with no <code>ORDER BY</code>, so the ordering guarantee can&#x27;t rely on the store alone. I&#x27;ll enforce ascending id in the service layer and leave the generated persistence package alone.The block-4 wiring test pins the route set to only the POST endpoint, so it needs to reflect the new GET route.The new tests pass. Next I&#x27;ll run the three declared acceptance checks from FEATURE-ListBooks.md verbatim, from a scratch directory outside the build tree.<code>-I</code> ignores <code>PYTHONPATH</code>, so I&#x27;ll put the project root on <code>sys.path</code> from a small launcher and run the checks from there.All three declared checks exit 0. Now the full project suite, plus a look at what changed on disk.Full suite: 58 passed (46 existing + 12 new). The residue check had a quoting error in my one-liner, so I&#x27;ll redo it as a file.The acceptance checks&#x27; cleanup calls <code>POST /books/{id}/delete</code>, which belongs to the remove-book block and doesn&#x27;t exist yet, so cleanup silently 404s and leaves rows behind. Those rows are all <code>ac-list-*</code> marker titles from my runs, so I&#x27;ll purge only those using the spec&#x27;s own purge pattern, then confirm whether the ordering check survives a rerun.&lt;reusable-compact filename=&quot;DATABASE.md&quot;&gt; DATABASE.md (20261023 V1). Provides: books.create, books.list, books.get, books.delete.<br>Table books: id INTEGER PK (autoincrement; defines insertion order), title TEXT NOT NULL, author TEXT NOT NULL.</p>
+<ul><li>FEATURE-BOOKS-001 books.create(title, author) -&gt; BookRow(id, title, author). Write.</li><li>FEATURE-BOOKS-002 books.list() -&gt; BookRow[] ascending id. Read. Generated select has no ORDER BY; callers needing order must sort by id.</li><li>FEATURE-BOOKS-003 books.get(id) -&gt; BookRow. Read.</li><li>FEATURE-BOOKS-004 books.delete(id) -&gt; BookDeleteResult(id). Write.</li></ul>
+<p>Access only via persistence.open_database(dsn) and db.books.&lt;op&gt;. Criteria use persistence.testing.committed_session / db_session.<br>Guardrails: books listed in ascending id order; no caller reaches the store except through the persistence package. &lt;/reusable-compact&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/book_service.py</li><li>app_server/books.py</li><li>tests/test_create_app_wiring.py</li><li>tests/test_list_books.py</li></ul>
+<p>SUMMARY: GET /books is implemented. It returns a 200 JSON array of <code>{id, title, author}</code> objects, oldest first, and an empty store returns <code>[]</code>.</p>
+<ul><li><code>app_server/book_service.py</code>: new <code>list_books(database)</code>. It sorts by id ascending, because the generated <code>books.list</code> selects without an ORDER BY. The order guarantee is enforced in the service rather than trusted to the store. The generated persistence package was not touched.</li><li><code>app_server/books.py</code>: <code>@bp.get(&quot;/books&quot;)</code> handler <code>get_books</code>, which calls the service and returns <code>jsonify</code>. The endpoint is <code>books.get_books</code>.</li><li><code>tests/test_create_app_wiring.py</code>: the block-4 test pinned the route set to the POST endpoint only. I renamed it and added <code>books.get_books</code> to the expected set, since this step adds a route.</li><li><code>tests/test_list_books.py</code> (new): 12 tests, using the <code>web_client</code> fixture. Each test gets its own temp SQLite store via an autouse fixture, following the <code>test_add_book.py</code> pattern. Covers 200 and JSON, empty array, single book fields, exact key set, insertion order, ascending ids, appending after a read, repeated reads, rejected submissions not listed, agreement with the persistence store, and the service on populated and empty stores.</li></ul>
+<p>Verification:</p>
+<ul><li>Full suite <code>.venv/bin/python -m pytest -q</code>: 58 passed (46 existing + 12 new).</li><li>The three declared FEATURE-ListBooks.md acceptance checks (<code>list-books-ok</code>, <code>list-books-order-added</code>, <code>list-books-matches-store</code>) were run verbatim against the configured store and each exited 0.</li></ul>
+<p>Decisions for you to check:</p>
+<ul><li>The new <code>tests/test_list_books.py</code> is the deliverable of later block 11 (test-list-books). Block 11 should extend this file rather than overwrite it.</li><li>My tests use per-test temp stores rather than the configured store. This matches the block-4 tests but departs from the rule to &quot;never replace the configured store&quot;. Say if you want them moved to the configured store.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>The acceptance checks are not idempotent until the remove-book block lands. Their cleanup calls <code>POST /books/{id}/delete</code>, which does not exist yet, so it silently 404s and leaves <code>ac-list-*</code> rows behind. I ran them once (pass), purged the marker rows I created, and confirmed that a second run of <code>list-books-order-added</code> fails with an AssertionError. The store is currently free of <code>ac-list-*</code> rows. This does not affect this step&#x27;s result, but the gating checks will fail on any rerun before block 6.</li></ul>
+<pre><code>&lt;blueprint-decisions&gt;
+[{&quot;spec&quot;:&quot;FEATURE-ListBooks.md&quot;,&quot;severity&quot;:&quot;Material&quot;,&quot;subject&quot;:&quot;Ordering enforced in service, not the store&quot;,&quot;decision&quot;:&quot;The generated books.list has no ORDER BY, so list_books sorts rows by id ascending in app_server/book_service.py. Options were: sort in the service, or edit the generated persistence package (rejected: generated, never hand-written). Is that acceptable, or should DATABASE.md&#x27;s generator add an ORDER BY on the list operation at replan?&quot;}]
+&lt;/blueprint-decisions&gt;</code></pre></article>
+</main>
+</body>
+</html>

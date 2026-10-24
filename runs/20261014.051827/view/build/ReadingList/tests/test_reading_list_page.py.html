@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_reading_list_page.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_reading_list_page.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_reading_list_page.py">Raw file</a></div></header>
+<article class="doc"><pre>from html.parser import HTMLParser
+
+import pytest
+
+
+class _ElementCollector(HTMLParser):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.elements: list[tuple[str, dict[str, str]]] = []
+
+    def handle_starttag(self, tag, attrs):
+        self.elements.append((tag, {name: value or &quot;&quot; for name, value in attrs}))
+
+
+def _elements(body: str) -&gt; list[tuple[str, dict[str, str]]]:
+    collector = _ElementCollector()
+    collector.feed(body)
+    collector.close()
+    return collector.elements
+
+
+def _by_id(elements, element_id):
+    matches = [attrs for _, attrs in elements if attrs.get(&quot;id&quot;) == element_id]
+    assert len(matches) == 1, f&quot;expected exactly one element with id {element_id!r}&quot;
+    return matches[0]
+
+
+def _tag_for_id(elements, element_id):
+    matches = [tag for tag, attrs in elements if attrs.get(&quot;id&quot;) == element_id]
+    assert len(matches) == 1, f&quot;expected exactly one element with id {element_id!r}&quot;
+    return matches[0]
+
+
+@pytest.fixture
+def page(web_client):
+    response = web_client.get(&quot;/&quot;)
+    return response.get_data(as_text=True)
+
+
+def test_get_root_returns_200_html(web_client):
+    response = web_client.get(&quot;/&quot;)
+    assert response.status_code == 200
+    assert response.mimetype == &quot;text/html&quot;
+
+
+def test_root_page_is_repeatable(web_client):
+    first = web_client.get(&quot;/&quot;).get_data(as_text=True)
+    second = web_client.get(&quot;/&quot;).get_data(as_text=True)
+    assert first == second
+
+
+def test_root_rejects_post_with_405(web_client):
+    assert web_client.post(&quot;/&quot;).status_code == 405
+
+
+def test_root_page_form_posts_to_books(page):
+    form = _by_id(_elements(page), &quot;add-book&quot;)
+    assert form[&quot;method&quot;] == &quot;post&quot;
+    assert form[&quot;action&quot;] == &quot;/books&quot;
+
+
+def test_root_page_has_text_input_for_title(page):
+    elements = _elements(page)
+    title = _by_id(elements, &quot;title&quot;)
+    assert title[&quot;name&quot;] == &quot;title&quot;
+    assert title[&quot;type&quot;] == &quot;text&quot;
+
+
+def test_root_page_has_text_input_for_author(page):
+    elements = _elements(page)
+    author = _by_id(elements, &quot;author&quot;)
+    assert author[&quot;name&quot;] == &quot;author&quot;
+    assert author[&quot;type&quot;] == &quot;text&quot;
+
+
+def test_root_page_has_exactly_one_submit_control(page):
+    elements = _elements(page)
+    submit_buttons = [attrs for tag, attrs in elements if tag == &quot;button&quot; and attrs.get(&quot;type&quot;) == &quot;submit&quot;]
+    assert len(submit_buttons) == 1
+
+
+def test_root_page_has_error_slot_for_title_beside_form(page):
+    assert _tag_for_id(_elements(page), &quot;title-error&quot;) == &quot;span&quot;
+
+
+def test_root_page_has_error_slot_for_author_beside_form(page):
+    assert _tag_for_id(_elements(page), &quot;author-error&quot;) == &quot;span&quot;
+
+
+def test_root_page_has_ordered_list_for_books(page):
+    assert _tag_for_id(_elements(page), &quot;books&quot;) == &quot;ol&quot;
+
+
+def test_root_page_does_not_embed_stored_books(web_client):
+    before = web_client.get(&quot;/&quot;).get_data(as_text=True)
+    web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+    after = web_client.get(&quot;/&quot;).get_data(as_text=True)
+    assert before == after
+
+
+def test_routes_the_page_calls_add_list_and_remove_a_book(web_client):
+    added = web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+    assert added.status_code == 201
+    book_id = added.get_json()[&quot;id&quot;]
+
+    listing = web_client.get(&quot;/books&quot;)
+    assert listing.status_code == 200
+    assert listing.get_json() == [{&quot;id&quot;: book_id, &quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}]
+
+    removed = web_client.delete(f&quot;/books/{book_id}&quot;)
+    assert removed.status_code == 204
+
+    assert web_client.get(&quot;/books&quot;).get_json() == []
+
+
+def test_routes_the_page_calls_keep_books_in_the_order_added(web_client):
+    first = web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;A&quot;, &quot;author&quot;: &quot;One&quot;}).get_json()
+    second = web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;B&quot;, &quot;author&quot;: &quot;Two&quot;}).get_json()
+    third = web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;C&quot;, &quot;author&quot;: &quot;Three&quot;}).get_json()
+    assert [book[&quot;id&quot;] for book in web_client.get(&quot;/books&quot;).get_json()] == [first[&quot;id&quot;], second[&quot;id&quot;], third[&quot;id&quot;]]
+
+
+def test_removing_unknown_book_returns_404_for_the_page(web_client):
+    assert web_client.delete(&quot;/books/999999999&quot;).status_code == 404
+
+
+def test_submission_with_empty_title_returns_400_naming_title_for_the_page(web_client):
+    response = web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+    assert response.status_code == 400
+    assert response.get_json() == {&quot;field&quot;: &quot;title&quot;}
+
+
+def test_submission_with_empty_author_returns_400_naming_author_for_the_page(web_client):
+    response = web_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;})
+    assert response.status_code == 400
+    assert response.get_json() == {&quot;field&quot;: &quot;author&quot;}
+</pre></article>
+</main>
+</body>
+</html>

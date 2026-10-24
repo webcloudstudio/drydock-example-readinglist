@@ -1,0 +1,437 @@
+=== BEGIN ARTIFACT ARCHITECTURE.md ===
+# ARCHITECTURE: ReadingList
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Application structure and module boundaries for the ReadingList web application. |
+| Depends On  | — |
+| Provides    | `app_server.create_app`, `app_server.testing.web_client` |
+| Consumes    | — |
+
+## Questions
+
+- None.
+
+## Application Structure
+
+The application uses a Flask factory in `app_server.create_app`. Web routes are registered by the application factory. Feature modules handle request workflows and call the generated `persistence` package for storage.
+
+## Module Ownership
+
+| Boundary | Owner | Rule |
+|----------|-------|------|
+| Application factory | `app_server` | Creates and configures the Flask application. |
+| Web routes | Feature modules | Translate HTTP requests into feature operations. |
+| Persistence | Generated `persistence` package | Owns database connections, schema operations, and repository calls. |
+| Configuration | `app_server` | Resolves application settings and database configuration. |
+| Templates and styling | Interface layer | Renders the server-rendered reading-list screen. |
+| External services | None | No external services are required. |
+
+## Routes
+
+| Method | Route | Owner |
+|--------|-------|-------|
+| GET | `/` | `FEATURE-READING-LIST.md` |
+| POST | `/books` | `FEATURE-ADD-BOOK.md` and `FEATURE-VALIDATE-BOOK.md` |
+| POST | `/books/<book_id>/delete` | `FEATURE-REMOVE-BOOK.md` |
+
+## Technology Stack
+
+| Technology | Use |
+|------------|-----|
+| Python | Application implementation and tests. |
+| Flask | Web application factory, routing, and test client. |
+| SQLite | Local relational persistence. |
+| pytest | Automated test suite. |
+| HTML/CSS | Server-rendered browser interface. |
+
+## Technical Decisions
+
+- The primary page is served at `/`.
+- Book creation uses `POST /books`.
+- Book removal uses `POST /books/<book_id>/delete`.
+- Features access persistence only through generated repository operations.
+
+## Programmatic Acceptance
+
+=== AC architecture-factory ===
+Intent: The application exposes the selected Flask factory and testing client contracts.
+
+from flask import Flask
+from app_server import create_app
+from app_server.testing import web_client
+
+app = create_app()
+assert isinstance(app, Flask)
+client = web_client()
+assert client is not None
+=== END AC architecture-factory ===
+
+=== AC architecture-testing ===
+Intent: The application factory can be created repeatedly for isolated automated tests.
+
+from app_server import create_app
+
+first = create_app()
+second = create_app()
+assert first is not second
+assert first.name == second.name
+=== END AC architecture-testing ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Raw database access remains outside feature route modules.
+- The application uses the declared Flask factory and testing-client contracts.
+- The primary workflow remains reachable from `/`.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT UI-GENERAL.md ===
+# UI-GENERAL: Reading List Interface
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Shared server-rendered interface patterns for the ReadingList application. |
+| Depends On  | ARCHITECTURE.md |
+| Provides    | shared reading-list layout and feedback patterns |
+| Consumes    | `app_server.create_app` |
+
+## Questions
+
+- None.
+
+## Interface Patterns
+
+The page uses a consistent server-rendered layout with a clear page title, an add-book form, accessible labels for title and author, a list region, and action controls.
+
+The list displays books in the order supplied by the reading-list feature. When no books exist, the page presents a clear empty-list state. Validation failures preserve the form workflow and expose field-specific feedback without discarding the submitted values.
+
+Controls use ordinary HTML form submission and remain usable without undocumented client-side behavior.
+
+## Programmatic Acceptance
+
+=== AC ui-general-client ===
+Intent: The shared interface is available through the application's published testing client.
+
+from app_server.testing import web_client
+
+client = web_client()
+response = client.get("/")
+assert response.status_code == 200
+assert response.request.path == "/"
+=== END AC ui-general-client ===
+
+=== AC ui-general-form ===
+Intent: The primary interface accepts the declared book form fields.
+
+from app_server.testing import web_client
+
+title = "Interface Acceptance Title"
+author = "Interface Acceptance Author"
+
+client = web_client()
+response = client.post(
+    "/books",
+    data={"title": title, "author": author},
+)
+assert response.status_code in (200, 302, 303)
+=== END AC ui-general-form ===
+
+## User Acceptance
+
+- The page is understandable to a reader without instructions outside the page.
+- Empty-list and validation states are visually clear.
+
+## Guardrails
+
+- The interface never displays a book with an empty title or author.
+- Validation feedback leaves the reader able to correct and resubmit.
+- Books are displayed in stored insertion order.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-READING-LIST.md ===
+# FEATURE: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Serves the ordered reading-list workflow for persisted books. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md |
+| Provides    | GET `/` |
+| Consumes    | `app_server.create_app`, `persistence.books.list` |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The primary reading-list page retrieves persisted books through `persistence.books.list` and presents them in insertion order. It renders a clear empty state when no books are available.
+
+## Database Interface
+
+- `FEATURE-READING-LIST-001` — read: list books - supplies: — - returns: `id`, `title`, `author`, `insertion_order`
+
+## Workflow
+
+1. A reader requests `GET /`.
+2. The feature reads books through `books.list`.
+3. The page renders the returned books without reordering them.
+4. An empty result renders the empty-list state.
+
+## Programmatic Acceptance
+
+=== AC reading-list-reachable ===
+Intent: The primary reading-list route is reachable and returns a successful page response.
+
+from app_server.testing import web_client
+
+client = web_client()
+response = client.get("/")
+assert response.status_code == 200
+=== END AC reading-list-reachable ===
+
+=== AC reading-list-order ===
+Intent: The reading-list route presents persisted books in insertion order.
+
+from persistence.testing import committed_session
+from app_server.testing import web_client
+
+first_title = "Reading List First"
+first_author = "Reading List Author One"
+second_title = "Reading List Second"
+second_author = "Reading List Author Two"
+
+with committed_session() as db:
+    first = db.books.create(
+        title=first_title,
+        author=first_author,
+        insertion_order=900001,
+    )
+    second = db.books.create(
+        title=second_title,
+        author=second_author,
+        insertion_order=900002,
+    )
+
+try:
+    client = web_client()
+    response = client.get("/")
+    assert response.status_code == 200
+    body = response.get_data(as_text=True)
+    first_position = body.index(first_title)
+    second_position = body.index(second_title)
+    assert first_position < second_position
+finally:
+    with committed_session() as db:
+        db.books.delete(id=first.id)
+        db.books.delete(id=second.id)
+=== END AC reading-list-order ===
+
+=== AC reading-list-empty ===
+Intent: The reading-list route successfully renders when no matching books are present.
+
+from app_server.testing import web_client
+
+title = "No Matching Reading List Fixture"
+client = web_client()
+response = client.get("/")
+assert response.status_code == 200
+assert response.request.path == "/"
+=== END AC reading-list-empty ===
+
+## User Acceptance
+
+- A reader can open the primary page and understand whether books are present.
+- Books appear in the order they were added.
+
+## Guardrails
+
+- The route never silently reorders books.
+- Removed books are absent on the next read.
+- Empty titles and authors are never displayed.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-ADD-BOOK.md ===
+# FEATURE: Add Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Adds valid books to the persisted reading list. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md |
+| Provides    | POST `/books` |
+| Consumes    | `app_server.create_app`, `persistence.books.create` |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader submits a title and author to `POST /books`. The feature persists the book through `books.create` and returns the reader to a usable reading-list workflow where the new book can be seen.
+
+## Database Interface
+
+- `FEATURE-ADD-BOOK-001` — write: create a book - supplies: `title`, `author`, `insertion_order` - returns: `id`, `title`, `author`, `insertion_order`
+
+## Workflow
+
+1. Receive title and author form values.
+2. Create the book through the persistence contract.
+3. Redirect to the primary list page.
+4. The subsequent list read includes the created book.
+
+## Programmatic Acceptance
+
+=== AC add-book-route ===
+Intent: The book-creation route accepts a valid title and author submission.
+
+from app_server.testing import web_client
+
+title = "Add Book Acceptance Title"
+author = "Add Book Acceptance Author"
+
+client = web_client()
+response = client.post(
+    "/books",
+    data={"title": title, "author": author},
+)
+assert response.status_code == 302
+
+follow_up = client.get("/")
+assert follow_up.status_code == 200
+body = follow_up.get_data(as_text=True)
+assert title in body
+assert author in body
+=== END AC add-book-route ===
+
+=== AC add-book-persistence ===
+Intent: A valid submission is persisted and readable through the public list workflow.
+
+from app_server.testing import web_client
+
+title = "Persisted Add Book Title"
+author = "Persisted Add Book Author"
+
+client = web_client()
+created_response = client.post(
+    "/books",
+    data={"title": title, "author": author},
+)
+assert created_response.status_code == 302
+
+read_response = client.get("/")
+assert read_response.status_code == 200
+body = read_response.get_data(as_text=True)
+assert title in body
+assert author in body
+=== END AC add-book-persistence ===
+
+## User Acceptance
+
+- A reader can submit a title and author and see the new book in the list.
+
+## Guardrails
+
+- Valid submissions use the generated persistence contract.
+- A created book is not silently omitted from the next list read.
+- Empty fields are rejected by the validation boundary.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-REMOVE-BOOK.md ===
+# FEATURE: Remove Book
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261023 V1 |
+| Description | Removes a selected persisted book from the reading list. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md |
+| Provides    | POST `/books/<book_id>/delete` |
+| Consumes    | `app_server.create_app`, `persistence.books.delete` |
+
+## Questions
+
+- None.
+
+## Purpose
+
+A reader submits the removal action for a selected book. The feature deletes only that persisted identifier through `books.delete`, then returns to the list workflow.
+
+## Database Interface
+
+- `FEATURE-REMOVE-BOOK-001` — write: delete a book - supplies: `id` - returns: `id`
+
+## Workflow
+
+1. A book identifier is submitted to `POST /books/<book_id>/delete`.
+2. The selected book is deleted through the persistence contract.
+3. The reader returns to the reading-list page.
+4. The next read omits the removed book.
+
+## Programmatic Acceptance
+
+=== AC remove-book-route ===
+Intent: The removal route deletes the selected book and returns to the reading-list workflow.
+
+from persistence.testing import committed_session
+from app_server.testing import web_client
+
+title = "Remove Book Acceptance Title"
+author = "Remove Book Acceptance Author"
+
+with committed_session() as db:
+    created = db.books.create(
+        title=title,
+        author=author,
+        insertion_order=900003,
+    )
+
+try:
+    client = web_client()
+    response = client.post(f"/books/{created.id}/delete")
+    assert response.status_code == 302
+
+    follow_up = client.get("/")
+    assert follow_up.status_code == 200
+    body = follow_up.get_data(as_text=True)
+    assert title not in body
+finally:
+    with committed_session() as db:
+        db.books.delete(id=created.id)
+=== END AC remove-book-route ===
+
+=== AC remove-book-readback ===
+Intent: Removing a book changes subsequent persisted reads so the selected identifier is absent.
+
+from persistence.testing import committed_session
+
+title = "Remove Book Readback Title"
+author = "Remove Book Readback Author"
+
+with committed_session() as db:
+    created = db.books.create(
+        title=title,
+        author=author,
+        insertion_order=900004,
+    )
+    deleted = db.books.delete(id=created.id)
+    assert deleted.id == created.id
+
+    remaining = db.books.list()
+    assert all(row.id != created.id for row in remaining)
+
+    db.books.delete(id=created.id)
+=== END AC remove-book-readback ===
+
+## User Acceptance
+
+- A reader can remove a selected book and no longer sees it on the next list read.
+
+## Guardrails
+
+- Removal affects only the selected persisted book.
+- A removed book is not shown on the next reading-list request.
+- The feature does not silently reorder remaining books.
+=== END ARTIFACT ===

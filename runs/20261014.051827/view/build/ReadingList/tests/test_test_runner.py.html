@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_test_runner.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_test_runner.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_test_runner.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Behavior of bin/test.sh, the terminal verification gate.
+
+Each runner check executes a copy of the script inside its own temporary application root,
+so the nested suite never re-enters this file and no residue is left in the build directory.
+&quot;&quot;&quot;
+
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+RUNNER = Path(__file__).resolve().parents[1] / &quot;bin&quot; / &quot;test.sh&quot;
+PROJECT_VENV = Path(__file__).resolve().parents[1] / &quot;.venv&quot;
+
+
+def _make_root(tmp_path: Path, *, with_venv: bool) -&gt; Path:
+    root = tmp_path / &quot;app&quot;
+    (root / &quot;bin&quot;).mkdir(parents=True)
+    shutil.copy(RUNNER, root / &quot;bin&quot; / &quot;test.sh&quot;)
+    if with_venv:
+        os.symlink(PROJECT_VENV, root / &quot;.venv&quot;, target_is_directory=True)
+    (root / &quot;tests&quot;).mkdir()
+    return root
+
+
+def _run(root: Path) -&gt; subprocess.CompletedProcess:
+    return subprocess.run([&quot;sh&quot;, &quot;bin/test.sh&quot;], cwd=root, capture_output=True, text=True)
+
+
+def test_runner_parses_as_posix_sh():
+    result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, str(RUNNER)], capture_output=True, text=True)
+    assert result.returncode == 0
+
+
+def test_runner_exits_nonzero_when_venv_is_missing(tmp_path):
+    root = _make_root(tmp_path, with_venv=False)
+    (root / &quot;tests&quot; / &quot;test_ok.py&quot;).write_text(&quot;def test_ok():\n    assert True\n&quot;)
+    assert _run(root).returncode != 0
+
+
+def test_runner_exits_zero_when_every_test_passes(tmp_path):
+    root = _make_root(tmp_path, with_venv=True)
+    (root / &quot;tests&quot; / &quot;test_ok.py&quot;).write_text(&quot;def test_ok():\n    assert True\n&quot;)
+    assert _run(root).returncode == 0
+
+
+def test_runner_exits_nonzero_when_any_test_fails(tmp_path):
+    root = _make_root(tmp_path, with_venv=True)
+    (root / &quot;tests&quot; / &quot;test_ok.py&quot;).write_text(&quot;def test_ok():\n    assert True\n&quot;)
+    (root / &quot;tests&quot; / &quot;test_fail.py&quot;).write_text(&quot;def test_fail():\n    assert False\n&quot;)
+    assert _run(root).returncode != 0
+
+
+def test_runner_runs_from_any_working_directory(tmp_path):
+    root = _make_root(tmp_path, with_venv=True)
+    (root / &quot;tests&quot; / &quot;test_ok.py&quot;).write_text(&quot;def test_ok():\n    assert True\n&quot;)
+    result = subprocess.run(
+        [&quot;sh&quot;, str(root / &quot;bin&quot; / &quot;test.sh&quot;)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
+
+</pre></article>
+</main>
+</body>
+</html>

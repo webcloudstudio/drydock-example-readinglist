@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-4.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-4.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-4.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 4 · Service (block-4)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 8972</li><li>execution id: 20261023.211018.519Z-310bad70</li></ul>
+<h2>Stories built</h2>
+<ul><li>Serve the ordered reading-list view. (reading-list) [story]</li><li>Add a valid book to the reading list. (add-book) [story]</li><li>Remove a selected book from the reading list. (remove-book) [story]</li><li>Reject incomplete book submissions with correction feedback. (validate-book) [story]</li></ul>
+<h2>Reusable compacts</h2>
+<ul><li>DATABASE_compact.md</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 601)</li><li>compass: COMPASS.md (SP 551)</li><li>implements: FEATURE-READING-LIST.md (SP 732)</li><li>context: ARCHITECTURE_compact.md (SP 129)</li><li>context: DATABASE.md (SP 1361)</li><li>stack: flask.md (SP 451)</li><li>stack: persistence.md (SP 2816)</li><li>implements: FEATURE-ADD-BOOK.md (SP 590)</li><li>implements: FEATURE-REMOVE-BOOK.md (SP 669)</li><li>implements: FEATURE-VALIDATE-BOOK.md (SP 861)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/config.py</li><li>app_server/features/reading_list/routes.py</li><li>data/app.db</li><li>tests/test_architecture.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): reading-list-reachable (FEATURE-READING-LIST.md)</li></ul>
+<p>intent: The primary reading-list route is reachable and returns a successful page response. return code: 0</p>
+<ul><li>RED: reading-list-order (FEATURE-READING-LIST.md)</li></ul>
+<p>intent: The reading-list route presents persisted books in insertion order. return code: 1 stderr: --- drydock: values at failure --- first_title = &#x27;Reading List First&#x27; body = &#x27;&lt;!doctype html&gt;\n&lt;html lang=&quot;en&quot;&gt;\n&lt;head&gt;\n  &lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;\n  &lt;title&gt;Reading List&lt;/title&gt;\n  &lt;link rel=&quot;stylesheet&quot; href=&quot;/static/reading-list.css&quot;&gt;\n&lt;/head&gt;\n&lt;body&gt;&lt;main class=&quot;page-shell&quot;&gt;\n  &lt;header class=&quot;page-header&quot;&gt;&lt;p class=&quot;eyebrow&quot;&gt;ReadingList&lt;/p&gt;&lt;h1&gt;Books to read&lt;/h1&gt;&lt;p class=&quot;intro&quot;&gt;Keep track of the books you… (+1274 chars) --- drydock: end values --- Traceback (most recent call last): File &quot;reading-list-order.py&quot;, line 26, in &lt;module&gt; first_position = body.index(first_title) ^^^^^^^^^^^^^^^^^^^^^^^<br>ValueError: substring not found</p>
+<ul><li>GREEN (prepassed): reading-list-empty (FEATURE-READING-LIST.md)</li></ul>
+<p>intent: The reading-list route successfully renders when no matching books are present. return code: 0</p>
+<ul><li>RED: add-book-route (FEATURE-ADD-BOOK.md)</li></ul>
+<p>intent: The book-creation route accepts a valid title and author submission. return code: 1 stderr: Traceback (most recent call last): File &quot;add-book-route.py&quot;, line 11, in &lt;module&gt; assert response.status_code == 302 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: add-book-persistence (FEATURE-ADD-BOOK.md)</li></ul>
+<p>intent: A valid submission is persisted and readable through the public list workflow. return code: 1 stderr: Traceback (most recent call last): File &quot;add-book-persistence.py&quot;, line 11, in &lt;module&gt; assert created_response.status_code == 302 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: remove-book-route (FEATURE-REMOVE-BOOK.md)</li></ul>
+<p>intent: The removal route deletes the selected book and returns to the reading-list workflow. return code: 1 stderr: Traceback (most recent call last): File &quot;remove-book-route.py&quot;, line 17, in &lt;module&gt; assert response.status_code == 302 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>GREEN (prepassed): remove-book-readback (FEATURE-REMOVE-BOOK.md)</li></ul>
+<p>intent: Removing a book changes subsequent persisted reads so the selected identifier is absent. return code: 0</p>
+<ul><li>RED: validate-book-route (FEATURE-VALIDATE-BOOK.md)</li></ul>
+<p>intent: The book submission route rejects an empty title with a client-error response and does not persist the invalid submission. return code: 1 stderr: Traceback (most recent call last): File &quot;validate-book-route.py&quot;, line 10, in &lt;module&gt; assert response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: validate-book-author (FEATURE-VALIDATE-BOOK.md)</li></ul>
+<p>intent: The book submission route rejects an empty author with a client-error response and does not persist the invalid submission. return code: 1 stderr: Traceback (most recent call last): File &quot;validate-book-author.py&quot;, line 10, in &lt;module&gt; assert response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: validate-book-correction (FEATURE-VALIDATE-BOOK.md)</li></ul>
+<p>intent: A reader can correct an invalid submission and successfully add the corrected book. return code: 1 stderr: Traceback (most recent call last): File &quot;validate-book-correction.py&quot;, line 13, in &lt;module&gt; assert invalid_response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: reading-list-reachable (FEATURE-READING-LIST.md)</li></ul>
+<p>intent: The primary reading-list route is reachable and returns a successful page response. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: reading-list-order (FEATURE-READING-LIST.md)</li></ul>
+<p>intent: The reading-list route presents persisted books in insertion order. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: reading-list-empty (FEATURE-READING-LIST.md)</li></ul>
+<p>intent: The reading-list route successfully renders when no matching books are present. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: add-book-route (FEATURE-ADD-BOOK.md)</li></ul>
+<p>intent: The book-creation route accepts a valid title and author submission. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: add-book-persistence (FEATURE-ADD-BOOK.md)</li></ul>
+<p>intent: A valid submission is persisted and readable through the public list workflow. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: remove-book-route (FEATURE-REMOVE-BOOK.md)</li></ul>
+<p>intent: The removal route deletes the selected book and returns to the reading-list workflow. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: remove-book-readback (FEATURE-REMOVE-BOOK.md)</li></ul>
+<p>intent: Removing a book changes subsequent persisted reads so the selected identifier is absent. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validate-book-route (FEATURE-VALIDATE-BOOK.md)</li></ul>
+<p>intent: The book submission route rejects an empty title with a client-error response and does not persist the invalid submission. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validate-book-author (FEATURE-VALIDATE-BOOK.md)</li></ul>
+<p>intent: The book submission route rejects an empty author with a client-error response and does not persist the invalid submission. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: validate-book-correction (FEATURE-VALIDATE-BOOK.md)</li></ul>
+<p>intent: A reader can correct an invalid submission and successfully add the corrected book. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Repair attempts</h2>
+<ul><li>attempt 0 (initial build): failed; 10/10 checks model=gpt-5.6-luna; execution 20261023.210837.317Z-0f9e54ab; reason: acceptance regression: database-books-create, database-books-list, database-books-delete</li><li>attempt 1 (repair 1): built; 10/10 checks model=gpt-5.6-luna; execution 20261023.211018.519Z-310bad70</li></ul>
+<h2>Build summary</h2>
+<p>&lt;reusable-compact filename=&quot;DATABASE.md&quot;&gt; Persistence provides <code>persistence.books</code> with:</p>
+<ul><li><code>list()</code> → ordered <code>BookRow[]</code></li><li><code>create(title, author, insertion_order)</code> → <code>BookRow</code></li><li><code>delete(id)</code> → <code>DeletedBook</code></li></ul>
+<p>Books require non-empty title/author, retain insertion order, and use generated persistence only. Schema: <code>books(id, title, author, insertion_order UNIQUE)</code>. &lt;/reusable-compact&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/features/reading_list/routes.py</li></ul>
+<p>SUMMARY: Implemented centralized ordered book reads for the list and validation workflows. Database regressions and all declared acceptance probes pass. <code>sh sources/full_test.sh</code>: 9 passed.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

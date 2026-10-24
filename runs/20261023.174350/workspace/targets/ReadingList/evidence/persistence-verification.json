@@ -1,0 +1,1 @@
+[{"name": "foreign-key-enforcement", "observed": 1}, {"name": "books:table", "observed": 1}, {"name": "books:rows", "observed": 0}, {"name": "books.id:column", "observed": 1}, {"name": "books.title:column", "observed": 1}, {"name": "books.author:column", "observed": 1}]

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_base_template.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_base_template.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_base_template.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Base layout template: title block, main content block, and error region.&quot;&quot;&quot;
+
+from html.parser import HTMLParser
+
+from flask import render_template
+
+from app_server import create_app
+
+
+class _Page(HTMLParser):
+    &quot;&quot;&quot;Collects the title text and the text of every role=&quot;alert&quot; element.&quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.title = &quot;&quot;
+        self.alerts: list[str] = []
+        self._in_title = False
+        self._alert_depth = 0
+        self._alert_text: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == &quot;title&quot;:
+            self._in_title = True
+        if self._alert_depth:
+            self._alert_depth += 1
+        elif (&quot;role&quot;, &quot;alert&quot;) in attrs:
+            self._alert_depth = 1
+            self._alert_text = []
+
+    def handle_endtag(self, tag):
+        if tag == &quot;title&quot;:
+            self._in_title = False
+        if self._alert_depth:
+            self._alert_depth -= 1
+            if self._alert_depth == 0:
+                self.alerts.append(&quot;&quot;.join(self._alert_text))
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.title += data
+        if self._alert_depth:
+            self._alert_text.append(data)
+
+
+def _parse(html: str) -&gt; _Page:
+    page = _Page()
+    page.feed(html)
+    page.close()
+    return page
+
+
+def test_base_template_loads_from_application_template_folder():
+    app = create_app()
+
+    template = app.jinja_env.get_template(&quot;base.html&quot;)
+
+    assert template is not None
+
+
+def test_base_template_renders_supplied_error_text_in_alert_region():
+    app = create_app()
+    message = &quot;bound error reason&quot;
+
+    with app.test_request_context(&quot;/&quot;):
+        html = render_template(&quot;base.html&quot;, error=message)
+
+    assert _parse(html).alerts == [message]
+
+
+def test_base_template_renders_without_alert_region_when_error_absent():
+    app = create_app()
+
+    with app.test_request_context(&quot;/&quot;):
+        html = render_template(&quot;base.html&quot;)
+
+    assert _parse(html).alerts == []
+
+
+def test_base_template_renders_without_alert_region_when_error_is_empty():
+    app = create_app()
+
+    with app.test_request_context(&quot;/&quot;):
+        html = render_template(&quot;base.html&quot;, error=&quot;&quot;)
+
+    assert _parse(html).alerts == []
+
+
+def test_base_template_renders_without_alert_region_when_error_is_none():
+    app = create_app()
+
+    with app.test_request_context(&quot;/&quot;):
+        html = render_template(&quot;base.html&quot;, error=None)
+
+    assert _parse(html).alerts == []
+
+
+def test_base_template_error_text_is_html_escaped():
+    app = create_app()
+    hostile = &quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;
+
+    with app.test_request_context(&quot;/&quot;):
+        html = render_template(&quot;base.html&quot;, error=hostile)
+
+    page = _parse(html)
+    assert page.alerts == [hostile]
+    assert &quot;&lt;script&gt;&quot; not in html
+
+
+def test_base_template_title_defaults_to_reading_list():
+    app = create_app()
+
+    with app.test_request_context(&quot;/&quot;):
+        html = render_template(&quot;base.html&quot;)
+
+    assert _parse(html).title == &quot;Reading List&quot;
+
+
+def test_child_template_overrides_title_block():
+    app = create_app()
+    child = app.jinja_env.from_string(
+        &#x27;{% extends &quot;base.html&quot; %}&#x27;
+        &quot;{% block title %}Shelf{% endblock %}&quot;
+        &quot;{% block content %}&lt;p&gt;body&lt;/p&gt;{% endblock %}&quot;
+    )
+
+    with app.test_request_context(&quot;/&quot;):
+        html = child.render()
+
+    assert _parse(html).title == &quot;Shelf&quot;
+
+
+def test_child_template_fills_main_content_block():
+    app = create_app()
+    child = app.jinja_env.from_string(
+        &#x27;{% extends &quot;base.html&quot; %}{% block content %}&lt;p id=&quot;marker&quot;&gt;filled&lt;/p&gt;{% endblock %}&#x27;
+    )
+
+    with app.test_request_context(&quot;/&quot;):
+        html = child.render()
+
+    assert &#x27;&lt;p id=&quot;marker&quot;&gt;filled&lt;/p&gt;&#x27; in html
+    assert html.index(&#x27;&lt;main&gt;&#x27;) &lt; html.index(&#x27;id=&quot;marker&quot;&#x27;) &lt; html.index(&#x27;&lt;/main&gt;&#x27;)
+
+
+def test_child_template_error_appears_in_alert_region_above_content():
+    app = create_app()
+    child = app.jinja_env.from_string(
+        &#x27;{% extends &quot;base.html&quot; %}{% block content %}&lt;p&gt;body&lt;/p&gt;{% endblock %}&#x27;
+    )
+
+    with app.test_request_context(&quot;/&quot;):
+        html = child.render(error=&quot;rejected: title is empty&quot;)
+
+    assert _parse(html).alerts == [&quot;rejected: title is empty&quot;]
+    assert html.index(&#x27;role=&quot;alert&quot;&#x27;) &lt; html.index(&quot;&lt;p&gt;body&lt;/p&gt;&quot;)
+</pre></article>
+</main>
+</body>
+</html>

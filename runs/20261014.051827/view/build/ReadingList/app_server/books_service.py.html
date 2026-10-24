@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/books_service.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/books_service.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/books_service.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Framework-independent book operations for the reading list.&quot;&quot;&quot;
+
+from persistence import Database
+from persistence.schema import Book
+
+__all__ = [&quot;InvalidBook&quot;, &quot;add_book&quot;, &quot;list_books&quot;, &quot;remove_book&quot;]
+
+
+class InvalidBook(ValueError):
+    &quot;&quot;&quot;A submitted book was rejected; ``field`` names the empty or missing field.&quot;&quot;&quot;
+
+    def __init__(self, field: str) -&gt; None:
+        super().__init__(f&quot;{field} must not be empty&quot;)
+        self.field = field
+
+
+def add_book(database: Database, title: object, author: object) -&gt; Book:
+    &quot;&quot;&quot;Store a book whose title and author are non-empty after trimming, and return it with its id.&quot;&quot;&quot;
+    cleaned_title = _required(&quot;title&quot;, title)
+    cleaned_author = _required(&quot;author&quot;, author)
+    book_id = database.books.create(title=cleaned_title, author=cleaned_author)
+    return Book(id=book_id, title=cleaned_title, author=cleaned_author)
+
+
+def list_books(database: Database) -&gt; list[Book]:
+    &quot;&quot;&quot;Return every stored book in the order it was added, which is ascending id.&quot;&quot;&quot;
+    # Sorted here rather than trusting the engine&#x27;s row order, since SELECT carries no ORDER BY.
+    return sorted(database.books.list(), key=lambda book: book.id)
+
+
+def remove_book(database: Database, book_id: int) -&gt; bool:
+    &quot;&quot;&quot;Remove the book with ``book_id``. Return False and change nothing when no such book is stored.&quot;&quot;&quot;
+    if database.books.get(id=book_id) is None:
+        return False
+    database.books.delete(id=book_id)
+    return True
+
+
+def _required(field: str, value: object) -&gt; str:
+    if not isinstance(value, str) or not value.strip():
+        raise InvalidBook(field)
+    return value.strip()
+</pre></article>
+</main>
+</body>
+</html>

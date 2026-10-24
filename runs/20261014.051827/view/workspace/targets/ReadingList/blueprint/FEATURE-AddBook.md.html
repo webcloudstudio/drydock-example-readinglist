@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Add Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261014 V1</td></tr><tr><td>Description</td><td>Accept a title and author, store the book, and reject an empty title or author.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>POST /books</td></tr><tr><td>Consumes</td><td>books.create</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>A reader adds a book with a title and an author. An empty title or author is rejected with a clear error.</p>
+<h2>Route</h2>
+<p><code>POST /books</code> accepts a JSON body with <code>title</code> and <code>author</code>.</p>
+<ul><li>A valid submission is stored through <code>books.create</code> and returns status 201 with the stored book as JSON: <code>id</code>, <code>title</code>, <code>author</code>.</li><li>An empty or whitespace-only <code>title</code> returns status 400 with JSON <code>{&quot;field&quot;: &quot;title&quot;}</code>.</li><li>An empty or whitespace-only <code>author</code> returns status 400 with JSON <code>{&quot;field&quot;: &quot;author&quot;}</code>.</li><li>A rejected submission is not stored.</li></ul>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOKS-001</code> — write: create a book - supplies: <code>title</code>, <code>author</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC add-book-stores-valid ===<br>Intent: A valid submission returns 201 with the stored book&#x27;s title and author.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>title = uuid.uuid4().hex author = uuid.uuid4().hex client = web_client() response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 201 body = response.get_json() assert body[&quot;title&quot;] == title assert body[&quot;author&quot;] == author assert isinstance(body[&quot;id&quot;], int) === END AC add-book-stores-valid ===</p>
+<p>=== AC add-book-rejects-empty-title ===<br>Intent: An empty title returns 400 and names the title field.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>author = uuid.uuid4().hex client = web_client() response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: author}) assert response.status_code == 400 assert response.get_json()[&quot;field&quot;] == &quot;title&quot; === END AC add-book-rejects-empty-title ===</p>
+<p>=== AC add-book-rejects-empty-author ===<br>Intent: An empty author returns 400 and names the author field.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>title = uuid.uuid4().hex client = web_client() response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 assert response.get_json()[&quot;field&quot;] == &quot;author&quot; === END AC add-book-rejects-empty-author ===</p>
+<p>=== AC add-book-rejects-whitespace-title ===<br>Intent: A whitespace-only title is treated as empty and returns 400.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>author = uuid.uuid4().hex client = web_client() response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: author}) assert response.status_code == 400 assert response.get_json()[&quot;field&quot;] == &quot;title&quot; === END AC add-book-rejects-whitespace-title ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never accept an empty title or an empty author.</li></ul></article>
+</main>
+</body>
+</html>

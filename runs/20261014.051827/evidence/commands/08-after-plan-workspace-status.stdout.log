@@ -1,0 +1,16 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — workspace
+
+Target: ReadingList
+   Phase:     Implement
+   State:     7 pending
+   Detail:    2 imported · 7 authored · metadata planned
+   Analysis:  Ready · 9 stories · 0 questions · 0 blockers
+   Plan:      7 pending
+   Next Step: drydock build ReadingList  (frontier: Stand up the Python project tree, environment, test runner, and Flask application factory., Declare the reading-list store and generate the persistence package from DATABASE.md.)
+   10-14:     ✅  drydock build status ReadingList
+   10-14:     ✅  drydock plan verify ReadingList
+   10-14:     ✅  drydock plan ReadingList --override
+   10-14:     ✅  drydock analyze ReadingList
+   10-14:     ✅  drydock import ReadingList /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/sources --format markdown
+

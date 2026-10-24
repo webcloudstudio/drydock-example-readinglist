@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: List Books</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>The application presents stored books in the order they were added.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md</td></tr><tr><td>Provides</td><td>GET /books</td></tr><tr><td>Consumes</td><td>books.list</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Let a reader (and the reading list page) view every book in the order added.</p>
+<h2>Trigger</h2>
+<p>A <code>GET /books</code> request.</p>
+<h2>Sequence</h2>
+<ol><li>Call <code>db.books.list()</code>, which returns rows by ascending <code>id</code>.</li><li>Respond <code>200</code> with a JSON array of objects carrying <code>id</code>, <code>title</code>, and <code>author</code>, in that same order.</li><li>An empty store yields an empty array.</li></ol>
+<h2>Reads</h2>
+<ul><li>All books via <code>books.list</code>.</li></ul>
+<h2>Writes</h2>
+<ul><li>None.</li></ul>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOKS-002</code> — read: books.list - supplies: — - returns: <code>id</code>, <code>title</code>, <code>author</code></li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC list-books-ok ===<br>Intent: GET /books answers 200 with a JSON array whose items carry id, title, and author.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-list-shape&quot; title = marker + &quot; title&quot; author = marker + &quot; author&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}).status_code == 303 response = client.get(&quot;/books&quot;) assert response.status_code == 200 body = response.get_json() assert isinstance(body, list) ours = [row for row in body if row[&quot;title&quot;] == title] assert len(ours) == 1 assert set([&quot;id&quot;, &quot;title&quot;, &quot;author&quot;]) &lt;= set(ours[0].keys()) finally: cleanup() === END AC list-books-ok ===</p>
+<p>=== AC list-books-order-added ===<br>Intent: Books are listed in the order they were added.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() marker = &quot;ac-list-order&quot; titles = [marker + &quot; third-added-last&quot;, marker + &quot; a-first&quot;, marker + &quot; m-second&quot;]</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: for t in titles: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: t, &quot;author&quot;: marker + &quot; author&quot;}).status_code == 303 body = client.get(&quot;/books&quot;).get_json() ours = [row[&quot;title&quot;] for row in body if marker in row[&quot;title&quot;]] assert ours == titles ids = [row[&quot;id&quot;] for row in body if marker in row[&quot;title&quot;]] assert ids == sorted(ids) finally: cleanup() === END AC list-books-order-added ===</p>
+<p>=== AC list-books-matches-store ===<br>Intent: The listed sequence of ids matches the persistence package&#x27;s own listing.<br>Suite: scoped</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() marker = &quot;ac-list-store&quot;</p>
+<p>def cleanup(): for row in client.get(&quot;/books&quot;).get_json(): if marker in row[&quot;title&quot;]: client.post(f&quot;/books/{row[&#x27;id&#x27;]}/delete&quot;)</p>
+<p>cleanup() try: for n in range(3): assert client.post(&quot;/books&quot;, data={&quot;title&quot;: f&quot;{marker} {n}&quot;, &quot;author&quot;: marker + &quot; author&quot;}).status_code == 303 http_ids = [row[&quot;id&quot;] for row in client.get(&quot;/books&quot;).get_json()] with committed_session() as db: store_ids = [row.id for row in db.books.list()] assert http_ids == store_ids finally: cleanup() === END AC list-books-matches-store ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books are never presented in any order other than the order added.</li><li>The listing never omits a stored book and never shows a removed one.</li></ul></article>
+</main>
+</body>
+</html>

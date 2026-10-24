@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-VALIDATE-BOOK.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-VALIDATE-BOOK.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-VALIDATE-BOOK.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Validate Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Validates book submissions and returns correction feedback for incomplete entries.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-ADD-BOOK.md</td></tr><tr><td>Provides</td><td>validation for POST /books</td></tr><tr><td>Consumes</td><td>POST /books, app_server.create_app, persistence.books.list</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The validation boundary protects the reading list from incomplete books. Submissions with an empty title, empty author, or both are rejected before persistence with a client-error response. The form remains usable so the reader can correct and resubmit.</p>
+<h2>Workflow</h2>
+<ol><li>Receive title and author form values at <code>POST /books</code>.</li><li>Reject the submission with HTTP 400 when either required value is empty.</li><li>Preserve the submitted values and identify the missing field or fields in the rendered feedback.</li><li>Do not create a persistence record for rejected input.</li><li>Accept corrected values through the existing add-book workflow.</li></ol>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-ADD-BOOK.md, FEATURE-READING-LIST.md, FEATURE-REMOVE-BOOK.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC validate-book-route ===<br>Intent: The book submission route rejects an empty title with a client-error response and does not persist the invalid submission.</p>
+<p>from app_server.testing import web_client from persistence.testing import db_session</p>
+<p>title = &quot;&quot; author = &quot;Validation Author&quot;</p>
+<p>client = web_client() response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})</p>
+<p>assert response.status_code == 400</p>
+<p>with db_session() as db: rows = db.books.list() assert all(row.title != title or row.author != author for row in rows) === END AC validate-book-route ===</p>
+<p>=== AC validate-book-author ===<br>Intent: The book submission route rejects an empty author with a client-error response and does not persist the invalid submission.</p>
+<p>from app_server.testing import web_client from persistence.testing import db_session</p>
+<p>title = &quot;Validation Title&quot; author = &quot;&quot;</p>
+<p>client = web_client() response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})</p>
+<p>assert response.status_code == 400</p>
+<p>with db_session() as db: rows = db.books.list() assert all(row.title != title or row.author != author for row in rows) === END AC validate-book-author ===</p>
+<p>=== AC validate-book-correction ===<br>Intent: A reader can correct an invalid submission and successfully add the corrected book.</p>
+<p>from app_server.testing import web_client</p>
+<p>invalid_title = &quot;&quot; invalid_author = &quot;Correctable Author&quot; valid_title = &quot;Corrected Title&quot; valid_author = &quot;Corrected Author&quot;</p>
+<p>client = web_client() invalid_response = client.post( &quot;/books&quot;, data={&quot;title&quot;: invalid_title, &quot;author&quot;: invalid_author}, ) assert invalid_response.status_code == 400</p>
+<p>valid_response = client.post( &quot;/books&quot;, data={&quot;title&quot;: valid_title, &quot;author&quot;: valid_author}, ) assert valid_response.status_code == 302</p>
+<p>list_response = client.get(&quot;/&quot;) assert list_response.status_code == 200 body = list_response.get_data(as_text=True) assert valid_title in body assert valid_author in body === END AC validate-book-correction ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Empty titles and authors are rejected before persistence.</li><li>Validation returns HTTP 400 and keeps the form workflow recoverable.</li><li>Validation feedback identifies the missing required field or fields.</li></ul></article>
+</main>
+</body>
+</html>

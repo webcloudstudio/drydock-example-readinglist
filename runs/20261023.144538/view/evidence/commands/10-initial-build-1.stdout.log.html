@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/10-initial-build-1.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/10-initial-build-1.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/10-initial-build-1.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: foundation
+git: baseline ReadingList 2a949bb5acd0
+git: baseline ReadingList 2033b4b2e9bc
+
+BLOCK block-1  name=&quot;Block 1 · Foundational&quot;  calls_max=7
+  story=foundation  &quot;Stand up the Python project root, environment, pytest runner, and application skeleton.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.145208.699Z-915601e1
+    acceptance=3/3
+git: block-1 | python.md, ARCHITECTURE.md | call=1 | app=2c66a0f661dd target=d61030860310
+
+  DONE  story=foundation  state=closed/implemented  execution=20261023.145208.699Z-915601e1  elapsed=2m40s
+git: block-1 | python.md, ARCHITECTURE.md | step_completed | app=unchanged target=2f064c97da05
+
+  DONE  story=database  state=closed/implemented  elapsed=8.1s
+git: block-2 | DATABASE.md | step_completed | app=2ff0e8a4054c target=e3d7d6a7374a
+
+BLOCK block-3  name=&quot;Block 3 · Foundational&quot;  calls_max=7
+  story=web-shell  &quot;Provide the shared page layout and register the web server wiring in the application factory.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.145511.914Z-46dec70b
+    acceptance=3/3
+git: block-3 | UI-GENERAL.md | call=1 | app=331205ae4a4b target=428c4e0d757d
+
+  DONE  story=web-shell  state=closed/implemented  execution=20261023.145511.914Z-46dec70b  elapsed=1m48s
+git: block-3 | UI-GENERAL.md | step_completed | app=unchanged target=e2f5c231db58
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-4  name=&quot;Block 4 · Service&quot;  calls_max=7
+  story=add-book  &quot;Let a reader add a book with a title and an author.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.145659.297Z-79985802
+    acceptance=0/3  skipped=add-book-redirects,add-book-round-trip,add-book-persists-in-store
+git: block-4 | FEATURE-AddBook.md | call=1 | app=149030da2314 target=3a1d9a404047
+
+  DONE  story=add-book  state=closed/implemented  execution=20261023.145659.297Z-79985802  elapsed=2m01s
+git: block-4 | FEATURE-AddBook.md | step_completed | app=unchanged target=44901a6c2cfc
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-5  name=&quot;Block 5 · Service&quot;  calls_max=7
+  story=list-books  &quot;Present the stored books in the order they were added.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.145904.003Z-7d313ad2
+    acceptance=0/3  skipped=list-books-ok,list-books-order-added,list-books-matches-store
+git: block-5 | FEATURE-ListBooks.md | call=1 | app=6e84da2d502a target=efac22b95409
+
+  DONE  story=list-books  state=closed/implemented  execution=20261023.145904.003Z-7d313ad2  elapsed=2m28s
+git: block-5 | FEATURE-ListBooks.md | step_completed | app=unchanged target=90fb92d4421b
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-6  name=&quot;Block 6 · Service&quot;  calls_max=7
+  story=remove-book  &quot;Let a reader remove a book from the list.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.150140.853Z-43ebe93f
+    acceptance=3/3
+git: block-6 | FEATURE-RemoveBook.md | call=1 | app=ffe5acdb0f84 target=e8c0d5e33e45
+
+  DONE  story=remove-book  state=closed/implemented  execution=20261023.150140.853Z-43ebe93f  elapsed=2m00s
+git: block-6 | FEATURE-RemoveBook.md | step_completed | app=unchanged target=cf2ed540109d
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-7  name=&quot;Block 7 · Service&quot;  calls_max=7
+  story=reject-empty-title  &quot;Reject a submission whose title is empty and report the reason.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.150337.906Z-8f3bd51e
+    acceptance=1/4  skipped=reject-title-empty-json,reject-title-whitespace,reject-title-missing
+git: block-7 | FEATURE-RejectEmptyTitle.md | call=1 | app=35a068773441 target=fc0d09a58b87
+
+  DONE  story=reject-empty-title  state=closed/implemented  execution=20261023.150337.906Z-8f3bd51e  elapsed=1m54s
+git: block-7 | FEATURE-RejectEmptyTitle.md | step_completed | app=unchanged target=0759db077659
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-8  name=&quot;Block 8 · Service&quot;  calls_max=7
+  story=reject-empty-author  &quot;Reject a submission whose author is empty and report the reason.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.150538.609Z-f89307a8
+    acceptance=4/4
+git: block-8 | FEATURE-RejectEmptyAuthor.md | call=1 | app=e7631cef5f3b target=cdf6c29c55ab
+
+  DONE  story=reject-empty-author  state=closed/implemented  execution=20261023.150538.609Z-f89307a8  elapsed=1m53s
+git: block-8 | FEATURE-RejectEmptyAuthor.md | step_completed | app=unchanged target=3fc2a534b612
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-9  name=&quot;Block 9 · Service&quot;  calls_max=7
+  story=screen-reading-list  &quot;Render the reading list page with the add form, rejection messages, and remove controls.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.150733.690Z-2bca0178
+    acceptance=4/4
+git: block-9 | SCREEN-ReadingList.md | call=1 | app=ff10f1a21be7 target=69a9b27a1a28
+
+  DONE  story=screen-reading-list  state=closed/implemented  execution=20261023.150733.690Z-2bca0178  elapsed=2m22s
+git: block-9 | SCREEN-ReadingList.md | step_completed | app=unchanged target=0eebd9f7ed60
+
+BLOCK block-10  name=&quot;Block 10 · Service&quot;  calls_max=7
+  story=test-add-book  &quot;Provide automated pytest tests for adding a book.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.151000.516Z-4c2636a3
+    acceptance=3/3
+git: block-10 | FEATURE-AddBookTests.md | call=1 | app=2a70392951c1 target=bcb1622a3140
+
+  DONE  story=test-add-book  state=closed/implemented  execution=20261023.151000.516Z-4c2636a3  elapsed=2m19s
+git: block-10 | FEATURE-AddBookTests.md | step_completed | app=unchanged target=b7356ef261dd
+
+BLOCK block-11  name=&quot;Block 11 · Service&quot;  calls_max=7
+  story=test-list-books  &quot;Provide automated pytest tests for listing books in the order added.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.151221.415Z-e9ae3d38
+    acceptance=3/3
+git: block-11 | FEATURE-ListBooksTests.md | call=1 | app=unchanged target=396f4b1f16d2
+
+  DONE  story=test-list-books  state=closed/implemented  execution=20261023.151221.415Z-e9ae3d38  elapsed=1m57s
+git: block-11 | FEATURE-ListBooksTests.md | step_completed | app=unchanged target=9d6be4ca2d47
+
+BLOCK block-12  name=&quot;Block 12 · Service&quot;  calls_max=7
+  story=test-remove-book  &quot;Provide automated pytest tests for removing a book.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.151420.658Z-34c16494
+    acceptance=5/5
+git: block-12 | FEATURE-RemoveBookTests.md | call=1 | app=c15bdee7bd00 target=2bc4224ba2dc
+
+  DONE  story=test-remove-book  state=closed/implemented  execution=20261023.151420.658Z-34c16494  elapsed=2m29s
+git: block-12 | FEATURE-RemoveBookTests.md | step_completed | app=unchanged target=833590382a0f
+
+BLOCK block-13  name=&quot;Block 13 · Service&quot;  calls_max=7
+  story=test-validation  &quot;Provide automated pytest tests for rejecting an empty title or author.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.151653.150Z-aa70569b
+    acceptance=8/8
+git: block-13 | FEATURE-ValidationTests.md | call=1 | app=fbedf7849d2e target=2205b0e955d6
+
+  DONE  story=test-validation  state=closed/implemented  execution=20261023.151653.150Z-aa70569b  elapsed=2m43s
+git: block-13 | FEATURE-ValidationTests.md | step_completed | app=unchanged target=3437f13301c8
+
+BLOCK block-14  name=&quot;Block 14 · Feature&quot;  calls_max=7
+  story=verification  &quot;Provide the POSIX bin/test.sh runner and gate on the complete suite.&quot;
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.151937.051Z-e7e7d08e
+    acceptance=3/3
+git: block-14 | VERIFICATION.md | call=1 | app=adab48306778 target=7a555341c4d0
+
+  DONE  story=verification  state=closed/implemented  execution=20261023.151937.051Z-e7e7d08e  elapsed=3m02s
+git: block-14 | VERIFICATION.md | step_completed | app=unchanged target=865071682d23
+git: build complete ReadingList 5328e99f1f8c
+git: build complete ReadingList 55f7a0f62329
+
+result: 14 built, 0 failed, 0 unchanged
+elapsed: 30 minutes 43 seconds
+Target - committed project workspace git store
+</pre></article>
+</main>
+</body>
+</html>

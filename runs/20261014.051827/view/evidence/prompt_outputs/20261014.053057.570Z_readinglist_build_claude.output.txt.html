@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261014.053057.570Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261014.053057.570Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261014.053057.570Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>Now I&#x27;ll write the runner, which is a thin POSIX wrapper around the full pytest suite.Next, tests for the runner itself. They read back the exit status of the script run in isolated temp copies, so the script never recurses into this file.The last test I wrote is redundant and its parameter is unused, so I&#x27;ll remove it.Now I&#x27;ll make the script executable and run the two declared acceptance checks exactly as specified, plus the full gate.RESULT: SUCCESS
+
+FILES CHANGED:
+- bin/test.sh
+- tests/test_test_runner.py
+
+SUMMARY:
+- `bin/test.sh` is a POSIX `sh` script. It resolves the application root from its own location, `cd`s there, and exits nonzero with a message if `.venv/bin/python` is missing. Otherwise it `exec`s `.venv/bin/python -m pytest -q`, so the suite&#x27;s exit status is the script&#x27;s exit status. It runs the full suite with no filtering.
+- `tests/test_test_runner.py` has 5 tests. Each one copies the script into its own temp application root, so the nested suite never re-enters this file and nothing is left in the build directory:
+  - the script parses under `sh -n`
+  - it exits nonzero when `.venv` is missing
+  - it exits zero when every test passes
+  - it exits nonzero when any test fails
+  - it works when invoked from a different working directory
+- Acceptance checks, run as declared:
+  - `test-runner-posix-syntax` (`sh -n bin/test.sh`): exit 0.
+  - `test-runner-full-suite` (`sh bin/test.sh`): exit 0.
+- Suite counts: the full gate ran 79 tests (74 existing plus 5 new), all passed. The new runner tests were also run on their own and passed.
+- `sources/full_test.sh` was not modified and not run. Its contents just dispatch to `sh bin/test.sh`, which is what the acceptance check exercised.
+- I made `bin/test.sh` executable so it can run directly. Nothing was staged or committed.
+
+Choices I made:
+- The error message for a missing `.venv` points to `uv venv` and `uv sync`. The spec didn&#x27;t name a setup command.
+- The runner tests use a symlink to the project&#x27;s `.venv` inside each temp root, so they don&#x27;t create a second environment.
+
+BLOCKERS:
+- None.</pre></article>
+</main>
+</body>
+</html>

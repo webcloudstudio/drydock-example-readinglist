@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_remove_book.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_remove_book.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_remove_book.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Remove a book: POST /books/{id}/delete removes a stored book, and answers 404 for an unknown id.
+
+Every test reaches removal only through the public HTTP routes. Each test creates the books it
+needs through POST /books, reads their ids back from GET /books, and removes the books it created
+before finishing. Titles carry a unique marker so the shared store can hold them safely.
+&quot;&quot;&quot;
+
+import uuid
+
+import pytest
+
+
+def _unique(label: str) -&gt; str:
+    &quot;&quot;&quot;Return a title no other test or run has used, so the shared store can hold it safely.&quot;&quot;&quot;
+    return f&quot;RemoveTest-{label}-{uuid.uuid4().hex}&quot;
+
+
+@pytest.fixture
+def owned_ids(web_client):
+    &quot;&quot;&quot;Collect the ids a test adds, then remove exactly those books that are still listed afterwards.&quot;&quot;&quot;
+    ids: list[int] = []
+    yield ids
+    listed = {row[&quot;id&quot;] for row in _listing(web_client)}
+    for book_id in ids:
+        if book_id in listed:
+            web_client.post(f&quot;/books/{book_id}/delete&quot;)
+
+
+def _listing(client) -&gt; list[dict]:
+    &quot;&quot;&quot;Return every listed book, read back through GET /books, in the order listed.&quot;&quot;&quot;
+    return client.get(&quot;/books&quot;).get_json()
+
+
+def _add(client, owned_ids: list[int], label: str) -&gt; int:
+    &quot;&quot;&quot;Add a book through POST /books, read its id back through GET /books, and own it.&quot;&quot;&quot;
+    title = _unique(label)
+    response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;Remove Author&quot;})
+    assert response.status_code == 303
+    matches = [row[&quot;id&quot;] for row in _listing(client) if row[&quot;title&quot;] == title]
+    assert len(matches) == 1
+    owned_ids.append(matches[0])
+    return matches[0]
+
+
+def _owned_listing(client, owned_ids: list[int]) -&gt; list[int]:
+    &quot;&quot;&quot;Return the ids of the books this test owns that are still listed, in the order listed.&quot;&quot;&quot;
+    return [row[&quot;id&quot;] for row in _listing(client) if row[&quot;id&quot;] in owned_ids]
+
+
+def _unknown_id(client) -&gt; int:
+    &quot;&quot;&quot;Return an id no listed book carries: one past the highest listed id, offset well clear of it.&quot;&quot;&quot;
+    return max((row[&quot;id&quot;] for row in _listing(client)), default=0) + 100000
+
+
+def test_removing_a_known_book_answers_303_to_start_page(web_client, owned_ids):
+    book_id = _add(web_client, owned_ids, &quot;redirect&quot;)
+
+    response = web_client.post(f&quot;/books/{book_id}/delete&quot;)
+
+    assert response.status_code == 303
+    assert response.headers[&quot;Location&quot;] == &quot;/&quot;
+
+
+def test_removed_book_is_absent_from_the_next_listing(web_client, owned_ids):
+    book_id = _add(web_client, owned_ids, &quot;omitted&quot;)
+
+    web_client.post(f&quot;/books/{book_id}/delete&quot;)
+
+    assert book_id not in [row[&quot;id&quot;] for row in _listing(web_client)]
+
+
+def test_removing_one_book_leaves_the_others_listed(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;others-first&quot;)
+    removed = _add(web_client, owned_ids, &quot;others-removed&quot;)
+    last = _add(web_client, owned_ids, &quot;others-last&quot;)
+
+    web_client.post(f&quot;/books/{removed}/delete&quot;)
+
+    listed = _owned_listing(web_client, owned_ids)
+    assert first in listed
+    assert last in listed
+    assert removed not in listed
+
+
+def test_removing_the_middle_book_keeps_the_others_in_their_original_order(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;middle-first&quot;)
+    middle = _add(web_client, owned_ids, &quot;middle-middle&quot;)
+    last = _add(web_client, owned_ids, &quot;middle-last&quot;)
+
+    web_client.post(f&quot;/books/{middle}/delete&quot;)
+
+    assert _owned_listing(web_client, owned_ids) == [first, last]
+
+
+def test_removing_the_first_book_keeps_the_rest_in_order(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;first-first&quot;)
+    second = _add(web_client, owned_ids, &quot;first-second&quot;)
+    third = _add(web_client, owned_ids, &quot;first-third&quot;)
+
+    web_client.post(f&quot;/books/{first}/delete&quot;)
+
+    assert _owned_listing(web_client, owned_ids) == [second, third]
+
+
+def test_removing_the_last_book_keeps_the_rest_in_order(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;last-first&quot;)
+    second = _add(web_client, owned_ids, &quot;last-second&quot;)
+    last = _add(web_client, owned_ids, &quot;last-last&quot;)
+
+    web_client.post(f&quot;/books/{last}/delete&quot;)
+
+    assert _owned_listing(web_client, owned_ids) == [first, second]
+
+
+def test_remaining_books_keep_their_id_title_and_author(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;keep-first&quot;)
+    middle = _add(web_client, owned_ids, &quot;keep-middle&quot;)
+    last = _add(web_client, owned_ids, &quot;keep-last&quot;)
+    before = {row[&quot;id&quot;]: row for row in _listing(web_client) if row[&quot;id&quot;] in owned_ids}
+
+    web_client.post(f&quot;/books/{middle}/delete&quot;)
+
+    after = {row[&quot;id&quot;]: row for row in _listing(web_client) if row[&quot;id&quot;] in owned_ids}
+    assert after == {first: before[first], last: before[last]}
+
+
+def test_unknown_id_answers_404(web_client, owned_ids):
+    _add(web_client, owned_ids, &quot;unknown&quot;)
+
+    response = web_client.post(f&quot;/books/{_unknown_id(web_client)}/delete&quot;)
+
+    assert response.status_code == 404
+
+
+def test_unknown_id_removes_nothing(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;unknown-first&quot;)
+    second = _add(web_client, owned_ids, &quot;unknown-second&quot;)
+
+    web_client.post(f&quot;/books/{_unknown_id(web_client)}/delete&quot;)
+
+    assert _owned_listing(web_client, owned_ids) == [first, second]
+
+
+def test_removing_the_same_book_twice_answers_303_then_404(web_client, owned_ids):
+    book_id = _add(web_client, owned_ids, &quot;twice&quot;)
+
+    first = web_client.post(f&quot;/books/{book_id}/delete&quot;)
+    second = web_client.post(f&quot;/books/{book_id}/delete&quot;)
+
+    assert first.status_code == 303
+    assert second.status_code == 404
+
+
+def test_removing_the_same_book_twice_does_not_disturb_the_other_books(web_client, owned_ids):
+    first = _add(web_client, owned_ids, &quot;twice-first&quot;)
+    removed = _add(web_client, owned_ids, &quot;twice-removed&quot;)
+    last = _add(web_client, owned_ids, &quot;twice-last&quot;)
+
+    web_client.post(f&quot;/books/{removed}/delete&quot;)
+    web_client.post(f&quot;/books/{removed}/delete&quot;)
+
+    assert _owned_listing(web_client, owned_ids) == [first, last]
+
+
+def test_non_integer_id_answers_404_and_removes_nothing(web_client, owned_ids):
+    book_id = _add(web_client, owned_ids, &quot;non-integer&quot;)
+
+    response = web_client.post(&quot;/books/not-a-number/delete&quot;)
+
+    assert response.status_code == 404
+    assert _owned_listing(web_client, owned_ids) == [book_id]
+
+
+def test_get_on_delete_path_is_not_a_removal(web_client, owned_ids):
+    book_id = _add(web_client, owned_ids, &quot;get-method&quot;)
+
+    response = web_client.get(f&quot;/books/{book_id}/delete&quot;)
+
+    assert response.status_code == 405
+    assert _owned_listing(web_client, owned_ids) == [book_id]
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md">Raw file</a></div></header>
+<article class="doc"><h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Defines the primary server-rendered screen for maintaining the reading list.</td></tr><tr><td>Depends On</td><td>UI-GENERAL.md, FEATURE-READING-LIST.md, FEATURE-ADD-BOOK.md, FEATURE-REMOVE-BOOK.md, FEATURE-VALIDATE-BOOK.md</td></tr><tr><td>Provides</td><td>primary reading-list screen</td></tr><tr><td>Consumes</td><td>GET /, POST /books, POST /books/&lt;book_id&gt;/delete</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>Main</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Sub Menu</td><td>—</td></tr><tr><td>Tab Order</td><td>1</td></tr></tbody></table></div>
+<h2>Layout</h2>
+<p>The primary page contains:</p>
+<ul><li>A page heading and reading-list content region.</li><li>A form with accessible title and author inputs and a submit control.</li><li>An ordered list of stored books, showing each title and author.</li><li>A removal control for each stored book.</li><li>A clear empty-list state when no books exist.</li><li>Validation feedback that leaves the form available for correction.</li></ul>
+<h2>Interactions</h2>
+<ul><li><code>GET /</code> renders the current list in insertion order.</li><li><code>POST /books</code> submits a new book and returns the updated workflow.</li><li><code>POST /books/&lt;book_id&gt;/delete</code> removes the selected book and returns the updated list.</li><li>Invalid submissions remain recoverable through the rendered form and feedback.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC reading-list-screen-load ===<br>Intent: The primary reading-list screen is reachable and returns a successful response.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/&quot;)</p>
+<p>assert response.status_code == 200 === END AC reading-list-screen-load ===</p>
+<p>=== AC reading-list-screen-add ===<br>Intent: The primary screen accepts a book submission and renders the supplied book after the workflow completes.</p>
+<p>from app_server.testing import web_client</p>
+<p>title = &quot;Screen Test Title&quot; author = &quot;Screen Test Author&quot;</p>
+<p>client = web_client() response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 302</p>
+<p>list_response = client.get(&quot;/&quot;) assert list_response.status_code == 200 body = list_response.get_data(as_text=True) assert title in body assert author in body === END AC reading-list-screen-add ===</p>
+<p>=== AC reading-list-screen-remove ===<br>Intent: The primary screen removes a selected book and omits it from the subsequent list response.</p>
+<p>from app_server.testing import web_client</p>
+<p>title = &quot;Screen Removal Title&quot; author = &quot;Screen Removal Author&quot;</p>
+<p>client = web_client() create_response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author}) assert create_response.status_code == 302</p>
+<p>before_response = client.get(&quot;/&quot;) assert before_response.status_code == 200 before_body = before_response.get_data(as_text=True) assert title in before_body assert author in before_body</p>
+<p>from persistence.testing import db_session</p>
+<p>with db_session() as db: rows = db.books.list() selected = next(row for row in rows if row.title == title and row.author == author) book_id = selected.id</p>
+<p>delete_response = client.post(f&quot;/books/{book_id}/delete&quot;) assert delete_response.status_code == 302</p>
+<p>after_response = client.get(&quot;/&quot;) assert after_response.status_code == 200 after_body = after_response.get_data(as_text=True) assert title not in after_body assert author not in after_body === END AC reading-list-screen-remove ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The reader can understand whether the list is empty, populated, loading, or showing a validation error.</li><li>The add form and removal controls are usable from the primary page.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The screen never displays books outside the stored insertion order.</li><li>A removed book is absent on the next list read.</li><li>The form remains available after validation failure.</li></ul></article>
+</main>
+</body>
+</html>

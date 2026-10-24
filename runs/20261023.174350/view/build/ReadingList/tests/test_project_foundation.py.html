@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_project_foundation.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_project_foundation.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_project_foundation.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Foundation checks: project tree, dependency manifest, and pytest runner.&quot;&quot;&quot;
+
+import importlib.metadata
+import sys
+import tomllib
+from pathlib import Path
+
+
+def _load_pyproject(project_root: Path) -&gt; dict:
+    with open(project_root / &quot;pyproject.toml&quot;, &quot;rb&quot;) as handle:
+        return tomllib.load(handle)
+
+
+def test_declares_supported_python_version(project_root: Path) -&gt; None:
+    data = _load_pyproject(project_root)
+
+    assert data[&quot;project&quot;][&quot;requires-python&quot;] == &quot;&gt;=3.11&quot;
+
+
+def test_runtime_dependencies_include_flask(project_root: Path) -&gt; None:
+    data = _load_pyproject(project_root)
+
+    names = [entry.lower() for entry in data[&quot;project&quot;][&quot;dependencies&quot;]]
+    assert any(name.startswith(&quot;flask&quot;) for name in names)
+
+
+def test_dev_group_includes_pytest(project_root: Path) -&gt; None:
+    data = _load_pyproject(project_root)
+
+    names = [entry.lower() for entry in data[&quot;dependency-groups&quot;][&quot;dev&quot;]]
+    assert any(name.startswith(&quot;pytest&quot;) for name in names)
+
+
+def test_lockfile_exists_at_root(project_root: Path) -&gt; None:
+    assert (project_root / &quot;uv.lock&quot;).is_file()
+
+
+def test_tests_directory_and_conftest_exist(project_root: Path) -&gt; None:
+    assert (project_root / &quot;tests&quot;).is_dir()
+    assert (project_root / &quot;tests&quot; / &quot;conftest.py&quot;).is_file()
+
+
+def test_pytest_discovers_tests_from_project_root(project_root: Path) -&gt; None:
+    data = _load_pyproject(project_root)
+
+    assert data[&quot;tool&quot;][&quot;pytest&quot;][&quot;ini_options&quot;][&quot;testpaths&quot;] == [&quot;tests&quot;]
+
+
+def test_running_interpreter_can_import_flask() -&gt; None:
+    import flask
+
+    assert flask.Flask.__name__ == &quot;Flask&quot;
+    assert importlib.metadata.version(&quot;flask&quot;).split(&quot;.&quot;)[0] == &quot;3&quot;
+
+
+def test_python_runtime_meets_declared_minimum() -&gt; None:
+    assert sys.version_info &gt;= (3, 11)
+</pre></article>
+</main>
+</body>
+</html>

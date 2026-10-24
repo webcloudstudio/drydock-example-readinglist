@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "import": {
+    "root": "/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/sources",
+    "format": "markdown"
+  },
+  "sources": {
+    "full_test.sh": {
+      "state": "current",
+      "versions": [
+        {
+          "commit": "9425e68",
+          "date": "2026-10-14",
+          "hash": "d4b7169755d1b5e6bf7a2a8a452d916a27904219951cacaf9cf1edb7f50f7aa2",
+          "release": "",
+          "state": "consumed",
+          "via": "plan",
+          "ticket": null,
+          "requirements": [
+            {
+              "name": "provide-posix-test-script",
+              "text": "st-001 requires the application to provide a POSIX-compatible bin/test.sh that exits zero when every automated test passes.",
+              "stories": [
+                "feature-test-runner"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "reading-list.md": {
+      "state": "current",
+      "versions": [
+        {
+          "commit": "9425e68",
+          "date": "2026-10-14",
+          "hash": "1b61badf71d1b0f24f23ba0873e4fed00b20b5ff927d05b4a4eede34aa515a58",
+          "release": "",
+          "state": "consumed",
+          "via": "plan",
+          "ticket": null,
+          "requirements": [
+            {
+              "name": "build-web-app",
+              "text": "Build a web application that keeps a list of books to read.",
+              "stories": [
+                "architecture-foundation",
+                "persistence-foundation"
+              ]
+            },
+            {
+              "name": "add-book",
+              "text": "The reader can add a book with a title and author,",
+              "stories": [
+                "feature-add-book",
+                "persistence-foundation",
+                "screen-reading-list"
+              ]
+            },
+            {
+              "name": "list-books-in-order",
+              "text": "view the books in the order added,",
+              "stories": [
+                "feature-list-books",
+                "persistence-foundation",
+                "screen-reading-list"
+              ]
+            },
+            {
+              "name": "remove-book",
+              "text": "and remove a book.",
+              "stories": [
+                "feature-remove-book",
+                "persistence-foundation",
+                "screen-reading-list"
+              ]
+            },
+            {
+              "name": "reject-empty-fields",
+              "text": "An empty title or author is rejected with a clear error message.",
+              "stories": [
+                "feature-add-book"
+              ]
+            },
+            {
+              "name": "tests-per-behavior",
+              "text": "The application includes automated tests for each behavior.",
+              "stories": [
+                "feature-test-runner"
+              ]
+            },
+            {
+              "name": "posix-test-gate",
+              "text": "The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete\nautomated test suite from the application root. `sh bin/test.sh` exits zero only when every test\npasses.",
+              "stories": [
+                "feature-test-runner"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

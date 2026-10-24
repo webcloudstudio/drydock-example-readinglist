@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_list_books.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_list_books.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_list_books.py">Raw file</a></div></header>
+<article class="doc"><pre>from types import SimpleNamespace
+
+import pytest
+
+from app_server import create_app
+from app_server.books_service import list_books
+from app_server.settings import DATABASE_EXTENSION
+from persistence.schema import Book
+
+
+@pytest.fixture
+def app():
+    application = create_app()
+    application.config[&quot;TESTING&quot;] = True
+    yield application
+    application.extensions[DATABASE_EXTENSION].close()
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture
+def db(app):
+    return app.extensions[DATABASE_EXTENSION]
+
+
+def test_get_books_on_empty_store_returns_200_with_empty_array(client):
+    response = client.get(&quot;/books&quot;)
+    assert response.status_code == 200
+    assert response.get_json() == []
+
+
+def test_get_books_returns_one_book_with_its_fields(client):
+    added = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}).get_json()
+    listing = client.get(&quot;/books&quot;).get_json()
+    assert listing == [{&quot;id&quot;: added[&quot;id&quot;], &quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}]
+
+
+def test_get_books_lists_books_in_the_order_they_were_added(client):
+    first = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;A&quot;, &quot;author&quot;: &quot;One&quot;}).get_json()
+    second = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;B&quot;, &quot;author&quot;: &quot;Two&quot;}).get_json()
+    third = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;C&quot;, &quot;author&quot;: &quot;Three&quot;}).get_json()
+    listing = client.get(&quot;/books&quot;).get_json()
+    assert [book[&quot;id&quot;] for book in listing] == [first[&quot;id&quot;], second[&quot;id&quot;], third[&quot;id&quot;]]
+    assert [book[&quot;title&quot;] for book in listing] == [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;]
+
+
+def test_get_books_reflects_books_added_after_an_earlier_read(client):
+    client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;A&quot;, &quot;author&quot;: &quot;One&quot;})
+    assert len(client.get(&quot;/books&quot;).get_json()) == 1
+    client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;B&quot;, &quot;author&quot;: &quot;Two&quot;})
+    assert [book[&quot;title&quot;] for book in client.get(&quot;/books&quot;).get_json()] == [&quot;A&quot;, &quot;B&quot;]
+
+
+def test_get_books_does_not_include_rejected_submissions(client):
+    client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Author&quot;})
+    client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Kept&quot;, &quot;author&quot;: &quot;Author&quot;})
+    assert [book[&quot;title&quot;] for book in client.get(&quot;/books&quot;).get_json()] == [&quot;Kept&quot;]
+
+
+def test_list_books_returns_stored_books_as_book_rows(db):
+    first = db.books.create(title=&quot;A&quot;, author=&quot;One&quot;)
+    second = db.books.create(title=&quot;B&quot;, author=&quot;Two&quot;)
+    assert list_books(db) == [
+        Book(id=first, title=&quot;A&quot;, author=&quot;One&quot;),
+        Book(id=second, title=&quot;B&quot;, author=&quot;Two&quot;),
+    ]
+
+
+def test_list_books_sorts_by_id_when_the_store_returns_rows_out_of_order():
+    stored = [Book(id=3, title=&quot;C&quot;, author=&quot;x&quot;), Book(id=1, title=&quot;A&quot;, author=&quot;x&quot;), Book(id=2, title=&quot;B&quot;, author=&quot;x&quot;)]
+    database = SimpleNamespace(books=SimpleNamespace(list=lambda: list(stored)))
+    assert [book.id for book in list_books(database)] == [1, 2, 3]
+</pre></article>
+</main>
+</body>
+</html>

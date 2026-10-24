@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/services/books.py</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/services/books.py</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../build/ReadingList/app_server/services/books.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Book behavior: validate submissions, then store, list, and remove books through ``db.books``.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from persistence import Database
+from persistence.schema import Book
+
+__all__ = [&quot;add_book&quot;, &quot;list_books&quot;, &quot;remove_book&quot;, &quot;validate_book_input&quot;]
+
+
+def validate_book_input(title: str | None, author: str | None) -&gt; None:
+    &quot;&quot;&quot;Raise ValueError naming each field that is missing, not text, or blank after stripping.&quot;&quot;&quot;
+    blank = [
+        name
+        for name, value in ((&quot;title&quot;, title), (&quot;author&quot;, author))
+        if not isinstance(value, str) or not value.strip()
+    ]
+    if blank:
+        raise ValueError(f&quot;{&#x27; and &#x27;.join(blank)} must be non-empty text&quot;)
+
+
+def add_book(db: Database, title: str | None, author: str | None) -&gt; Book:
+    &quot;&quot;&quot;Validate the submission, then store exactly the title and author supplied.&quot;&quot;&quot;
+    validate_book_input(title, author)
+    return db.books.create(title=title, author=author)
+
+
+def list_books(db: Database) -&gt; list[Book]:
+    &quot;&quot;&quot;Return every stored book in the order it was added.&quot;&quot;&quot;
+    return db.books.list()
+
+
+def remove_book(db: Database, book_id: int) -&gt; bool:
+    &quot;&quot;&quot;Delete the book and return True; return False and change nothing for an unknown id.&quot;&quot;&quot;
+    if db.books.get(id=book_id) is None:
+        return False
+    db.books.delete(id=book_id)
+    return True
+</pre></article>
+</main>
+</body>
+</html>

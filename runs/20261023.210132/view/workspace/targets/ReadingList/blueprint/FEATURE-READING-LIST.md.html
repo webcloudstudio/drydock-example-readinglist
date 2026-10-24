@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-READING-LIST.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-READING-LIST.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-READING-LIST.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Serves the ordered reading-list workflow for persisted books.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>GET <code>/</code></td></tr><tr><td>Consumes</td><td><code>app_server.create_app</code>, <code>persistence.books.list</code></td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The primary reading-list page retrieves persisted books through <code>persistence.books.list</code> and presents them in insertion order. It renders a clear empty state when no books are available.</p>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-READING-LIST-001</code> — read: list books - supplies: — - returns: <code>id</code>, <code>title</code>, <code>author</code>, <code>insertion_order</code></li></ul>
+<h2>Workflow</h2>
+<ol><li>A reader requests <code>GET /</code>.</li><li>The feature reads books through <code>books.list</code>.</li><li>The page renders the returned books without reordering them.</li><li>An empty result renders the empty-list state.</li></ol>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC reading-list-reachable ===<br>Intent: The primary reading-list route is reachable and returns a successful page response.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 === END AC reading-list-reachable ===</p>
+<p>=== AC reading-list-order ===<br>Intent: The reading-list route presents persisted books in insertion order.</p>
+<p>from persistence.testing import committed_session from app_server.testing import web_client</p>
+<p>first_title = &quot;Reading List First&quot; first_author = &quot;Reading List Author One&quot; second_title = &quot;Reading List Second&quot; second_author = &quot;Reading List Author Two&quot;</p>
+<p>with committed_session() as db: first = db.books.create( title=first_title, author=first_author, insertion_order=900001, ) second = db.books.create( title=second_title, author=second_author, insertion_order=900002, )</p>
+<p>try: client = web_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 body = response.get_data(as_text=True) first_position = body.index(first_title) second_position = body.index(second_title) assert first_position &lt; second_position finally: with committed_session() as db: db.books.delete(id=first.id) db.books.delete(id=second.id) === END AC reading-list-order ===</p>
+<p>=== AC reading-list-empty ===<br>Intent: The reading-list route successfully renders when no matching books are present.</p>
+<p>from app_server.testing import web_client</p>
+<p>title = &quot;No Matching Reading List Fixture&quot; client = web_client() response = client.get(&quot;/&quot;) assert response.status_code == 200 assert response.request.path == &quot;/&quot; === END AC reading-list-empty ===</p>
+<h2>User Acceptance</h2>
+<ul><li>A reader can open the primary page and understand whether books are present.</li><li>Books appear in the order they were added.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The route never silently reorders books.</li><li>Removed books are absent on the next read.</li><li>Empty titles and authors are never displayed.</li></ul></article>
+</main>
+</body>
+</html>

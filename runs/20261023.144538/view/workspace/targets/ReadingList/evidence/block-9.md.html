@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-9.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-9.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-9.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 9 · Service (block-9)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 4766</li><li>execution id: 20261023.150733.690Z-2bca0178</li></ul>
+<h2>Stories built</h2>
+<ul><li>Render the reading list page with the add form, rejection messages, and remove controls. (screen-reading-list) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>SCREEN-ReadingList.md#screen-index-reachable: python-package=pytest; scope=test; authorization=existing Target environment</li><li>SCREEN-ReadingList.md#screen-shows-books-in-order: python-package=pytest; scope=test; authorization=existing Target environment</li><li>SCREEN-ReadingList.md#screen-rejection-shown: python-package=pytest; scope=test; authorization=existing Target environment</li><li>SCREEN-ReadingList.md#screen-remove-book: python-package=pytest; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: SCREEN-ReadingList.md (SP 2287)</li><li>stack: flask.md (SP 691)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/books.py</li><li>app_server/templates/reading_list.html</li><li>tests/test_create_app_wiring.py</li><li>tests/test_reading_list_page.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: screen-index-reachable (SCREEN-ReadingList.md)</li></ul>
+<p>intent: The reading list page at GET / answers 200 and GET /books answers 200 with a JSON array. return code: 1 stderr: Traceback (most recent call last): File &quot;screen-index-reachable.py&quot;, line 5, in &lt;module&gt; assert page.status_code == 200 ^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-shows-books-in-order (SCREEN-ReadingList.md)</li></ul>
+<p>intent: Books added through POST /books appear on GET / in the order they were added, with GET /books agreeing. return code: 1 stderr: --- drydock: values at failure --- positions = [-1, -1, -1] --- drydock: end values --- Traceback (most recent call last): File &quot;screen-shows-books-in-order.py&quot;, line 23, in &lt;module&gt; assert all(p &gt;= 0 for p in positions) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-rejection-shown (SCREEN-ReadingList.md)</li></ul>
+<p>intent: A rejected browser submission is answered 400 with a page, stores nothing, and the page remains reachable. return code: 1 stderr: --- drydock: values at failure --- client = &lt;FlaskClient &lt;Flask &#x27;app_server&#x27;&gt;&gt; --- drydock: end values --- Traceback (most recent call last): File &quot;screen-rejection-shown.py&quot;, line 22, in &lt;module&gt; assert client.get(&quot;/&quot;).status_code == 200 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: screen-remove-book (SCREEN-ReadingList.md)</li></ul>
+<p>intent: Posting to the remove route redirects with 303 and the book is absent from GET / and GET /books on the next read. return code: 1 stderr: --- drydock: values at failure --- keep_title = &#x27;ScreenRemoveKeep&#x27; html = &#x27;&lt;!doctype html&gt;\n&lt;html lang=en&gt;\n&lt;title&gt;404 Not Found&lt;/title&gt;\n&lt;h1&gt;Not Found&lt;/h1&gt;\n&lt;p&gt;The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.&lt;/p&gt;\n&#x27; --- drydock: end values --- Traceback (most recent call last): File &quot;screen-remove-book.py&quot;, line 30, in &lt;module&gt; assert keep_title in html ^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: screen-index-reachable (SCREEN-ReadingList.md)</li></ul>
+<p>intent: The reading list page at GET / answers 200 and GET /books answers 200 with a JSON array. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-shows-books-in-order (SCREEN-ReadingList.md)</li></ul>
+<p>intent: Books added through POST /books appear on GET / in the order they were added, with GET /books agreeing. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-rejection-shown (SCREEN-ReadingList.md)</li></ul>
+<p>intent: A rejected browser submission is answered 400 with a page, stores nothing, and the page remains reachable. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-remove-book (SCREEN-ReadingList.md)</li></ul>
+<p>intent: Posting to the remove route redirects with 303 and the book is absent from GET / and GET /books on the next read. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>The page route <code>GET /</code> doesn&#x27;t exist yet, and the rejection path renders only <code>base.html</code>. Before changing anything, I&#x27;ll get a baseline test run.Baseline is 117 passing. Now I&#x27;ll add the <code>GET /</code> route, the page template, and make the HTML rejection path re-render the full reading list page (per the spec&#x27;s &quot;page re-rendered with the reason&quot;).One existing wiring test pins the endpoint set exactly. Let me read it before deciding how to update it.That test&#x27;s intent is &quot;only the book routes exist.&quot; The <code>GET /</code> page is a new route this step is required to add, so I&#x27;ll extend the expected set to include it and say so in the summary. Next, the new tests for the page.Running the full suite now.All 134 tests pass. Next I&#x27;ll run the four declared acceptance criteria for this step, with each one in its own script kept outside the build directory.All four declared criteria pass. I&#x27;ll remove one redundant assertion loop in my new test file, re-run the suite, and check the changed-file list.RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/books.py</li><li>app_server/templates/reading_list.html</li><li>tests/test_reading_list_page.py</li><li>tests/test_create_app_wiring.py</li></ul>
+<p>SUMMARY:</p>
+<ul><li><strong><code>GET /</code></strong> now renders the reading list page. It lists books in insertion order (via <code>list_books</code>, which sorts by id), shows an empty-state message when there are none, and has one remove form per book posting to <code>/books/{id}/delete</code>.</li><li><strong>Add form</strong> posts <code>title</code> and <code>author</code> to <code>POST /books</code>.</li><li><strong>Rejections:</strong> the HTML 400 path now re-renders the full reading list page with the reason in the alert region, instead of the bare base layout. The JSON 400 path is unchanged.</li><li><strong>Template:</strong> <code>reading_list.html</code> extends the shared <code>base.html</code>, so the alert region is inherited.</li><li><strong>Wiring test:</strong> <code>test_create_app_registers_only_book_routes_beside_static</code> pins the exact endpoint set, so I added <code>books.index</code> to its expected set. This is the one existing test I changed; no declared acceptance criterion was touched.</li><li><strong>New tests:</strong> <code>tests/test_reading_list_page.py</code> (23 tests) parses the rendered HTML and checks forms, list items, alerts, ordering, escaping, and post-rejection rendering.</li><li><strong>Declared acceptance criteria (<code>Suite: scoped</code>):</strong> all four pass when run as standalone scripts (<code>screen-index-reachable</code>, <code>screen-shows-books-in-order</code>, <code>screen-rejection-shown</code>, <code>screen-remove-book</code>). The scripts live in <code>/tmp/drydock-acs/</code>, outside the build directory.</li><li><strong>Project suite:</strong> <code>pytest -q</code> gives 134 passed (117 before, plus the new tests). I did not run <code>sources/full_test.sh</code>, since no criterion in this step invokes it.</li><li><strong>Not done:</strong> no git commit, per the build instructions.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>None.</li></ul>
+<p>&lt;blueprint-decisions&gt; [{&quot;spec&quot;:&quot;SCREEN-ReadingList.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Rejected HTML submission response&quot;,&quot;decision&quot;:&quot;The spec says a rejected submission re-renders the page with the reason. I render the full reading list page (alert region, add form, and current books) with the 400 status, instead of the bare base layout the route used before. Is that acceptable?&quot;}] &lt;/blueprint-decisions&gt;</p></article>
+</main>
+</body>
+</html>

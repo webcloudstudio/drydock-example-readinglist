@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/UI-GENERAL.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/UI-GENERAL.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/UI-GENERAL.md">Raw file</a></div></header>
+<article class="doc"><h1>UI-GENERAL: ReadingList</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Shared page layout and error region used by every ReadingList page.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md</td></tr><tr><td>Provides</td><td>base layout template</td></tr></tbody></table></div>
+<h2>Layout</h2>
+<p>All pages extend <code>app_server/templates/base.html</code>.</p>
+<div class="scroll"><table><thead><tr><th>Element</th><th>Template name</th><th>Behavior</th></tr></thead><tbody><tr><td>Page title</td><td><code>block title</code></td><td>Defaults to <code>Reading List</code></td></tr><tr><td>Main content</td><td><code>block content</code></td><td>Filled by each page</td></tr><tr><td>Error region</td><td>variable <code>error</code></td><td>When <code>error</code> is set and non-empty, an element with <code>role=&quot;alert&quot;</code> shows the text; otherwise nothing is rendered</td></tr></tbody></table></div>
+<h2>Wiring</h2>
+<p><code>create_app()</code> configures the Jinja template folder <code>app_server/templates</code> and initializes persistence through <code>open_database(...)</code> using the configured store. No book routes are registered by this story.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC ui-base-template-loads ===<br>Intent: The base layout template is available to the application.<br>Suite: scoped</p>
+<p>from app_server import create_app</p>
+<p>app = create_app() template = app.jinja_env.get_template(&quot;base.html&quot;) assert template is not None === END AC ui-base-template-loads ===</p>
+<p>=== AC ui-base-shows-error ===<br>Intent: The base layout renders the supplied error text in its error region.<br>Suite: scoped</p>
+<p>from flask import render_template from app_server import create_app</p>
+<p>app = create_app() message = &quot;bound error reason&quot; with app.test_request_context(&quot;/&quot;): html = render_template(&quot;base.html&quot;, error=message) assert message in html === END AC ui-base-shows-error ===</p>
+<p>=== AC ui-base-without-error ===<br>Intent: The base layout renders without an error and does not show an alert region.<br>Suite: scoped</p>
+<p>from flask import render_template from app_server import create_app</p>
+<p>app = create_app() with app.test_request_context(&quot;/&quot;): html = render_template(&quot;base.html&quot;) assert &#x27;role=&quot;alert&quot;&#x27; not in html === END AC ui-base-without-error ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The page looks clean and readable in a browser.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The layout never hides a supplied error message.</li></ul></article>
+</main>
+</body>
+</html>

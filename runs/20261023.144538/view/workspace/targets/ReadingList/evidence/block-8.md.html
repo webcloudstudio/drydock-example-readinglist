@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-8.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-8.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-8.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 8 · Service (block-8)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 5320</li><li>execution id: 20261023.150538.609Z-f89307a8</li></ul>
+<h2>Stories built</h2>
+<ul><li>Reject a submission whose author is empty and report the reason. (reject-empty-author) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-RejectEmptyAuthor.md#reject-author-empty-json: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-RejectEmptyAuthor.md#reject-author-whitespace: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-RejectEmptyAuthor.md#reject-author-missing: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-RejectEmptyAuthor.md#reject-author-html: python-package=pytest; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-RejectEmptyAuthor.md (SP 2161)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE_compact.md (SP 360)</li><li>stack: flask.md (SP 691)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>tests/test_reject_empty_author.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): reject-author-empty-json (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: An empty author on POST /books answers 400 with a non-empty reason naming the author field and stores nothing. return code: 0</p>
+<ul><li>GREEN (prepassed): reject-author-whitespace (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: A whitespace-only author is treated as empty, rejected with 400, and nothing is stored. return code: 0</p>
+<ul><li>GREEN (prepassed): reject-author-missing (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: A POST /books with no author field at all is rejected with 400 and nothing is stored. return code: 0</p>
+<ul><li>GREEN (prepassed): reject-author-html (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: A browser submission with an empty author is answered 400 with a re-rendered page and nothing is stored. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: reject-author-empty-json (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: An empty author on POST /books answers 400 with a non-empty reason naming the author field and stores nothing. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: reject-author-whitespace (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: A whitespace-only author is treated as empty, rejected with 400, and nothing is stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: reject-author-missing (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: A POST /books with no author field at all is rejected with 400 and nothing is stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: reject-author-html (FEATURE-RejectEmptyAuthor.md)</li></ul>
+<p>intent: A browser submission with an empty author is answered 400 with a re-rendered page and nothing is stored. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>The author rejection already appears in <code>add_book</code> and the route. Next I&#x27;ll check the existing tests, whether <code>bin/test.sh</code> exists, and what the previous commits changed.The rejection behavior is already in place from earlier blocks. What&#x27;s missing for this block is a test file that proves the <code>reject-empty-author</code> assertions. Before writing it, I&#x27;ll get a baseline of the existing suite.Baseline is 94 passing. I&#x27;ll add a test file for this block that follows the same fixture and style as <code>test_reject_empty_title.py</code>.All 117 tests pass. Next I&#x27;ll run the four declared acceptance criteria as written. They run against the configured store (<code>data/app.db</code>) through the criteria&#x27;s own purge and cleanup, so I&#x27;ll execute them from the project root with the venv interpreter and keep the runner script outside the build tree.Block 8 (reject-empty-author) is done. The author rejection was already in the code from earlier blocks, so this step only added the tests that prove it.</p>
+<ul><li><strong>Existing behaviour:</strong> <code>add_book</code> and the <code>POST /books</code> route already reject a missing, empty, or whitespace-only author with status 400, a reason, and <code>field: author</code>, and store nothing.</li><li><strong>New tests:</strong> <code>tests/test_reject_empty_author.py</code> adds 23 tests covering the JSON and HTML paths, the absent and whitespace cases, title-first ordering, and nothing stored.</li><li><strong>Declared criteria:</strong> I ran all four <code>reject-author-*</code> criteria from the project root against the configured store. All passed.</li><li><strong>Suite:</strong> <code>pytest -q</code> is green at 117 passed (94 existing plus 23 new).</li></ul>
+<p>Not done: <code>bin/test.sh</code> does not exist. COMPASS requires it, and <code>sources/full_test.sh</code> dispatches to it, so the full scoring gate currently fails. That file isn&#x27;t part of this block&#x27;s spec, so I didn&#x27;t create it. It needs its own step or a foundation fix.</p>
+<p>&lt;blueprint-decisions&gt; [] &lt;/blueprint-decisions&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>tests/test_reject_empty_author.py</li></ul>
+<p>SUMMARY: Block 8 (reject-empty-author) builds on behaviour already present from earlier blocks: <code>add_book</code> in <code>app_server/book_service.py</code> and the <code>POST /books</code> route in <code>app_server/books.py</code> refuse an empty or whitespace-only author with status 400, a non-empty reason, and <code>field: author</code>, and store nothing. This step adds <code>tests/test_reject_empty_author.py</code> (23 tests) covering JSON and HTML paths, missing and whitespace authors, title-first ordering, earlier books left intact, and the service-level refusal.</p>
+<p>Verification:</p>
+<ul><li>Declared criteria <code>reject-author-empty-json</code>, <code>reject-author-whitespace</code>, <code>reject-author-missing</code>, <code>reject-author-html</code>: each run from the project root against the configured store with its own purge and cleanup. All PASS.</li><li><code>.venv/bin/python -m pytest -q</code>: 117 passed (94 pre-existing plus 23 new).</li><li><code>sources/full_test.sh</code> was not invoked; no criterion in this block declares it.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li><code>bin/test.sh</code> is missing from the application root. COMPASS requires it (POSIX <code>sh</code>, exits zero only when all tests pass), and <code>sources/full_test.sh</code> dispatches to it, so the release gate fails regardless of this block. It is outside this block&#x27;s spec, so it was not created here.</li></ul></article>
+</main>
+</body>
+</html>

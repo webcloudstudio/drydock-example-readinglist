@@ -7,8 +7,8 @@
     "sources/reading-list.md",
     "sources/full_test.sh"
   ],
-  "updates": [
-    "updates/reading-list.md"
+  "RENAME_updates": [
+    "RENAME_updates/reading-list.md"
   ],
   "sea_trials": "inputs/SEA_TRIALS.md",
   "technology_stack": "inputs/TECHNOLOGY_STACK.md",

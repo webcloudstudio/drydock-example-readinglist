@@ -1,0 +1,35 @@
+The suite passes, but the Flask check uses a deprecated `__version__` attribute and `importorskip` could silently skip. I'll tighten that test.<reusable-compact filename="ARCHITECTURE.md">
+Project: ReadingList (Flask, SQLite via generated `persistence`, pytest). Python >=3.11.
+Layout: `pyproject.toml` + `uv.lock` (deps: flask>=3.1,<4; dev group: pytest>=9,<10); `.venv` via `uv venv`; `app_server/__init__.py` exposes `create_app() -> Flask`; `app_server/testing.py` exposes `web_client()`; `app_server/routes/{books.py,pages.py}`; `app_server/services/books.py` exposes `add_book`, `list_books`, `remove_book`, `validate_book_input`; `app_server/templates/`; `persistence/` generated from `DATABASE.md`; `tests/conftest.py` exposes `web_client` and `db_session` fixtures; `bin/test.sh` POSIX runner.
+Rules: routes call services only; services call `db.<table>.<verb>(...)`; only `persistence` touches SQLite; books ordered by id ascending; rejected input -> 400; unknown book removal -> 404; server-rendered HTML forms, no client JS.
+Config: `DATABASE_URL` > `DATABASE_PATH` > `data/app.db`.
+Test command: `pytest -q` from application root.
+</reusable-compact>
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- .gitignore
+- pyproject.toml
+- uv.lock
+- tests/conftest.py
+- tests/test_project_foundation.py
+
+SUMMARY:
+Stood up the Python foundation in the build directory:
+- `pyproject.toml`: `requires-python >=3.11`; runtime dependency `flask>=3.1,<4`; dev group `pytest>=9,<10`; `[tool.uv] package = false`; `[tool.pytest.ini_options]` with `testpaths = ["tests"]` and `pythonpath = ["."]` so `pytest -q` runs from the application root.
+- Package names verified on PyPI before adding (flask 3.1.3, pytest 9.1.1).
+- `uv.lock` generated with `uv lock`; `.venv` created with `uv venv --python 3.12` and populated with `uv sync`. `.venv` is git-ignored.
+- `tests/conftest.py`: session fixture `project_root`. The `web_client` and `db_session` fixtures are left for the app and persistence stories.
+- `tests/test_project_foundation.py`: 8 tests that read the manifest, lockfile, and tests layout back from disk, check the Flask import and version, and check the interpreter version.
+- `.gitignore`: `.venv/`, `__pycache__/`, `.pytest_cache/`, `.env`, `data/`.
+
+Verification:
+- `.venv/bin/python -m pytest -q`: 8 passed, exit 0.
+- `.venv/bin/python -m pytest --version`: pytest 9.1.1, exit 0.
+- The three `architecture-*` acceptance checks, run in-process: all pass.
+- Choice: I did not create `app_server/`, `bin/test.sh`, or `.env.example`. Those belong to later stories. Because of that, `sources/full_test.sh` will report failure until `bin/test.sh` exists. That is expected for this block.
+- `sources/` was not touched. Nothing was committed.
+
+BLOCKERS:
+- None for this block.

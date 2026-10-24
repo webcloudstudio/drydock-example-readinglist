@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-ListBooks.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: List Books</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261014 V1</td></tr><tr><td>Description</td><td>Return stored books in the order they were added.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md</td></tr><tr><td>Provides</td><td>GET /books</td></tr><tr><td>Consumes</td><td>books.list</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>A reader views the books in the order they were added.</p>
+<h2>Route</h2>
+<p><code>GET /books</code> returns status 200 with a JSON array of books, each with <code>id</code>, <code>title</code>, and <code>author</code>. The array is ordered by ascending <code>id</code>, which is insertion order.</p>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOKS-002</code> — read: books.list - supplies: <code>(none)</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC list-books-returns-ok ===<br>Intent: GET /books returns status 200 with a JSON array.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/books&quot;) assert response.status_code == 200 assert isinstance(response.get_json(), list) === END AC list-books-returns-ok ===</p>
+<p>=== AC list-books-insertion-order ===<br>Intent: Books added in sequence are listed in the order they were added.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>author = uuid.uuid4().hex first = uuid.uuid4().hex second = uuid.uuid4().hex third = uuid.uuid4().hex client = web_client() for title in (first, second, third): added = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert added.status_code == 201 listing = client.get(&quot;/books&quot;) assert listing.status_code == 200 titles = [book[&quot;title&quot;] for book in listing.get_json() if book[&quot;title&quot;] in (first, second, third)] assert titles == [first, second, third] === END AC list-books-insertion-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never present books in an order other than the order they were added.</li></ul></article>
+</main>
+</body>
+</html>

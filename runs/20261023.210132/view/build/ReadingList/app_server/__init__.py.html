@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/__init__.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/__init__.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/__init__.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Application factory for the ReadingList web application.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from flask import Flask
+
+from app_server.config import ApplicationConfig
+from app_server.features.reading_list import reading_list
+
+
+def create_app() -&gt; Flask:
+    &quot;&quot;&quot;Create a configured, independently usable Flask application.&quot;&quot;&quot;
+
+    app = Flask(__name__, instance_relative_config=True)
+    settings = ApplicationConfig.load()
+    app.config.from_mapping(settings.as_flask_config())
+
+    app.register_blueprint(reading_list)
+    return app
+</pre></article>
+</main>
+</body>
+</html>

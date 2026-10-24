@@ -1,0 +1,12 @@
+2026-10-23T21:07:20.293046Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/app_server/features/reading_list/routes.py:
+"""Routes owned by the reading-list feature.
+
+The feature workflow implementations are added by their dedicated build blocks. Keeping route
+registration here establishes the module boundary while the application factory remains
+responsible only for composition.
+"""
+
+from flask import Response
+
+from app_server.features.reading_list import reading_list
+2026-10-23T21:07:27.619002Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid patch: multiple operations target /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/app_server/features/reading_list/routes.py

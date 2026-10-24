@@ -1,0 +1,5 @@
+2026-10-23T21:05:21.781644Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0 seconds
+Output:
+Failed to create parent directories for /mnt/C/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/build/ReadingList/app_server/config.py
+

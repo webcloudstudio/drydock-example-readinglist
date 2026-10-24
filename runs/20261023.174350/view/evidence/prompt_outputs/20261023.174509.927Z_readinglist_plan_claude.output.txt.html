@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.174509.927Z_readinglist_plan_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.174509.927Z_readinglist_plan_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.174509.927Z_readinglist_plan_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT DATABASE.md ===
+# DATABASE: ReadingList
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Persistence stores and typed interfaces for ReadingList. |
+| Depends On | ARCHITECTURE.md |
+| Provides | books.create, books.get, books.list, books.delete |
+| Build Order | 1 |
+
+## Questions
+
+- None.
+
+## Persistence Boundary
+
+| Boundary | Rule |
+|----------|------|
+| Raw storage access | Only the generated `persistence/` package reaches the store. |
+| Caller dependency | Features depend on declared access patterns and their DTOs, not on schemas. |
+| Implementation | Generated from this file at the DATABASE build step; never written by hand. |
+
+## Access Patterns
+
+### FEATURE-BOOK-001 — Add a book
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-AddBook.md |
+| Access | write |
+| Repository operation | `books.create` |
+| Compatibility | unchanged |
+
+Input: NewBook
+
+| Field | Type | Notes |
+|-------|------|-------|
+| title | TEXT | Non-empty, validated by the service before the call. |
+| author | TEXT | Non-empty, validated by the service before the call. |
+
+Output: Book
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Assigned in insertion order. |
+| title | TEXT | As supplied. |
+| author | TEXT | As supplied. |
+
+### FEATURE-BOOK-002 — Get a book by id
+
+| Field | Value |
+|-------|-------|
+| Owner | DATABASE.md |
+| Access | read |
+| Repository operation | `books.get` |
+| Compatibility | unchanged |
+
+Input: BookKey
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Book identifier. |
+
+Output: Book
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Book identifier. |
+| title | TEXT | Stored title. |
+| author | TEXT | Stored author. |
+
+### FEATURE-BOOK-003 — List books in the order added
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-ListBooks.md |
+| Access | read |
+| Repository operation | `books.list` |
+| Compatibility | unchanged |
+
+Input: BookListQuery
+
+| Field | Type | Notes |
+|-------|------|-------|
+
+Output: Book
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Rows are returned ordered by id ascending, which is the order added. |
+| title | TEXT | Stored title. |
+| author | TEXT | Stored author. |
+
+### FEATURE-BOOK-004 — Remove a book
+
+| Field | Value |
+|-------|-------|
+| Owner | FEATURE-RemoveBook.md |
+| Access | write |
+| Repository operation | `books.delete` |
+| Compatibility | unchanged |
+
+Input: BookKey
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Identifier of the book to remove. |
+
+Output: DeletedBook
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER | Identifier of the removed book. |
+
+## Schemas
+
+## `books`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | INTEGER PK | Autoincrementing key; ascending id is the order added. |
+| title | TEXT NOT NULL | Book title. |
+| author | TEXT NOT NULL | Book author. |
+
+## Migrations
+
+Each relational change has one staged record in `migrations/MIGRATION-&lt;AccessPatternId&gt;.md`.
+The record carries Alembic `upgrade`/`downgrade` snippets and progresses from `planned` to `built`
+only when its DATABASE build story completes. Alembic records deployment application separately.
+
+| Access Pattern | Revision | State |
+|----------------|----------|-------|
+
+## Config (.env)
+
+| Key | Type | Required | Notes |
+|-----|------|----------|-------|
+| DATABASE_URL | string | No | Overrides DATABASE_PATH when set. |
+| DATABASE_PATH | string | No | Defaults to `data/app.db`. |
+
+## File Stores
+
+| Store | Root dir | Notes |
+|-------|----------|-------|
+
+## External Services
+
+| Service | Wrapper | Notes |
+|---------|---------|-------|
+
+## External Libraries
+
+| Library | Ownership | Distribution | Consumer Contract |
+|---------|-----------|--------------|-------------------|
+
+## Programmatic Acceptance
+
+=== AC books-create ===
+Intent: books.create stores a book and returns the declared Output row carrying the supplied title and author.
+Suite: scoped
+
+from persistence.testing import db_session
+
+title = &quot;ac-create-title&quot;
+author = &quot;ac-create-author&quot;
+with db_session() as db:
+    row = db.books.create(title=title, author=author)
+    assert row.id is not None
+    assert row.title == title
+    assert row.author == author
+=== END AC books-create ===
+
+=== AC books-get ===
+Intent: books.get reads back a created book by id with the stored title and author.
+Suite: scoped
+
+from persistence.testing import db_session
+
+title = &quot;ac-get-title&quot;
+author = &quot;ac-get-author&quot;
+with db_session() as db:
+    created = db.books.create(title=title, author=author)
+    fetched = db.books.get(id=created.id)
+    assert fetched.id == created.id
+    assert fetched.title == title
+    assert fetched.author == author
+=== END AC books-get ===
+
+=== AC books-list ===
+Intent: books.list returns books in the order they were added.
+Suite: scoped
+
+from persistence.testing import db_session
+
+titles = [&quot;ac-list-first&quot;, &quot;ac-list-second&quot;, &quot;ac-list-third&quot;]
+with db_session() as db:
+    created_ids = [db.books.create(title=t, author=&quot;ac-list-author&quot;).id for t in titles]
+    listed_ids = [row.id for row in db.books.list()]
+    mine = [i for i in listed_ids if i in created_ids]
+    assert mine == created_ids
+=== END AC books-list ===
+
+=== AC books-delete ===
+Intent: books.delete removes a book so it no longer appears in the next list read, and leaves other books in place.
+Suite: scoped
+
+from persistence.testing import db_session
+
+with db_session() as db:
+    keep = db.books.create(title=&quot;ac-delete-keep&quot;, author=&quot;ac-delete-author&quot;)
+    gone = db.books.create(title=&quot;ac-delete-gone&quot;, author=&quot;ac-delete-author&quot;)
+    db.books.delete(id=gone.id)
+    listed_ids = [row.id for row in db.books.list()]
+    assert gone.id not in listed_ids
+    assert keep.id in listed_ids
+=== END AC books-delete ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Only the generated `persistence/` package reaches the store; routes and services call `db.books.&lt;verb&gt;(...)`.
+- `books.list` always orders by id ascending; no other ordering is declared.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

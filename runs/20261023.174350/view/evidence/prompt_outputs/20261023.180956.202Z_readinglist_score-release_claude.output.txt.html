@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.180956.202Z_readinglist_score-release_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.180956.202Z_readinglist_score-release_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.180956.202Z_readinglist_score-release_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>I&#x27;ll start by checking the tree&#x27;s layout and the test entry point the criteria name.The gate ran green (117 passed). Next I&#x27;ll read the book service and routes so I can probe the behaviors the gate does not directly cover.The routes look complete. Now I need the persistence layer to know how to open a database for a probe, and the test files to see what the suite actually covers.The suite covers each behavior, but a green gate is not the same as observing the behaviors work. I&#x27;ll write an ephemeral end-to-end probe under the probe directory, using the app&#x27;s real factory and a throwaway database.The probe failed because the `books` table does not exist on a fresh database. The factory docstring says &quot;no schema is applied here&quot;, so I need to see how the tests and the README create the schema before I call this a product defect.The schema is applied by provisioning, not by the factory: the test fixture runs `schema.sql` through `execute_script`. That is the documented path, so I&#x27;ll provision the probe database the same way and rerun.```json
+{
+  &quot;criteria&quot;: [
+    {
+      &quot;id&quot;: &quot;st-001&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;bin/test.sh exists, is a POSIX sh script that runs pytest, and the governed gate `sh sources/full_test.sh` exited 0 with 117 tests passed.&quot;,
+      &quot;evidence&quot;: [
+        &quot;bin/test.sh:1-16 is a #!/bin/sh script that changes to the app root, activates .venv if present, and runs `pytest -q` as its last command&quot;,
+        &quot;governed gate full: argv `sh sources/full_test.sh`, return_code 0, stdout `117 passed in 2.65s`&quot;,
+        &quot;sources/full_test.sh:17 execs `sh bin/test.sh`, so the gate&#x27;s exit code is pytest&#x27;s exit code&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;st-002&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe POSTed a title and author to /add, got 303 back to /, and the next GET / showed both values; the book also appeared in GET /books.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app_server/routes/pages.py:64-73 /add calls book_service.add_book and redirects to index on success&quot;,
+        &quot;probe: POST /add {title: Dune, author: Frank Herbert} returned 303 Location /&quot;,
+        &quot;probe: GET / contained &#x27;Dune&#x27; and &#x27;Frank Herbert&#x27; -&gt; True&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;st-003&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe added Dune, Emma, Beloved in that order, and both the rendered page and the JSON list returned them in that order.&quot;,
+      &quot;evidence&quot;: [
+        &quot;persistence/schema.py:36-51 declares the list operation; persistence/sqlite.py orders by insertion, and app_server/services/books.py:29 documents &#x27;in the order it was added&#x27;&quot;,
+        &quot;probe: page positions of Dune, Emma, Beloved were ascending&quot;,
+        &quot;probe: GET /books titles returned [&#x27;Dune&#x27;, &#x27;Emma&#x27;, &#x27;Beloved&#x27;]&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;st-004&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe removed Emma through /remove/&lt;id&gt;, and the next page read and the next /books read both omitted it while keeping the others.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app_server/routes/pages.py:76-79 /remove/&lt;id&gt; calls remove_book and redirects&quot;,
+        &quot;probe: POST /remove/&lt;Emma id&gt; returned 303&quot;,
+        &quot;probe: GET / no longer contains &#x27;Emma&#x27;; GET /books returned [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;st-005&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Probe submitted an empty title, a whitespace-only author, and a missing author; each was rejected with 400 and a reason naming the field, and none was stored.&quot;,
+      &quot;evidence&quot;: [
+        &quot;app_server/services/books.py:11-19 validate_book_input rejects blank or non-text title/author with a message naming the field&quot;,
+        &quot;probe: {title:&#x27;&#x27;, author:&#x27;X&#x27;} -&gt; 400, reason &#x27;title must be non-empty text&#x27;&quot;,
+        &quot;probe: {title:&#x27;Y&#x27;, author:&#x27;   &#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;&quot;,
+        &quot;probe: {title:&#x27;Z&#x27;} -&gt; 400, reason &#x27;author must be non-empty text&#x27;&quot;,
+        &quot;probe: GET /books after rejects still [&#x27;Dune&#x27;, &#x27;Beloved&#x27;]&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;st-006&quot;,
+      &quot;verdict&quot;: &quot;MET&quot;,
+      &quot;rationale&quot;: &quot;Automated tests exist for each of the four named behaviors and the full suite passed in the governed gate.&quot;,
+      &quot;evidence&quot;: [
+        &quot;tests/test_add_book.py: add behavior tests (e.g. test_post_answers_201_with_stored_book_fields)&quot;,
+        &quot;tests/test_list_books.py: test_list_returns_titles_in_the_order_they_were_added&quot;,
+        &quot;tests/test_remove_book.py: test_removed_book_is_absent_from_next_list_read&quot;,
+        &quot;tests/test_reject_empty_fields.py: test_blank_or_missing_field_answers_400_with_error_message&quot;,
+        &quot;governed gate full: 117 passed, return_code 0&quot;
+      ]
+    }
+  ],
+  &quot;improvements&quot;: [
+    &quot;README does not say how to provision the database before first run. create_app applies no schema, so a fresh DATABASE_URL serves 500 &#x27;no such table: books&#x27; until schema.sql is executed. Add a documented provisioning command (or a CLI step) to the README&#x27;s Setup section.&quot;,
+    &quot;st-001 says &#x27;POSIX-compatible&#x27; but no machine check runs the script under a strict POSIX shell such as dash. Add that check to the suite, or name the shell it must run under.&quot;,
+    &quot;Several criteria (st-002 to st-005) are proven only by the test suite and my probe. Adding an end-to-end test that drives the web form through a real server would make these trials observable without an ephemeral probe.&quot;
+  ]
+}
+```</pre></article>
+</main>
+</body>
+</html>

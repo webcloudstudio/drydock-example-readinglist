@@ -1,0 +1,17 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+2026-10-23 11:24:18 EDT  Calling CLAUDE/claude-haiku-5-5 (score release)...
+-
+  Completed CLAUDE/claude-haiku-5-5 (score release)  rc=0
+
+ReadingList: PASSED — 6 of 6
+
+  st-001  MET       bin/test.sh:1-11 is `#!/bin/sh` with `set -eu` and ends in `exec pytest -q`; governed gate full: outcome PASS, return_code 0, stdout '191 passed in 9.87s'
+  st-002  MET       app_server/books.py:create_book POST /books calls add_book and redirects 303; probe: add status 303 Location '/'; probe: GET /books returned [{'title': 'Dune', 'author': 'Frank Herbert', ...}]; probe: GET / page contains 'Dune' and 'Frank Herbert'; tests/test_add_book.py round-trip tests pass in the gate
+  st-003  MET       app_server/book_service.py:list_books returns sorted(..., key=id); probe: list returned Dune (id 1) then Emma (id 2); tests/test_list_books.py:58 test_several_books_are_listed_in_the_order_added passes in the gate
+  st-004  MET       app_server/books.py:delete_book POST /books/<int:book_id>/delete calls remove_book then 303; probe: after remove, GET /books returned ['Emma']; tests/test_remove_book.py:64 test_removed_book_is_absent_from_the_next_listing passes in the gate
+  st-005  MET       app_server/book_service.py:add_book raises BookRejected('rejected: title is empty' / 'rejected: author is empty') before any write; probe: empty title, HTML -> 400, alert region and 'rejected: title is empty' present; probe: blank author, JSON Accept -> 400 {'error': 'rejected: author is empty', 'field': 'author'}; tests/test_reject_empty_title.py and test_reject_empty_author.py assert nothing is stored; they pass in the gate
+  st-006  MET       tests/test_add_book.py; tests/test_list_books.py (order-added tests at lines 58 and 117); tests/test_remove_book.py; tests/test_reject_empty_title.py; tests/test_reject_empty_author.py; governed gate full: 191 passed, return_code 0
+
+Scorecard: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/SCORECARD.md
+Evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList/evidence/score-release.json
+Target - committed project workspace git store

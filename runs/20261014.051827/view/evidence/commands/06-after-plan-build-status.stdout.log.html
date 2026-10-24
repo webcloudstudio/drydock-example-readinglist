@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/06-after-plan-build-status.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/06-after-plan-build-status.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/06-after-plan-build-status.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Next: drydock build ReadingList
+
+Blueprint: ReadingList
+Target: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList
+Rows: &lt;state&gt; &lt;type&gt;  &lt;Name&gt;  [&lt;id&gt;]   — pass [&lt;id&gt;] to --step
+
+Block: Build Block 1 · Foundational  [block-1]   — 0/2 stories complete
+  [pending] story  Stand up the Python project tree, environment, test runner, and Flask application factory.  [architecture-foundation]  &lt;- next
+  [pending] story  Declare the reading-list store and generate the persistence package from DATABASE.md.  [persistence-foundation]  &lt;- next
+
+Block: Build Block 2 · Service  [block-2]   — 0/1 stories complete
+  [pending] story  Accept a title and author, store the book, and reject empty fields with a named reason.  [feature-add-book]
+
+Block: Build Block 3 · Service  [block-3]   — 0/2 stories complete
+  [pending] story  List stored books in the order they were added.  [feature-list-books]
+  [pending] story  Remove a book and omit it from the next read; report a missing id without altering the list.  [feature-remove-book]
+
+Block: Build Block 4 · Service  [block-4]   — 0/1 stories complete
+  [pending] story  Serve the reading list page that adds, lists, and removes books.  [screen-reading-list]
+
+Block: Build Block 5 · Feature  [block-5]   — 0/1 stories complete
+  [pending] story  Provide POSIX bin/test.sh that runs the complete automated suite and is the terminal verification gate.  [feature-test-runner]
+
+Steps: 7 total — 0 done, 0 built (await verify), 0 in review, 7 pending, 0 blocked by questions, 0 failed (0% complete)
+Buildable now: block-1
+</pre></article>
+</main>
+</body>
+</html>

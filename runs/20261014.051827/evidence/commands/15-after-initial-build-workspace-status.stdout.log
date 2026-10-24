@@ -1,0 +1,16 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status — workspace
+
+Target: ReadingList
+   Phase:     Loop
+   State:     7 closed/implemented
+   Detail:    2 imported · 7 authored · metadata built
+   Analysis:  Ready · 9 stories · 0 questions · 0 blockers
+   Plan:      7 closed/implemented
+   Next Step: drydock refit ReadingList BOTH <Scope> <Change>
+   10-14:     ✅  drydock build status ReadingList
+   10-14:     ✅  drydock build ReadingList --override --repair-attempts 6
+   10-14:     ✅  drydock build status ReadingList
+   10-14:     ✅  drydock plan verify ReadingList
+   10-14:     ✅  drydock plan ReadingList --override
+

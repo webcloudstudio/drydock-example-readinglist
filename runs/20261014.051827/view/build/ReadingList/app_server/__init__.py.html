@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/__init__.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/__init__.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/__init__.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Flask application factory for the reading list.
+
+Opens the declared store and registers the blueprints feature stories contribute. Routes are added
+only by the feature modules that declare them.
+&quot;&quot;&quot;
+
+from flask import Flask
+
+from app_server.books_views import bp as books_bp
+from app_server.pages import bp as pages_bp
+from app_server.settings import DATABASE_EXTENSION, PROJECT_ROOT, database_dsn
+from persistence import open_database
+
+__all__ = [&quot;create_app&quot;]
+
+SCHEMA_PATH = PROJECT_ROOT / &quot;schema.sql&quot;
+
+
+def create_app() -&gt; Flask:
+    &quot;&quot;&quot;Build the Flask application with its store, the blueprints, and the error handlers.&quot;&quot;&quot;
+    app = Flask(__name__)
+    database = open_database(database_dsn())
+    database.execute_script(SCHEMA_PATH.read_text(encoding=&quot;utf-8&quot;))
+    app.extensions[DATABASE_EXTENSION] = database
+    app.register_blueprint(pages_bp)
+    app.register_blueprint(books_bp)
+    return app
+</pre></article>
+</main>
+</body>
+</html>

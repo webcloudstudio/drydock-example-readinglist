@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Remove Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261014 V1</td></tr><tr><td>Description</td><td>Remove a book so it is omitted from the next read; report a missing id without altering the list.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md, FEATURE-ListBooks.md</td></tr><tr><td>Provides</td><td>DELETE /books/{id}</td></tr><tr><td>Consumes</td><td>books.get, books.delete</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>A reader removes a book from the list.</p>
+<h2>Route</h2>
+<p><code>DELETE /books/{id}</code></p>
+<ul><li>A stored id is removed through <code>books.delete</code> and returns status 204.</li><li>An id that is not in the list returns status 404 and leaves the list unchanged.</li><li>A removed book is absent from the next <code>GET /books</code>.</li></ul>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOKS-003</code> — read: retrieve a book by id - supplies: <code>id</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li><li><code>FEATURE-BOOKS-004</code> — write: delete a book by id - supplies: <code>id</code> - returns: <code>id</code></li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC remove-book-deletes ===<br>Intent: A removed book returns status 204 and is absent from the next list read.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>author = uuid.uuid4().hex client = web_client() added = client.post(&quot;/books&quot;, json={&quot;title&quot;: uuid.uuid4().hex, &quot;author&quot;: author}) assert added.status_code == 201 book_id = added.get_json()[&quot;id&quot;] deleted = client.delete(f&quot;/books/{book_id}&quot;) assert deleted.status_code == 204 listing = client.get(&quot;/books&quot;) assert listing.status_code == 200 assert book_id not in [book[&quot;id&quot;] for book in listing.get_json()] === END AC remove-book-deletes ===</p>
+<p>=== AC remove-book-missing-id ===<br>Intent: Removing an id that is not in the list returns 404 and leaves the list unchanged.</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>author = uuid.uuid4().hex client = web_client() added = client.post(&quot;/books&quot;, json={&quot;title&quot;: uuid.uuid4().hex, &quot;author&quot;: author}) assert added.status_code == 201 book_id = added.get_json()[&quot;id&quot;] assert client.delete(f&quot;/books/{book_id}&quot;).status_code == 204 before = [book[&quot;id&quot;] for book in client.get(&quot;/books&quot;).get_json()] repeated = client.delete(f&quot;/books/{book_id}&quot;) assert repeated.status_code == 404 after = [book[&quot;id&quot;] for book in client.get(&quot;/books&quot;).get_json()] assert after == before === END AC remove-book-missing-id ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Removing a missing id must not alter the list.</li></ul></article>
+</main>
+</body>
+</html>

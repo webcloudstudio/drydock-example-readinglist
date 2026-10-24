@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-RemoveBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Remove Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Remove a book from the reading list so it never reappears in later reads.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md, FEATURE-ListBooks.md, DATABASE.md</td></tr><tr><td>Provides</td><td>DELETE /books/{book_id}</td></tr><tr><td>Consumes</td><td>books.delete, books.get, GET /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>A reader removes a book they no longer want on their list. Once removed, the book must be absent from every subsequent list read, and the remaining books keep the order in which they were added.</p>
+<h2>Trigger</h2>
+<p>An HTTP <code>DELETE /books/{book_id}</code> request, where <code>book_id</code> is the integer id returned when the book was added.</p>
+<h2>Sequence</h2>
+<ol><li>The route parses <code>book_id</code> as an integer. A non-integer id does not match the route and is answered by the framework as an unknown resource (404).</li><li>The service looks the book up through <code>books.get</code>. If it does not exist, the route answers 404 with a JSON error body.</li><li>The service removes the book through <code>books.delete</code>.</li><li>The route answers 204 with an empty body.</li></ol>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Route</th><th>Method</th><th>Success</th><th>Failure</th></tr></thead><tbody><tr><td><code>/books/{book_id}</code></td><td>DELETE</td><td>204, empty body</td><td>404 for an unknown id, including a repeat removal of the same id</td></tr></tbody></table></div>
+<h2>Reads</h2>
+<ul><li><code>books.get</code> — confirms the book exists before deletion.</li></ul>
+<h2>Writes</h2>
+<ul><li><code>books.delete</code> — permanently removes the book row.</li></ul>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOK-004</code> — write: remove a book - supplies: <code>id</code> - returns: <code>id</code></li><li><code>FEATURE-BOOK-002</code> — read: get a book by id - supplies: <code>id</code> - returns: <code>id</code></li></ul>
+<h2>Operational Behavior</h2>
+<ul><li>Removal never alters the ids or relative order of the remaining books.</li><li>A removed book must not reappear in any later read, including after the application restarts.</li><li>Removing an already removed id is a no-op on state and answers 404.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC remove-book-deletes ===<br>Intent: Removing an added book answers 204 and the book is absent from the next list read.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() title = &quot;ac-remove-&quot; + uuid.uuid4().hex author = &quot;ac-remove-author&quot; created = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert created.status_code == 201 book_id = created.get_json()[&quot;id&quot;] try: before = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] assert book_id in before removed = client.delete(f&quot;/books/{book_id}&quot;) assert removed.status_code == 204 after = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] assert book_id not in after finally: client.delete(f&quot;/books/{book_id}&quot;) === END AC remove-book-deletes ===</p>
+<p>=== AC remove-book-unknown-id ===<br>Intent: Removing an id that does not exist answers 404, and removing the same id twice answers 404 the second time.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() title = &quot;ac-remove-twice-&quot; + uuid.uuid4().hex created = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;ac-remove-author&quot;}) assert created.status_code == 201 book_id = created.get_json()[&quot;id&quot;] try: first = client.delete(f&quot;/books/{book_id}&quot;) assert first.status_code == 204 second = client.delete(f&quot;/books/{book_id}&quot;) assert second.status_code == 404 existing = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] unknown_id = max(existing + [book_id]) + 1000000 unknown = client.delete(f&quot;/books/{unknown_id}&quot;) assert unknown.status_code == 404 finally: client.delete(f&quot;/books/{book_id}&quot;) === END AC remove-book-unknown-id ===</p>
+<p>=== AC remove-book-preserves-order ===<br>Intent: Removing the middle book leaves the other books in the order they were added.<br>Suite: scoped</p>
+<p>import uuid from app_server.testing import web_client</p>
+<p>client = web_client() token = uuid.uuid4().hex ids = [] try: for n in range(3): resp = client.post(&quot;/books&quot;, json={&quot;title&quot;: f&quot;ac-order-{token}-{n}&quot;, &quot;author&quot;: &quot;ac-remove-author&quot;}) assert resp.status_code == 201 ids.append(resp.get_json()[&quot;id&quot;]) removed = client.delete(f&quot;/books/{ids[1]}&quot;) assert removed.status_code == 204 listed = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()] mine = [i for i in listed if i in ids] assert mine == [ids[0], ids[2]] finally: for book_id in ids: client.delete(f&quot;/books/{book_id}&quot;) === END AC remove-book-preserves-order ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>A removed book must never reappear in a later list read.</li><li>Removal must not change the relative order of the remaining books.</li><li>A request for an unknown id must not alter stored state.</li></ul></article>
+</main>
+</body>
+</html>

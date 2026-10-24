@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-5.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-5.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-5.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 5 · Feature (block-5)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-14</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 2657</li><li>execution id: 20261014.053057.570Z-4b066be4</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide POSIX bin/test.sh that runs the complete automated suite and is the terminal verification gate. (feature-test-runner) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 833)</li><li>implements: FEATURE-TestRunner.md (SP 818)</li><li>context: ARCHITECTURE_compact.md (SP 261)</li><li>context: DATABASE_compact.md (SP 272)</li><li>stack: python_compact.md (SP 390)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>bin/test.sh</li><li>tests/test_test_runner.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: test-runner-posix-syntax (FEATURE-TestRunner.md)</li></ul>
+<p>intent: bin/test.sh parses as POSIX sh. return code: 1 stdout: sh: 0: cannot open bin/test.sh: No such file stderr: --- drydock: values at failure --- result = CompletedProcess(args=[&#x27;sh&#x27;, &#x27;-n&#x27;, &#x27;bin/test.sh&#x27;], returncode=2, stdout=&#x27;&#x27;, stderr=&#x27;sh: 0: cannot open bin/test.sh: No such file\n&#x27;) --- drydock: end values --- Traceback (most recent call last): File &quot;test-runner-posix-syntax.py&quot;, line 6, in &lt;module&gt; assert result.returncode == 0 ^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: test-runner-full-suite (FEATURE-TestRunner.md)</li></ul>
+<p>intent: The complete automated suite runs unfiltered through sh bin/test.sh and exits zero only when every test passes. return code: 1 stderr: sh: 0: cannot open bin/test.sh: No such file</p>
+<p>--- drydock: values at failure --- result = CompletedProcess(args=[&#x27;sh&#x27;, &#x27;bin/test.sh&#x27;], returncode=2, stdout=&#x27;&#x27;, stderr=&#x27;sh: 0: cannot open bin/test.sh: No such file\n&#x27;) --- drydock: end values --- Traceback (most recent call last): File &quot;test-runner-full-suite.py&quot;, line 7, in &lt;module&gt; assert result.returncode == 0 ^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: test-runner-posix-syntax (FEATURE-TestRunner.md)</li></ul>
+<p>intent: bin/test.sh parses as POSIX sh. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: test-runner-full-suite (FEATURE-TestRunner.md)</li></ul>
+<p>intent: The complete automated suite runs unfiltered through sh bin/test.sh and exits zero only when every test passes. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0 stdout: ........................................................................ [ 91%] .......                                                                  [100%]</p>
+<h2>Build summary</h2>
+<p>Now I&#x27;ll write the runner, which is a thin POSIX wrapper around the full pytest suite.Next, tests for the runner itself. They read back the exit status of the script run in isolated temp copies, so the script never recurses into this file.The last test I wrote is redundant and its parameter is unused, so I&#x27;ll remove it.Now I&#x27;ll make the script executable and run the two declared acceptance checks exactly as specified, plus the full gate.RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>bin/test.sh</li><li>tests/test_test_runner.py</li></ul>
+<p>SUMMARY:</p>
+<ul><li><code>bin/test.sh</code> is a POSIX <code>sh</code> script. It resolves the application root from its own location, <code>cd</code>s there, and exits nonzero with a message if <code>.venv/bin/python</code> is missing. Otherwise it <code>exec</code>s <code>.venv/bin/python -m pytest -q</code>, so the suite&#x27;s exit status is the script&#x27;s exit status. It runs the full suite with no filtering.</li><li><code>tests/test_test_runner.py</code> has 5 tests. Each one copies the script into its own temp application root, so the nested suite never re-enters this file and nothing is left in the build directory:<ul><li>the script parses under <code>sh -n</code></li><li>it exits nonzero when <code>.venv</code> is missing</li><li>it exits zero when every test passes</li><li>it exits nonzero when any test fails</li><li>it works when invoked from a different working directory</li></ul></li><li>Acceptance checks, run as declared:<ul><li><code>test-runner-posix-syntax</code> (<code>sh -n bin/test.sh</code>): exit 0.</li><li><code>test-runner-full-suite</code> (<code>sh bin/test.sh</code>): exit 0.</li></ul></li><li>Suite counts: the full gate ran 79 tests (74 existing plus 5 new), all passed. The new runner tests were also run on their own and passed.</li><li><code>sources/full_test.sh</code> was not modified and not run. Its contents just dispatch to <code>sh bin/test.sh</code>, which is what the acceptance check exercised.</li><li>I made <code>bin/test.sh</code> executable so it can run directly. Nothing was staged or committed.</li></ul>
+<p>Choices I made:</p>
+<ul><li>The error message for a missing <code>.venv</code> points to <code>uv venv</code> and <code>uv sync</code>. The spec didn&#x27;t name a setup command.</li><li>The runner tests use a symlink to the project&#x27;s <code>.venv</code> inside each temp root, so they don&#x27;t create a second environment.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>None.</li></ul></article>
+</main>
+</body>
+</html>

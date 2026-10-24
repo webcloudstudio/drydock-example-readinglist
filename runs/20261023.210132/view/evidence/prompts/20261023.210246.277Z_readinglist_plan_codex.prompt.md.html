@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompts/20261023.210246.277Z_readinglist_plan_codex.prompt.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompts/20261023.210246.277Z_readinglist_plan_codex.prompt.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompts/20261023.210246.277Z_readinglist_plan_codex.prompt.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;pblock label=&quot;Plan topology repair&quot; kind=&quot;repair&quot;&gt;</p>
+<h1>Plan Topology Repair</h1>
+<p>Drydock rejected this TOPOLOGY.md declaration. Repair only the deterministic defects reported below. Preserve every story ID, implements assignment, and story field the defects do not require you to change. Dependencies must name exact story IDs declared in this topology.</p>
+<p>Emit each artifact below in exactly this form, and emit no other text:</p>
+<p>=== BEGIN ARTIFACT &lt;FILENAME&gt; === &lt;the complete file body&gt; === END ARTIFACT ===</p>
+<p>The filename appears once, in the opening delimiter. The closing delimiter is the constant token above and never carries a name.</p>
+<p>Emit exactly one such block for each of: TOPOLOGY.md.</p>
+<p>Repair pass: 1</p>
+<p>Deterministic validation defect: analyzed stories are not delivered by any Manifest story: RLB-006 — name each analyzed Story ID in the covers: field of the story that delivers it</p>
+<p>Original TOPOLOGY.md, in the same form your reply must use: === BEGIN ARTIFACT TOPOLOGY.md ===</p>
+<h2>Declarations</h2>
+<h2>story architecture</h2>
+<p>summary:      Establish the Flask application structure and module boundaries. type:         foundational kind:         capability phase:        1 implements:   ARCHITECTURE.md stack:        python.md, flask.md provides:     app_server.create_app, app_server.testing.web_client consumes: acceptance:   yes instructions: | Establish the Python Flask application factory, testing client entry point, module ownership boundaries, and application configuration needed by the reading-list features. Keep persistence access behind the generated persistence package and make the primary web application runnable. scope:        blueprint</p>
+<h2>story database</h2>
+<p>summary:      Provide relational persistence for ordered books. type:         foundational kind:         migration phase:        1 implements:   DATABASE.md stack:        python.md, persistence.md, sqlite.md provides:     persistence.books consumes: acceptance:   yes instructions: | Declare and provision the local relational store for books, including a stable identifier, title, author, and insertion-order field. Provide the repository operations required by the reading-list workflows through the generated persistence contract. scope:        blueprint</p>
+<h2>story ui-general</h2>
+<p>summary:      Define the shared server-rendered interface patterns. type:         foundational kind:         capability phase:        2 implements:   UI-GENERAL.md stack:        python.md, flask.md provides:     shared reading-list layout and feedback patterns consumes:     app_server.create_app depends:      architecture acceptance:   yes instructions: | Define the shared HTML structure, accessible form controls, list presentation, empty state, validation feedback, and reusable styling conventions for the server-rendered reading-list page. scope:        blueprint</p>
+<h2>story reading-list</h2>
+<p>summary:      Serve the ordered reading-list view. type:         service kind:         capability phase:        2 implements:   FEATURE-READING-LIST.md covers:       RLB-001, RLB-003 accepts:       st-003 stack:        python.md, flask.md, persistence.md provides:     GET / consumes:     app_server.create_app, persistence.books.list depends:      architecture, database acceptance:   yes instructions: | Implement the read workflow for the primary reading-list page. Retrieve books through the persistence contract in insertion order, render the collection or a clear empty-list state, and expose the primary GET / route. scope:        both</p>
+<h2>story add-book</h2>
+<p>summary:      Add a valid book to the reading list. type:         service kind:         capability phase:        2 implements:   FEATURE-ADD-BOOK.md covers:       RLB-002 accepts:       st-002 stack:        python.md, flask.md, persistence.md provides:     POST /books consumes:     app_server.create_app, persistence.books.create depends:      architecture, database acceptance:   yes instructions: | Implement the valid book submission workflow at POST /books. Accept title and author form values, create the book through the persistence contract, and redirect or render the updated list so the newly stored book is visible. scope:        both</p>
+<h2>story remove-book</h2>
+<p>summary:      Remove a selected book from the reading list. type:         service kind:         capability phase:        2 implements:   FEATURE-REMOVE-BOOK.md covers:       RLB-004 accepts:       st-004 stack:        python.md, flask.md, persistence.md provides:     POST /books/&lt;book_id&gt;/delete consumes:     app_server.create_app, persistence.books.delete depends:      architecture, database acceptance:   yes instructions: | Implement removal at POST /books/&lt;book_id&gt;/delete. Delete only the selected persisted book through the repository contract and ensure the next reading-list request omits it. scope:        both</p>
+<h2>story validate-book</h2>
+<p>summary:      Reject incomplete book submissions with correction feedback. type:         service kind:         capability phase:        2 implements:   FEATURE-VALIDATE-BOOK.md covers:       RLB-005 accepts:       st-005 stack:        python.md, flask.md, persistence.md provides:     validation for POST /books consumes:     POST /books, app_server.create_app depends:      architecture, database, add-book acceptance:   yes instructions: | Add boundary validation for POST /books. Reject an empty title, an empty author, or both before persistence, report which required field is missing, and preserve a usable form workflow so the reader can correct and resubmit. scope:        both</p>
+<h2>story reading-list-screen</h2>
+<p>summary:      Assemble the primary reading-list page and interactions. type:         service kind:         integration phase:        2 implements:   SCREEN-ReadingList.md stack:        python.md, flask.md provides:     primary reading-list screen consumes:     GET /, POST /books, POST /books/&lt;book_id&gt;/delete depends:      ui-general, reading-list, add-book, remove-book, validate-book acceptance:   yes instructions: | Assemble the primary server-rendered screen using the shared UI patterns and feature routes. Include the add-book form, ordered book display, empty state, validation feedback, and a removal control for each persisted book. scope:        both</p>
+<h2>story verification</h2>
+<p>summary:      Provide the complete POSIX automated test runner. type:         service kind:         test harness phase:        3 implements:   FEATURE-VERIFICATION.md accepts:       st-001, st-006 context:      sources/full_test.sh context_roles: | sources/full_test.sh: conformance harness stack:        python.md provides:     bin/test.sh, complete automated test suite consumes:     primary reading-list screen, GET /, POST /books, POST /books/&lt;book_id&gt;/delete depends:      architecture, database, ui-general, reading-list, add-book, remove-book, validate-book, reading-list-screen acceptance:   yes instructions: | Add a POSIX-compatible executable bin/test.sh that runs the complete automated test suite from the application root and exits zero only when every test passes. Include focused automated tests for adding, ordering, removing, and rejecting incomplete books. The terminal acceptance for this story runs the staged sources/full_test.sh with Suite: full. scope:        target === END ARTIFACT === &lt;/pblock&gt;</p></article>
+</main>
+</body>
+</html>

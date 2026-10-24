@@ -1,0 +1,15 @@
+<requirement name="provide-test-runner" stories="verification">
+the application provides a POSIX-compatible bin/test.sh
+</requirement>
+<requirement name="automated-tests-pass" stories="test-add-book,test-list-books,test-remove-book,test-validation">
+exits zero when every automated test passes.
+</requirement>
+<unattached story="foundation"/>
+<unattached story="database"/>
+<unattached story="web-shell"/>
+<unattached story="add-book"/>
+<unattached story="list-books"/>
+<unattached story="remove-book"/>
+<unattached story="reject-empty-title"/>
+<unattached story="reject-empty-author"/>
+<unattached story="screen-reading-list"/>

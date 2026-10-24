@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/settings.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/settings.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/settings.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Typed runtime settings for the ReadingList web application.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+
+DEFAULT_DATABASE_PATH = &quot;data/app.db&quot;
+
+
+@dataclass(frozen=True)
+class Settings:
+    &quot;&quot;&quot;Runtime settings read from the environment.&quot;&quot;&quot;
+
+    database_url: str
+
+    @classmethod
+    def from_environment(cls) -&gt; Settings:
+        &quot;&quot;&quot;Read DATABASE_URL, then DATABASE_PATH, then fall back to the default store path.&quot;&quot;&quot;
+        configured = (
+            os.environ.get(&quot;DATABASE_URL&quot;) or os.environ.get(&quot;DATABASE_PATH&quot;) or DEFAULT_DATABASE_PATH
+        )
+        return cls(database_url=configured)
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/conftest.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/conftest.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/conftest.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Shared pytest fixtures for the ReadingList test suite.&quot;&quot;&quot;
+
+from collections.abc import Iterator
+
+import pytest
+from flask.testing import FlaskClient
+
+
+@pytest.fixture
+def web_client() -&gt; FlaskClient:
+    &quot;&quot;&quot;Provide a Flask test client for the application factory.&quot;&quot;&quot;
+    from app_server.testing import web_client as make_client
+
+    return make_client()
+
+
+@pytest.fixture
+def db_session() -&gt; Iterator[object]:
+    &quot;&quot;&quot;Provide a rolled-back database session from the generated persistence package.
+
+    The persistence package is generated from DATABASE.md at the DATABASE build step,
+    so the import is deferred until a test requests this fixture.
+    &quot;&quot;&quot;
+    from persistence.testing import db_session as open_session
+
+    with open_session() as db:
+        yield db
+</pre></article>
+</main>
+</body>
+</html>

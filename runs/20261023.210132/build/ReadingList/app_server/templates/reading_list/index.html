@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='reading-list.css') }}">
+</head>
+<body><main class="page-shell">
+  <header class="page-header"><p class="eyebrow">ReadingList</p><h1>Books to read</h1><p class="intro">Keep track of the books you want to discover next.</p></header>
+  <section class="panel" aria-labelledby="add-book-heading"><h2 id="add-book-heading">Add a book</h2>
+    <form method="post" action="{{ url_for('reading_list.add_book') }}" novalidate>
+      <div class="form-grid">
+        <div class="field {% if errors.title %}field-error{% endif %}"><label for="title">Title</label><input id="title" name="title" type="text" value="{{ form.title|default('') }}" required {% if errors.title %}aria-invalid="true" {% endif %}aria-describedby="title-help{% if errors.title %} title-error{% endif %}"><span id="title-help" class="help">The book's title</span>{% if errors.title %}<span id="title-error" class="error" role="alert">{{ errors.title }}</span>{% endif %}</div>
+        <div class="field {% if errors.author %}field-error{% endif %}"><label for="author">Author</label><input id="author" name="author" type="text" value="{{ form.author|default('') }}" required {% if errors.author %}aria-invalid="true" {% endif %}aria-describedby="author-help{% if errors.author %} author-error{% endif %}"><span id="author-help" class="help">Who wrote it?</span>{% if errors.author %}<span id="author-error" class="error" role="alert">{{ errors.author }}</span>{% endif %}</div>
+      </div><button type="submit">Add to reading list</button>
+    </form>
+  </section>
+  <section class="list-section" aria-labelledby="list-heading"><div class="section-heading"><h2 id="list-heading">Your reading list</h2>{% if books %}<span class="count">{{ books|length }} book{% if books|length != 1 %}s{% endif %}</span>{% endif %}</div>
+    {% if books %}<ol class="book-list">{% for book in books %}<li class="book-card"><div><h3>{{ book.title }}</h3><p>{{ book.author }}</p></div><form method="post" action="{{ url_for('reading_list.delete_book', book_id=book.id) }}"><button class="button-secondary" type="submit" aria-label="Remove {{ book.title }}">Remove</button></form></li>{% endfor %}</ol>
+    {% else %}<div class="empty-state"><h3>Your list is empty</h3><p>Add a book above to start your reading list.</p></div>{% endif %}
+  </section>
+</main></body></html>

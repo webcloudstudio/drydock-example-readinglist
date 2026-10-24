@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_verification_runner.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_verification_runner.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_verification_runner.py">Raw file</a></div></header>
+<article class="doc"><pre>from __future__ import annotations
+
+from app_server.testing import web_client
+from persistence import open_database
+
+
+def _delete_titles(*titles: str) -&gt; None:
+    database = open_database(&quot;data/app.db&quot;)
+    try:
+        for book in database.books.list():
+            if book.title in titles:
+                database.books.delete(id=book.id)
+    finally:
+        database.close()
+
+
+def test_runner_workflow_adds_and_reads_a_book() -&gt; None:
+    title = &quot;Verification Added Book&quot;
+    try:
+        client = web_client()
+
+        response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;A Reader&quot;})
+
+        assert response.status_code == 302
+        page = client.get(&quot;/&quot;)
+        assert page.status_code == 200
+        assert title in page.get_data(as_text=True)
+    finally:
+        _delete_titles(title)
+
+
+def test_runner_workflow_preserves_insertion_order() -&gt; None:
+    titles = (&quot;Verification First Book&quot;, &quot;Verification Second Book&quot;)
+    try:
+        client = web_client()
+        for title in titles:
+            assert client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;A Reader&quot;}).status_code == 302
+
+        body = client.get(&quot;/&quot;).get_data(as_text=True)
+
+        assert body.index(titles[0]) &lt; body.index(titles[1])
+    finally:
+        _delete_titles(*titles)
+
+
+def test_runner_workflow_removes_a_selected_book() -&gt; None:
+    title = &quot;Verification Removed Book&quot;
+    try:
+        client = web_client()
+        assert client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;A Reader&quot;}).status_code == 302
+        database = open_database(&quot;data/app.db&quot;)
+        try:
+            book_id = next(book.id for book in database.books.list() if book.title == title)
+        finally:
+            database.close()
+
+        response = client.post(f&quot;/books/{book_id}/delete&quot;)
+
+        assert response.status_code == 302
+        assert title not in client.get(&quot;/&quot;).get_data(as_text=True)
+    finally:
+        _delete_titles(title)
+
+
+def test_runner_workflow_rejects_an_empty_title() -&gt; None:
+    client = web_client()
+
+    response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;  &quot;, &quot;author&quot;: &quot;A Reader&quot;})
+
+    assert response.status_code == 400
+    assert &#x27;name=&quot;title&quot;&#x27; in response.get_data(as_text=True)
+
+
+def test_runner_workflow_rejects_an_empty_author() -&gt; None:
+    client = web_client()
+
+    response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;A Book&quot;, &quot;author&quot;: &quot;  &quot;})
+
+    assert response.status_code == 400
+    assert &#x27;name=&quot;author&quot;&#x27; in response.get_data(as_text=True)
+</pre></article>
+</main>
+</body>
+</html>

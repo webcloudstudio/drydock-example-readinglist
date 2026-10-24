@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/COMPASS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/COMPASS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/COMPASS.md">Raw file</a></div></header>
+<article class="doc"><h1>COMPASS: ReadingList</h1>
+<h2>Compass</h2>
+<p>A small web application that keeps a reader&#x27;s list of books to read. A reader adds a book with a title and author, views the books in the order added, and removes books. It exists so the reader can track what to read next without losing order or accepting incomplete entries.</p>
+<h2>Constraints</h2>
+<ul><li>The completed application must provide a POSIX-compatible <code>bin/test.sh</code> at the application root.</li><li><code>sh bin/test.sh</code> must run the complete automated test suite and exit zero only when every test passes.</li><li>The final build story runs <code>sh bin/test.sh</code> after every implementation story and preserves its command, exit code, standard output, and standard error as evidence.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never accept an empty title or an empty author.</li><li>Never present books in an order other than the order they were added.</li><li>Never report a passing test suite while any automated test fails.</li><li>Never ship without automated tests covering each behavior.</li></ul>
+<p>&lt;!-- drydock:build-write-guardrail:start --&gt;</p>
+<h2>Build Write Guardrail</h2>
+<ul><li>Authorized build directory: <code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList</code></li><li>Authorized Target directory: <code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList</code></li><li>Build agents have permission to create, modify, and remove files required by the active build block inside these authorized directories.</li><li>No path outside these authorized directories may be modified.</li><li>Protected Drydock artifacts:<ul><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/blueprint/</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/MANIFEST.md</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/COMPASS.md</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/QuarterDeck/</code></li><li><code>/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/evidence/</code></li></ul></li></ul>
+<p>&lt;!-- drydock:build-write-guardrail:end --&gt;</p></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261014.052020.483Z_readinglist_plan_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261014.052020.483Z_readinglist_plan_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261014.052020.483Z_readinglist_plan_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT SCREEN-ReadingList.md ===
+# SCREEN: Reading List
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | The reading list page where a reader adds, views, and removes books. |
+| Depends On  | FEATURE-AddBook.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md |
+| Provides    | GET / |
+| Consumes    | POST /books, GET /books, DELETE /books/{id} |
+| Route       | / |
+| Parent      | — |
+| Main Menu   | Reading List (1) |
+| Sub Menu    | — |
+| Tab Order   | — |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The single page of the application. A reader submits a title and author, sees the ordered list, and removes a book.
+
+## Layout
+
+- A form with a title field and an author field, and a submit control.
+- An ordered list of books, in the order returned by `GET /books`.
+- A remove control beside each book.
+- Validation errors from a rejected submission are shown beside the form, naming the failing field.
+
+## Interactions
+
+- Submitting the form calls `POST /books`. On status 201 the list is reloaded. On status 400 the error for the field named in the response is shown.
+- The page loads the list by calling `GET /books`.
+- Activating a remove control calls `DELETE /books/{id}` for that book. On status 204 the list is reloaded.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md, FEATURE-ListBooks.md, and FEATURE-RemoveBook.md.
+
+## Programmatic Acceptance
+
+=== AC screen-get-root ===
+Intent: GET / returns status 200 with an HTML page.
+
+from app_server.testing import web_client
+
+client = web_client()
+response = client.get(&quot;/&quot;)
+assert response.status_code == 200
+assert response.mimetype == &quot;text/html&quot;
+=== END AC screen-get-root ===
+
+=== AC screen-add-list-remove ===
+Intent: The routes the page calls add, list, and remove a book, and an unknown id returns 404.
+
+import uuid
+from app_server.testing import web_client
+
+client = web_client()
+title = uuid.uuid4().hex
+author = uuid.uuid4().hex
+added = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author})
+assert added.status_code == 201
+book_id = added.get_json()[&quot;id&quot;]
+listing = client.get(&quot;/books&quot;)
+assert listing.status_code == 200
+assert book_id in [book[&quot;id&quot;] for book in listing.get_json()]
+removed = client.delete(f&quot;/books/{book_id}&quot;)
+assert removed.status_code == 204
+assert client.delete(&quot;/books/999999999&quot;).status_code == 404
+=== END AC screen-add-list-remove ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- The page must not present a book in an order other than the order returned by `GET /books`.
+- The page must not offer a submit control that sends an empty title or author.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-TestRunner.md ===
+# FEATURE: Test Runner
+
+| Field       | Value |
+|-------------|-------|
+| Version     | 20261014 V1 |
+| Description | POSIX bin/test.sh that runs the complete automated suite and exits with its status; the terminal verification gate. |
+| Depends On  | ARCHITECTURE.md, DATABASE.md, FEATURE-AddBook.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, SCREEN-ReadingList.md |
+| Provides    | sh bin/test.sh |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The reader&#x27;s project must provide one command that runs every automated test and reports success only when all of them pass.
+
+## Runner
+
+- `bin/test.sh` is a POSIX `sh` script at the application root.
+- It runs the complete pytest suite with `.venv/bin/python -m pytest -q` from the application root.
+- It exits with the status of that run. It exits nonzero if `.venv` is missing.
+- It runs no subset of the suite.
+
+## Tests
+
+- Pytest tests cover adding a book, listing books in insertion order, removing a book, and rejecting an empty title or author, as declared by the feature stories.
+- Each behavior has at least one test that calls the public route through `web_client`.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC test-runner-posix-syntax ===
+Intent: bin/test.sh parses as POSIX sh.
+
+import subprocess
+
+result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC test-runner-posix-syntax ===
+
+=== AC test-runner-full-suite ===
+Intent: The complete automated suite runs unfiltered through sh bin/test.sh and exits zero only when every test passes.
+Suite: full
+
+import subprocess
+import sys
+
+result = subprocess.run([&quot;sh&quot;, &quot;bin/test.sh&quot;], capture_output=True, text=True)
+print(result.stdout)
+print(result.stderr, file=sys.stderr)
+assert result.returncode == 0
+=== END AC test-runner-full-suite ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Never report a passing suite while any automated test fails.
+- Never ship without automated tests covering each behavior.
+- `bin/test.sh` must not skip, filter, or reinterpret the suite.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

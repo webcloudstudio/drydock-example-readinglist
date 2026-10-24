@@ -1,0 +1,21 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status
+
+  Target          /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/workspace/targets/ReadingList
+  Name            ReadingList
+  Phase           Implement
+  State           14 pending
+  Metadata        planned · approved
+  Sources         2 imported · 14 authored blueprint files
+  Analysis        Ready · 10 stories · 0 questions · 0 blockers
+  Blueprint       ✗  1 errors · 0 warnings
+    ✗  METADATA fields: short_description not set in METADATA.md
+       → Set `short_description:` in ReadingList/METADATA.md to one line describing the project, or run `drydock analyze ReadingList` to have one proposed from the sources.
+  Plan            14 pending
+  Frontier        foundation: Stand up the Python project root, environment, pytest runner, and application skeleton.
+  Workflow        4 steps
+                  Initialize         complete at 2026-10-23T14:45:40.298+00:00
+                  Import             complete at 2026-10-23T14:45:45.005+00:00
+                  Analyze            complete at 2026-10-23T14:46:04.027+00:00
+                  Plan               complete at 2026-10-23T14:51:06.373+00:00
+  Next step       drydock build ReadingList  (frontier: Stand up the Python project root, environment, pytest runner, and application skeleton.)

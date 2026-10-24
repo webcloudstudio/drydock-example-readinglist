@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-10.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-10.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-10.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 10 · Service (block-10)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 3618</li><li>execution id: 20261023.151000.516Z-4c2636a3</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide automated pytest tests for adding a book. (test-add-book) [story]</li></ul>
+<h2>Acceptance tooling authorization</h2>
+<ul><li>FEATURE-AddBookTests.md#add-tests-file-defines-tests: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-AddBookTests.md#add-tests-pass: python-package=pytest; scope=test; authorization=existing Target environment</li><li>FEATURE-AddBookTests.md#add-roundtrip-behavior: python-package=pytest; scope=test; authorization=existing Target environment</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 921)</li><li>compass: COMPASS.md (SP 781)</li><li>implements: FEATURE-AddBookTests.md (SP 1223)</li><li>context: ARCHITECTURE_compact.md (SP 281)</li><li>context: DATABASE_compact.md (SP 360)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>data/app.db</li><li>tests/test_add_book.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): add-tests-file-defines-tests (FEATURE-AddBookTests.md)</li></ul>
+<p>intent: tests/test_add_book.py exists, parses, defines at least three test functions, and exercises the books route. return code: 0</p>
+<ul><li>GREEN (prepassed): add-tests-pass (FEATURE-AddBookTests.md)</li></ul>
+<p>intent: The add-book test file passes when run with pytest from the application root. return code: 0 stdout: ....................                                                     [100%] 20 passed in 0.46s</p>
+<ul><li>GREEN (prepassed): add-roundtrip-behavior (FEATURE-AddBookTests.md)</li></ul>
+<p>intent: Adding a book through POST /books is readable back through GET /books with the supplied title and author. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: add-tests-file-defines-tests (FEATURE-AddBookTests.md)</li></ul>
+<p>intent: tests/test_add_book.py exists, parses, defines at least three test functions, and exercises the books route. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: add-tests-pass (FEATURE-AddBookTests.md)</li></ul>
+<p>intent: The add-book test file passes when run with pytest from the application root. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0 stdout: ...........................                                              [100%] 27 passed in 0.97s</p>
+<ul><li>PASS: add-roundtrip-behavior (FEATURE-AddBookTests.md)</li></ul>
+<p>intent: Adding a book through POST /books is readable back through GET /books with the supplied title and author. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.144538/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>The existing suite is green (134 passed). <code>tests/test_add_book.py</code> doesn&#x27;t exist yet, so I&#x27;ll write it now. Per the spec, it uses the <code>web_client</code> fixture against the configured store, unique titles per test, and removes only the books it created.The write reported &quot;updated&quot;, not &quot;created&quot;, and <code>tests/test_add_book.py</code> was in the earlier file listing. I overwrote a file I hadn&#x27;t read. Checking git to see what it contained.I made a mistake. The file already existed and was committed in <code>149030d</code> (Build block-4, FEATURE-AddBook). Its tests cover the <code>app</code> fixture and the empty-field rules, and they still pass. I&#x27;m restoring it from git and adding the new round-trip tests to it, so nothing is lost.The file is back to its committed content, which is what the notice shows. Now I&#x27;ll add the new imports and round-trip tests alongside the existing ones.Now I&#x27;ll run the declared acceptance check (<code>pytest -q tests/test_add_book.py</code>), the full suite, and the spec&#x27;s round-trip criterion script.The round-trip check failed only because I ran it with <code>-I</code>, which ignores the project path. The pytest results are good: 27 passed in the add-book file and 141 across the suite. Rerunning the round-trip criterion with the project on the path.I added the add-book round-trip tests to <code>tests/test_add_book.py</code>, and the suite is green. One mistake along the way: I overwrote that file before reading it, then restored it from git. The file already held the committed FEATURE-AddBook tests (Build block-4), so I added the new tests to it rather than replacing it. Nothing from the committed version was lost.</p>
+<p><strong>What the new tests cover</strong> (7 tests, all using the <code>web_client</code> fixture against the configured store):</p>
+<ul><li>A valid <code>POST /books</code> answers 303 with <code>Location: /</code>.</li><li>The added book appears in <code>GET /books</code> with the submitted title and author.</li><li>The book is stored with the submitted title and author, read back through <code>committed_session</code>.</li><li>Surrounding whitespace is trimmed on the round trip.</li><li>Two added books are both listed, in the order added, and each keeps its own author.</li></ul>
+<p>Each test uses a unique <code>AddTest-…</code> title, and an <code>added_titles</code> fixture deletes exactly those books afterwards. I checked that no <code>AddTest</code> rows remain in the store.</p>
+<p><strong>Verification</strong></p>
+<ul><li><code>pytest -q tests/test_add_book.py</code>: 27 passed (the committed tests plus the new ones).</li><li><code>pytest -q</code> for the full suite: 141 passed.</li><li>The declared <code>add-roundtrip-behavior</code> criterion, run as a standalone script: round-trip ok, exit 0.</li></ul>
+<p><strong>Choices I made</strong></p>
+<ul><li>The new tests run against the configured store (<code>DATABASE_URL</code>, default <code>data/app.db</code>), as the spec describes, rather than an isolated temp store like the committed tests use.</li><li>The round trip trims whitespace. I took that from the route&#x27;s behavior, since the spec doesn&#x27;t mention it.</li></ul>
+<p><strong>Not in this step:</strong> <code>bin/test.sh</code> does not exist yet. <code>sources/full_test.sh</code> will report failure until it is built, which belongs to a different step.</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>tests/test_add_book.py</li></ul>
+<p>SUMMARY: Added round-trip pytest tests for POST /books and GET /books to the existing tests/test_add_book.py. The new tests use the web_client fixture, unique titles, and checked cleanup of only the books they created. Declared add-book criteria and the full suite pass (141 tests).</p>
+<p>BLOCKERS:</p>
+<ul><li>None for this step. <code>bin/test.sh</code> is absent, so <code>sources/full_test.sh</code> will fail until it is built in a later step.</li></ul>
+<p>&lt;blueprint-decisions&gt; [{&quot;spec&quot;:&quot;FEATURE-AddBookTests.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Store used by the round-trip tests&quot;,&quot;decision&quot;:&quot;The new tests run against the configured store (DATABASE_URL or data/app.db), as the spec&#x27;s web_client and committed_session guidance describes. Each test removes only the books it created. The existing FEATURE-AddBook tests keep their isolated temp store. Is a shared configured store acceptable, or should these tests move to an isolated store?&quot;}] &lt;/blueprint-decisions&gt;</p></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_app_shell.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_app_shell.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_app_shell.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;App shell: application factory, configuration, test client, health route, and shared layout.&quot;&quot;&quot;
+
+from html.parser import HTMLParser
+
+from flask import Flask
+from flask.testing import FlaskClient
+
+from app_server import create_app
+from app_server.config import DEFAULT_DATABASE_PATH, Config
+from app_server.testing import web_client as make_web_client
+from persistence import Database
+
+
+class _TitleParser(HTMLParser):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.in_title = False
+        self.title = &quot;&quot;
+
+    def handle_starttag(self, tag: str, attrs: list) -&gt; None:
+        if tag == &quot;title&quot;:
+            self.in_title = True
+
+    def handle_endtag(self, tag: str) -&gt; None:
+        if tag == &quot;title&quot;:
+            self.in_title = False
+
+    def handle_data(self, data: str) -&gt; None:
+        if self.in_title:
+            self.title += data
+
+
+def test_create_app_returns_flask_application() -&gt; None:
+    assert isinstance(create_app(), Flask)
+
+
+def test_create_app_opens_database_handle_for_services() -&gt; None:
+    app = create_app(Config(database_dsn=&quot;data/app.db&quot;))
+
+    assert isinstance(app.extensions[&quot;db&quot;], Database)
+
+
+def test_web_client_returns_test_client_in_testing_mode() -&gt; None:
+    client = make_web_client()
+
+    assert isinstance(client, FlaskClient)
+    assert client.application.config[&quot;TESTING&quot;] is True
+
+
+def test_health_returns_200_with_status_body(web_client: FlaskClient) -&gt; None:
+    response = web_client.get(&quot;/health&quot;)
+
+    assert response.status_code == 200
+    assert response.get_json() == {&quot;status&quot;: &quot;ok&quot;}
+
+
+def test_unknown_route_returns_404(web_client: FlaskClient) -&gt; None:
+    response = web_client.get(&quot;/route-nobody-declared&quot;)
+
+    assert response.status_code == 404
+
+
+def test_factory_registers_only_the_declared_routes() -&gt; None:
+    app = create_app()
+
+    rules = {rule.rule for rule in app.url_map.iter_rules() if rule.endpoint != &quot;static&quot;}
+
+    assert rules == {
+        &quot;/&quot;,
+        &quot;/health&quot;,
+        &quot;/add&quot;,
+        &quot;/remove/&lt;int:book_id&gt;&quot;,
+        &quot;/books&quot;,
+        &quot;/books/&lt;int:book_id&gt;&quot;,
+    }
+
+
+def test_base_layout_renders_title_block() -&gt; None:
+    app = create_app()
+    template = app.jinja_env.from_string(
+        &#x27;{% extends &quot;base.html&quot; %}{% block title %}Shelf{% endblock %}&#x27;
+        &quot;{% block content %}&lt;p&gt;body&lt;/p&gt;{% endblock %}&quot;
+    )
+
+    parser = _TitleParser()
+    parser.feed(template.render())
+
+    assert parser.title == &quot;Shelf&quot;
+
+
+def test_config_defaults_to_data_app_db() -&gt; None:
+    assert Config.load(environ={}).database_dsn == DEFAULT_DATABASE_PATH
+
+
+def test_config_prefers_database_url_over_database_path() -&gt; None:
+    config = Config.load(environ={&quot;DATABASE_URL&quot;: &quot;sqlite:///tmp/a.db&quot;, &quot;DATABASE_PATH&quot;: &quot;b.db&quot;})
+
+    assert config.database_dsn == &quot;sqlite:///tmp/a.db&quot;
+
+
+def test_config_uses_database_path_when_url_absent() -&gt; None:
+    config = Config.load(environ={&quot;DATABASE_PATH&quot;: &quot;b.db&quot;})
+
+    assert config.database_dsn == &quot;b.db&quot;
+</pre></article>
+</main>
+</body>
+</html>

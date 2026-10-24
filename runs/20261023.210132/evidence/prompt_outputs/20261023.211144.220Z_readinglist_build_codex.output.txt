@@ -1,0 +1,11 @@
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/templates/reading_list/index.html
+- tests/test_reading_list_screen.py
+
+SUMMARY:
+Added accessible invalid-field feedback and focused screen tests. All tests and 3 screen acceptance checks pass.
+
+BLOCKERS:
+- None

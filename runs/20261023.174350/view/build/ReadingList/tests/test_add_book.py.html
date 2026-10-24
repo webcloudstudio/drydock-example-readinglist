@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_add_book.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_add_book.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_add_book.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Add book: POST /books answers 201 with the stored book, and the stored row reads back.&quot;&quot;&quot;
+
+from flask.testing import FlaskClient
+
+from persistence import Database
+
+
+def test_post_answers_201_with_stored_book_fields(fresh_client: FlaskClient) -&gt; None:
+    response = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    assert response.status_code == 201
+    body = response.get_json()
+    assert isinstance(body[&quot;id&quot;], int)
+    assert body[&quot;title&quot;] == &quot;Dune&quot;
+    assert body[&quot;author&quot;] == &quot;Frank Herbert&quot;
+
+
+def test_post_response_body_carries_exactly_id_title_and_author(fresh_client: FlaskClient) -&gt; None:
+    response = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    assert set(response.get_json()) == {&quot;id&quot;, &quot;title&quot;, &quot;author&quot;}
+
+
+def test_posted_book_reads_back_from_store(fresh_client: FlaskClient, fresh_db: Database) -&gt; None:
+    body = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}).get_json()
+
+    row = fresh_db.books.get(id=body[&quot;id&quot;])
+
+    assert row is not None
+    assert (row.id, row.title, row.author) == (body[&quot;id&quot;], &quot;Dune&quot;, &quot;Frank Herbert&quot;)
+
+
+def test_stored_title_and_author_keep_the_supplied_whitespace(fresh_client: FlaskClient) -&gt; None:
+    response = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;  Dune  &quot;, &quot;author&quot;: &quot; Frank Herbert &quot;})
+
+    body = response.get_json()
+    assert body[&quot;title&quot;] == &quot;  Dune  &quot;
+    assert body[&quot;author&quot;] == &quot; Frank Herbert &quot;
+
+
+def test_two_books_added_in_sequence_receive_ascending_ids(fresh_client: FlaskClient) -&gt; None:
+    first = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;One&quot;, &quot;author&quot;: &quot;A&quot;}).get_json()
+    second = fresh_client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;Two&quot;, &quot;author&quot;: &quot;A&quot;}).get_json()
+
+    assert first[&quot;id&quot;] &lt; second[&quot;id&quot;]
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.145037.257Z_readinglist_lineage_attribute_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.145037.257Z_readinglist_lineage_attribute_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.145037.257Z_readinglist_lineage_attribute_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>&lt;requirement name=&quot;add-remove-books&quot; stories=&quot;database,add-book,list-books,remove-book,screen-reading-list&quot;&gt;
+The reader can add a book with a title and author, view the books in the order added,
+and remove a book.
+&lt;/requirement&gt;
+&lt;requirement name=&quot;reject-empty-fields&quot; stories=&quot;reject-empty-title,reject-empty-author&quot;&gt;
+An empty title or author is rejected with a clear error message.
+&lt;/requirement&gt;
+&lt;requirement name=&quot;automated-tests-per-behavior&quot; stories=&quot;test-add-book,test-list-books,test-remove-book,test-validation&quot;&gt;
+The application includes automated tests for each behavior.
+&lt;/requirement&gt;
+&lt;requirement name=&quot;posix-test-runner&quot; stories=&quot;verification&quot;&gt;
+The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete
+automated test suite from the application root. `sh bin/test.sh` exits zero only when every test
+passes. The final build story runs this command after every implementation story and preserves its
+command, exit code, standard output, and standard error as evidence.
+&lt;/requirement&gt;
+&lt;requirement name=&quot;web-application&quot; stories=&quot;foundation,web-shell&quot;&gt;
+Build a web application that keeps a list of books to read.
+&lt;/requirement&gt;</pre></article>
+</main>
+</body>
+</html>

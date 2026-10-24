@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/18-score-build-report.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/18-score-build-report.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/18-score-build-report.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+
+Build report: ReadingList
+  evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/targets/ReadingList/evidence
+  usage:    /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/workspace/logs/llm.jsonl
+
+  Blueprint acceptance (last `score ac`): PASS 14  FAIL 0  UNVERIFIED 0  PREPASSED 1  (15 AC)
+
+  Block                     Build AC  Calls     Cached  Uncached     Hit  Output    Time
+  ──────────────────────────────────────────────────────────────────────────────────────
+  ✓ Block 1 · Foundational       3/3      1    263,180        18  100.0%  10,186  1m 34s
+  ✓ Block 2 · Service            4/4      1    395,665        22  100.0%  17,315  1m 43s
+  ✓ Block 3 · Service            4/4      1    382,254        24  100.0%  11,392  1m 13s
+  ✓ Block 4 · Service            2/2      1    247,885        20  100.0%  14,388  1m 32s
+  ✓ Block 5 · Feature            2/2      1    210,037        20  100.0%   6,712  1m 08s
+  ──────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                        15/15      5  1,499,021       104  100.0%  59,993  7m 11s
+
+  Blocks: 5/5 verified · 5 on first call · 0 repaired
+  Model:  claude-haiku-5-5
+  Tokens: 1,499,021 cached · 104 uncached · 59,993 out
+
+</pre></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-1.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-1.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-1.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 1 · Foundational (block-1)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 2557</li><li>execution id: 20261023.210502.052Z-4d83d2d4</li></ul>
+<h2>Stories built</h2>
+<ul><li>Establish the Flask application structure and module boundaries. (architecture) [story]</li></ul>
+<h2>Reusable compacts</h2>
+<ul><li>ARCHITECTURE_compact.md</li></ul>
+<h2>Stacked context</h2>
+<ul><li>implements: python.md (SP 761)</li><li>compass: COMPASS.md (SP 551)</li><li>implements: ARCHITECTURE.md (SP 723)</li><li>stack: flask.md (SP 451)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/config.py</li><li>app_server/features/<strong>init</strong>.py</li><li>app_server/features/reading_list/<strong>init</strong>.py</li><li>app_server/features/reading_list/routes.py</li><li>app_server/testing.py</li><li>bin/test.sh</li><li>pyproject.toml</li><li>tests/test_architecture.py</li><li>uv.lock</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: architecture-factory (ARCHITECTURE.md)</li></ul>
+<p>intent: The application exposes the selected Flask factory and testing client contracts. error: foundation not built: <code>app_server</code> is the package the web-server foundation (django.md, fastapi.md, flask.md) builds, and the build directory has no <code>app_server/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: architecture-testing (ARCHITECTURE.md)</li></ul>
+<p>intent: The application factory can be created repeatedly for isolated automated tests. error: foundation not built: <code>app_server</code> is the package the web-server foundation (django.md, fastapi.md, flask.md) builds, and the build directory has no <code>app_server/</code>. The criterion exercises the built application, so it was not run.</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: architecture-factory (ARCHITECTURE.md)</li></ul>
+<p>intent: The application exposes the selected Flask factory and testing client contracts. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: architecture-testing (ARCHITECTURE.md)</li></ul>
+<p>intent: The application factory can be created repeatedly for isolated automated tests. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>&lt;reusable-compact filename=&quot;ARCHITECTURE.md&quot;&gt; Provides <code>app_server.create_app()</code> and <code>app_server.testing.web_client()</code>. The factory composes feature-owned Flask Blueprints; feature routes own HTTP workflows, while generated <code>persistence</code> owns storage. Required routes: <code>GET /</code>, <code>POST /books</code>, and <code>POST /books/&lt;book_id&gt;/delete</code>. Configuration belongs to <code>app_server</code>; the primary workflow is reachable at <code>/</code>. &lt;/reusable-compact&gt;</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/config.py</li><li>app_server/features/<strong>init</strong>.py</li><li>app_server/features/reading_list/<strong>init</strong>.py</li><li>app_server/features/reading_list/routes.py</li><li>app_server/testing.py</li><li>bin/test.sh</li><li>pyproject.toml</li><li>tests/test_architecture.py</li><li>uv.lock</li></ul>
+<p>SUMMARY: Implemented the Flask application factory, configuration boundary, feature Blueprint routes, testing client, POSIX test launcher, dependency manifests, and architecture tests. Pytest and the full dispatcher pass.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

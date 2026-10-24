@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/commands/18-score-build-report.stdout.log</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/commands/18-score-build-report.stdout.log</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/commands/18-score-build-report.stdout.log">Raw file</a></div></header>
+<article class="doc"><pre>Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+
+Build report: ReadingList
+  evidence: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/workspace/targets/ReadingList/evidence
+  usage:    /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/workspace/logs/llm.jsonl
+
+  Blueprint acceptance (last `score ac`): PASS 10  FAIL 3  UNVERIFIED 0  PREPASSED 9  (22 AC)
+
+  Block                     Build AC  Calls     Cached  Uncached    Hit  Output    Time
+  ─────────────────────────────────────────────────────────────────────────────────────
+  ✓ Block 2 · Foundational       3/3      1          0         0      —       0      0s
+  ✓ Block 1 · Foundational       2/2      1    291,200    30,795  90.4%   5,482  1m 23s
+  ✓ Block 3 · Foundational       2/2      1    351,360    54,293  86.6%   9,664  1m 22s
+  ✓ Block 4 · Service          10/10      2    660,096   100,953  86.7%  12,862  2m 23s
+  ✓ Block 5 · Service            3/3      1    316,672    21,592  93.6%   4,465  1m 02s
+  ✓ Block 6 · Service            2/2      1    144,896    15,287  90.5%   3,802     57s
+  ─────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                        22/22      7  1,764,224   222,920  88.8%  36,275  7m 09s
+
+  Blocks: 6/6 verified · 5 on first call · 1 repaired
+  Model:  gpt-5.6-luna
+  Tokens: 1,764,224 cached · 222,920 uncached · 36,275 out
+
+  Repairs
+    Block 4 · Service [block-4]
+      initial build  incomplete 10/10 AC · 461,974 in · 84.1% hit · 1m 22s
+                     not yet passing: database-books-create, database-books-list, database-books-delete
+      repair 1       built      10/10 AC · 299,075 in · 90.8% hit · 1m 00s
+
+  Note: 1 execution(s) have no usage record; their tokens read as zero.
+
+</pre></article>
+</main>
+</body>
+</html>

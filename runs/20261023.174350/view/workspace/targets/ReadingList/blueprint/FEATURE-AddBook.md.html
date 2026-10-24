@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-AddBook.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Add Book</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Add a book with a title and author, persist it, and return the stored book.</td></tr><tr><td>Depends On</td><td>FEATURE-AppShell.md, DATABASE.md</td></tr><tr><td>Provides</td><td>POST /books</td></tr><tr><td>Consumes</td><td>books.create, books.get</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Let the reader add a book. A valid submission is stored and returned; the new book appears in later list reads.</p>
+<h2>Trigger</h2>
+<p>A client sends <code>POST /books</code> with a JSON body.</p>
+<h2>Sequence</h2>
+<ol><li>The route parses the JSON body for <code>title</code> and <code>author</code>.</li><li>The service <code>app_server.services.books.add_book(db, title, author)</code> stores the book via <code>books.create</code>.</li><li>The route returns 201 with the stored book.</li></ol>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Route</th><th>Behavior</th></tr></thead><tbody><tr><td><code>POST /books</code></td><td>JSON <code>{&quot;title&quot;: ..., &quot;author&quot;: ...}</code>. Returns 201 with JSON <code>{&quot;id&quot;, &quot;title&quot;, &quot;author&quot;}</code>. Validation of empty fields is owned by FEATURE-RejectEmptyFields.md.</td></tr></tbody></table></div>
+<h2>Reads</h2>
+<p><code>books.get</code> is used to return the stored row.</p>
+<h2>Writes</h2>
+<p><code>books.create</code> inserts one row per valid submission; ids ascend in insertion order.</p>
+<h2>Database Interface</h2>
+<ul><li><code>FEATURE-BOOK-001</code> — write: create a book - supplies: <code>title</code>, <code>author</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li><li><code>FEATURE-BOOK-002</code> — read: retrieve a book by id - supplies: <code>id</code> - returns: <code>id</code>, <code>title</code>, <code>author</code></li></ul>
+<h2>Tests</h2>
+<p>The build writes pytest tests under <code>tests/</code> covering a valid add, the 201 response fields, and a read-back of the stored row.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC addbook-create ===<br>Intent: POST /books answers 201 and returns the title and author that were supplied, with an id.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>title = &quot;ac-addbook-create-title&quot; author = &quot;ac-addbook-create-author&quot; client = web_client() created_id = None try: response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 201 body = response.get_json() created_id = body[&quot;id&quot;] assert isinstance(created_id, int) assert body[&quot;title&quot;] == title assert body[&quot;author&quot;] == author finally: if created_id is not None: with committed_session() as db: db.books.delete(id=created_id) === END AC addbook-create ===</p>
+<p>=== AC addbook-persisted ===<br>Intent: A submitted book is read back from the store with the supplied title and author.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>title = &quot;ac-addbook-persist-title&quot; author = &quot;ac-addbook-persist-author&quot; created_id = None try: response = web_client().post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}) assert response.status_code == 201 created_id = response.get_json()[&quot;id&quot;] with committed_session() as db: row = db.books.get(id=created_id) assert row.id == created_id assert row.title == title assert row.author == author finally: if created_id is not None: with committed_session() as db: db.books.delete(id=created_id) === END AC addbook-persisted ===</p>
+<p>=== AC addbook-ascending-ids ===<br>Intent: Two books added in sequence receive ascending ids, preserving insertion order.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() created = [] try: for title in [&quot;ac-addbook-seq-one&quot;, &quot;ac-addbook-seq-two&quot;]: response = client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: &quot;ac-addbook-seq-author&quot;}) assert response.status_code == 201 created.append(response.get_json()[&quot;id&quot;]) assert created[0] &lt; created[1] finally: with committed_session() as db: for book_id in created: db.books.delete(id=book_id) === END AC addbook-ascending-ids ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The route never accesses the database directly; it calls the book service.</li><li>A stored book keeps exactly the title and author supplied.</li></ul></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.211537.447Z_readinglist_score-release_codex.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.211537.447Z_readinglist_score-release_codex.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.211537.447Z_readinglist_score-release_codex.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>{&quot;criteria&quot;:[{&quot;id&quot;:&quot;st-001&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The supplied full gate passed and bin/test.sh is a POSIX executable invoking pytest.&quot;,&quot;evidence&quot;:[&quot;governed gate full returned 0 with 18 passing tests&quot;,&quot;bin/test.sh:1-12&quot;]},{&quot;id&quot;:&quot;st-002&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The ephemeral probe successfully submitted a book and found it on the next list read.&quot;,&quot;evidence&quot;:[&quot;probe: POST /books succeeded and GET / contained the submitted title&quot;,&quot;app_server/features/reading_list/routes.py:25-40&quot;]},{&quot;id&quot;:&quot;st-003&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The ephemeral probe confirmed books were displayed in insertion order.&quot;,&quot;evidence&quot;:[&quot;probe: First Probe Book appeared before Second Probe Book&quot;,&quot;app_server/features/reading_list/routes.py:17-22&quot;]},{&quot;id&quot;:&quot;st-004&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The ephemeral probe removed a selected book and confirmed it was absent from the next read.&quot;,&quot;evidence&quot;:[&quot;probe: POST /books/&lt;id&gt;/delete succeeded and the removed title was absent from GET /&quot;,&quot;app_server/features/reading_list/routes.py:43-50&quot;]},{&quot;id&quot;:&quot;st-005&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;The ephemeral probe confirmed empty title and author submissions return 400 responses with field-specific reasons.&quot;,&quot;evidence&quot;:[&quot;probe: empty title and whitespace-only author both returned 400 with required-field messages&quot;,&quot;app_server/features/reading_list/routes.py:29-34&quot;]},{&quot;id&quot;:&quot;st-006&quot;,&quot;verdict&quot;:&quot;MET&quot;,&quot;rationale&quot;:&quot;Automated tests cover adding, insertion ordering, removal, and rejecting empty title and author.&quot;,&quot;evidence&quot;:[&quot;tests/test_verification_runner.py:17-80&quot;,&quot;tests/test_reading_list_screen.py:38-88&quot;,&quot;governed gate full passed&quot;]}],&quot;improvements&quot;:[]}</pre></article>
+</main>
+</body>
+</html>

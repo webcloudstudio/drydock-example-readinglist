@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/templates/reading_list.html</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/templates/reading_list.html</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../build/ReadingList/app_server/templates/reading_list.html">Raw file</a></div></header>
+<article class="doc"><pre>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;Reading List&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nav&gt;
+    &lt;a href=&quot;/&quot;&gt;Reading List (1)&lt;/a&gt;
+  &lt;/nav&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Reading List&lt;/h1&gt;
+
+    &lt;form id=&quot;add-book&quot; method=&quot;post&quot; action=&quot;/books&quot; novalidate&gt;
+      &lt;label for=&quot;title&quot;&gt;Title&lt;/label&gt;
+      &lt;input id=&quot;title&quot; name=&quot;title&quot; type=&quot;text&quot;&gt;
+      &lt;span id=&quot;title-error&quot; class=&quot;error&quot; role=&quot;alert&quot;&gt;&lt;/span&gt;
+
+      &lt;label for=&quot;author&quot;&gt;Author&lt;/label&gt;
+      &lt;input id=&quot;author&quot; name=&quot;author&quot; type=&quot;text&quot;&gt;
+      &lt;span id=&quot;author-error&quot; class=&quot;error&quot; role=&quot;alert&quot;&gt;&lt;/span&gt;
+
+      &lt;button type=&quot;submit&quot;&gt;Add book&lt;/button&gt;
+    &lt;/form&gt;
+
+    &lt;ol id=&quot;books&quot;&gt;&lt;/ol&gt;
+  &lt;/main&gt;
+
+  &lt;script&gt;
+    (function () {
+      var FIELDS = [&quot;title&quot;, &quot;author&quot;];
+      var form = document.getElementById(&quot;add-book&quot;);
+      var list = document.getElementById(&quot;books&quot;);
+
+      function clearErrors() {
+        FIELDS.forEach(function (field) {
+          document.getElementById(field + &quot;-error&quot;).textContent = &quot;&quot;;
+        });
+      }
+
+      function showError(field, message) {
+        if (FIELDS.indexOf(field) === -1) {
+          return;
+        }
+        document.getElementById(field + &quot;-error&quot;).textContent = message;
+      }
+
+      function renderBooks(books) {
+        list.textContent = &quot;&quot;;
+        books.forEach(function (book) {
+          var item = document.createElement(&quot;li&quot;);
+          var label = document.createElement(&quot;span&quot;);
+          label.textContent = book.title + &quot; by &quot; + book.author;
+          var remove = document.createElement(&quot;button&quot;);
+          remove.type = &quot;button&quot;;
+          remove.textContent = &quot;Remove&quot;;
+          remove.addEventListener(&quot;click&quot;, function () {
+            removeBook(book.id);
+          });
+          item.appendChild(label);
+          item.appendChild(document.createTextNode(&quot; &quot;));
+          item.appendChild(remove);
+          list.appendChild(item);
+        });
+      }
+
+      function loadBooks() {
+        return fetch(&quot;/books&quot;, { headers: { Accept: &quot;application/json&quot; } })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(renderBooks);
+      }
+
+      function removeBook(id) {
+        return fetch(&quot;/books/&quot; + encodeURIComponent(id), { method: &quot;DELETE&quot; })
+          .then(function (response) {
+            if (response.status === 204) {
+              return loadBooks();
+            }
+          });
+      }
+
+      form.addEventListener(&quot;submit&quot;, function (event) {
+        event.preventDefault();
+        clearErrors();
+
+        var title = form.elements.title.value.trim();
+        var author = form.elements.author.value.trim();
+        if (title === &quot;&quot;) {
+          showError(&quot;title&quot;, &quot;Title must not be empty.&quot;);
+          return;
+        }
+        if (author === &quot;&quot;) {
+          showError(&quot;author&quot;, &quot;Author must not be empty.&quot;);
+          return;
+        }
+
+        fetch(&quot;/books&quot;, {
+          method: &quot;POST&quot;,
+          headers: { &quot;Content-Type&quot;: &quot;application/json&quot;, Accept: &quot;application/json&quot; },
+          body: JSON.stringify({ title: title, author: author })
+        })
+          .then(function (response) {
+            if (response.status === 201) {
+              form.reset();
+              return loadBooks();
+            }
+            return response.json().then(function (body) {
+              showError(body.field, body.field + &quot; must not be empty.&quot;);
+            });
+          });
+      });
+
+      loadBooks();
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></article>
+</main>
+</body>
+</html>

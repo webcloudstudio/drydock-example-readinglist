@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_test_runner.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_test_runner.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_test_runner.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Behavior tests for bin/test.sh, the POSIX entry point for the full suite.
+
+Each test runs the real script from a temporary application root. A stub `pytest` placed first on
+PATH records what it observed and exits with a chosen status, so the script&#x27;s own behavior is
+checked without recursively running this suite.
+&quot;&quot;&quot;
+
+import os
+import shutil
+import subprocess
+from collections.abc import Callable
+from pathlib import Path
+
+import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SCRIPT = PROJECT_ROOT / &quot;bin&quot; / &quot;test.sh&quot;
+
+RunScript = Callable[..., subprocess.CompletedProcess]
+
+
+def _write_executable(path: Path, text: str) -&gt; None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding=&quot;utf-8&quot;)
+    path.chmod(0o755)
+
+
+@pytest.fixture
+def app_root(tmp_path: Path) -&gt; Path:
+    &quot;&quot;&quot;Return a temporary application root holding a copy of the real bin/test.sh.&quot;&quot;&quot;
+    root = tmp_path / &quot;app&quot;
+    (root / &quot;bin&quot;).mkdir(parents=True)
+    shutil.copy2(SCRIPT, root / &quot;bin&quot; / &quot;test.sh&quot;)
+    return root
+
+
+@pytest.fixture
+def stub_bin(tmp_path: Path) -&gt; Path:
+    &quot;&quot;&quot;Return a directory that will hold the stub pytest, placed first on PATH.&quot;&quot;&quot;
+    directory = tmp_path / &quot;stubs&quot;
+    directory.mkdir()
+    return directory
+
+
+@pytest.fixture
+def run_script(app_root: Path, stub_bin: Path) -&gt; RunScript:
+    &quot;&quot;&quot;Return a runner that executes `sh bin/test.sh` with the given stub exit status.&quot;&quot;&quot;
+
+    def run(status: int = 0, cwd: Path | None = None) -&gt; subprocess.CompletedProcess:
+        record = app_root.parent / &quot;pytest-record.txt&quot;
+        _write_executable(
+            stub_bin / &quot;pytest&quot;,
+            &quot;#!/bin/sh\n&quot;
+            f&#x27;printf &quot;%s\\n&quot; &quot;$(pwd)&quot; &quot;$*&quot; &quot;${{RL_VENV_MARKER:-unset}}&quot; &gt; &quot;{record}&quot;\n&#x27;
+            f&quot;exit {status}\n&quot;,
+        )
+        env = {**os.environ, &quot;PATH&quot;: f&quot;{stub_bin}{os.pathsep}{os.environ[&#x27;PATH&#x27;]}&quot;}
+        env.pop(&quot;RL_VENV_MARKER&quot;, None)
+        return subprocess.run(
+            [&quot;sh&quot;, str(app_root / &quot;bin&quot; / &quot;test.sh&quot;)],
+            cwd=cwd or app_root,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+
+    return run
+
+
+def _read_record(app_root: Path) -&gt; list[str]:
+    return (app_root.parent / &quot;pytest-record.txt&quot;).read_text(encoding=&quot;utf-8&quot;).splitlines()
+
+
+def test_runner_exits_zero_when_pytest_passes(run_script: RunScript) -&gt; None:
+    result = run_script(status=0)
+
+    assert result.returncode == 0
+
+
+def test_runner_passes_through_pytest_failure_status(run_script: RunScript) -&gt; None:
+    result = run_script(status=3)
+
+    assert result.returncode == 3
+
+
+def test_runner_passes_through_pytest_error_status(run_script: RunScript) -&gt; None:
+    result = run_script(status=5)
+
+    assert result.returncode == 5
+
+
+def test_runner_invokes_pytest_quietly(run_script: RunScript, app_root: Path) -&gt; None:
+    run_script(status=0)
+
+    assert _read_record(app_root)[1] == &quot;-q&quot;
+
+
+def test_runner_changes_to_app_root_from_another_directory(
+    run_script: RunScript, app_root: Path, tmp_path: Path
+) -&gt; None:
+    elsewhere = tmp_path / &quot;elsewhere&quot;
+    elsewhere.mkdir()
+
+    result = run_script(status=0, cwd=elsewhere)
+
+    assert result.returncode == 0
+    assert Path(_read_record(app_root)[0]).resolve() == app_root.resolve()
+
+
+def test_runner_activates_venv_when_present(run_script: RunScript, app_root: Path) -&gt; None:
+    _write_executable(
+        app_root / &quot;.venv&quot; / &quot;bin&quot; / &quot;activate&quot;,
+        &#x27;export RL_VENV_MARKER=&quot;activated&quot;\n&#x27;,
+    )
+
+    run_script(status=0)
+
+    assert _read_record(app_root)[2] == &quot;activated&quot;
+
+
+def test_runner_uses_path_pytest_when_venv_absent(run_script: RunScript, app_root: Path) -&gt; None:
+    assert not (app_root / &quot;.venv&quot;).exists()
+
+    result = run_script(status=0)
+
+    assert result.returncode == 0
+    assert _read_record(app_root)[2] == &quot;unset&quot;
+</pre></article>
+</main>
+</body>
+</html>

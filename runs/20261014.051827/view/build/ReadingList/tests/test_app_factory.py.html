@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_app_factory.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_app_factory.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_app_factory.py">Raw file</a></div></header>
+<article class="doc"><pre>from flask import Flask
+
+from app_server import create_app
+
+
+def test_create_app_returns_flask_instance():
+    assert isinstance(create_app(), Flask)
+
+
+def test_create_app_returns_a_new_application_each_call():
+    assert create_app() is not create_app()
+
+
+def test_create_app_registers_only_the_page_and_book_routes_besides_static():
+    app = create_app()
+    rules = {rule.rule for rule in app.url_map.iter_rules()}
+    assert rules == {&quot;/&quot;, &quot;/static/&lt;path:filename&gt;&quot;, &quot;/books&quot;, &quot;/books/&lt;int:book_id&gt;&quot;}
+
+
+def test_create_app_leaves_testing_disabled_by_default():
+    assert create_app().config[&quot;TESTING&quot;] is False
+</pre></article>
+</main>
+</body>
+</html>

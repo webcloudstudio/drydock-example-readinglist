@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from ARCHITECTURE.md sha256=513564d05020d87c4d59bcbd40b693fe2aae86fabff2f44b9c436731980f5168 on 2026-10-23 by drydock build agent --&gt;</p>
+<p>Project: ReadingList (Flask, SQLite via generated <code>persistence</code>, pytest). Python &gt;=3.11.<br>Layout: <code>pyproject.toml</code> + <code>uv.lock</code> (deps: flask&gt;=3.1,&lt;4; dev group: pytest&gt;=9,&lt;10); <code>.venv</code> via <code>uv venv</code>; <code>app_server/__init__.py</code> exposes <code>create_app() -&gt; Flask</code>; <code>app_server/testing.py</code> exposes <code>web_client()</code>; <code>app_server/routes/{books.py,pages.py}</code>; <code>app_server/services/books.py</code> exposes <code>add_book</code>, <code>list_books</code>, <code>remove_book</code>, <code>validate_book_input</code>; <code>app_server/templates/</code>; <code>persistence/</code> generated from <code>DATABASE.md</code>; <code>tests/conftest.py</code> exposes <code>web_client</code> and <code>db_session</code> fixtures; <code>bin/test.sh</code> POSIX runner.<br>Rules: routes call services only; services call <code>db.&lt;table&gt;.&lt;verb&gt;(...)</code>; only <code>persistence</code> touches SQLite; books ordered by id ascending; rejected input -&gt; 400; unknown book removal -&gt; 404; server-rendered HTML forms, no client JS.<br>Config: <code>DATABASE_URL</code> &gt; <code>DATABASE_PATH</code> &gt; <code>data/app.db</code>.<br>Test command: <code>pytest -q</code> from application root.</p></article>
+</main>
+</body>
+</html>

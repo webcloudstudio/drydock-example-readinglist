@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_test_runner.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_test_runner.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_test_runner.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Test runner tests: bin/test.sh is POSIX sh, runs the whole suite, and reports its verdict.
+
+Each behavior is exercised by running the real runner against a temporary application root
+and reading back the process exit status. Temporary roots carry their own tests, so the
+runner&#x27;s verdict is observed without re-entering this suite.
+&quot;&quot;&quot;
+
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RUNNER = PROJECT_ROOT / &quot;bin&quot; / &quot;test.sh&quot;
+VENV_BIN = Path(sys.executable).parent  # not resolved: the venv&#x27;s own bin holds pytest
+
+
+def _make_app_root(root: Path, test_source: str) -&gt; Path:
+    &quot;&quot;&quot;Build a minimal application root holding the runner and one test module.&quot;&quot;&quot;
+    (root / &quot;bin&quot;).mkdir(parents=True)
+    shutil.copy(RUNNER, root / &quot;bin&quot; / &quot;test.sh&quot;)
+    (root / &quot;tests&quot;).mkdir()
+    (root / &quot;tests&quot; / &quot;test_sample.py&quot;).write_text(test_source)
+    return root
+
+
+def _run_runner(runner: Path, cwd: Path) -&gt; subprocess.CompletedProcess:
+    &quot;&quot;&quot;Run the runner with pytest reachable on PATH and no project .venv in the temporary root.&quot;&quot;&quot;
+    env = {&quot;PATH&quot;: f&quot;{VENV_BIN}:/usr/bin:/bin&quot;, &quot;HOME&quot;: str(cwd)}
+    return subprocess.run([&quot;sh&quot;, str(runner)], cwd=cwd, env=env, capture_output=True, text=True)
+
+
+def test_runner_is_posix_sh_syntax():
+    result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, str(RUNNER)], capture_output=True, text=True)
+
+    assert result.returncode == 0
+
+
+def test_runner_exits_zero_when_every_test_passes(tmp_path):
+    root = _make_app_root(tmp_path / &quot;app&quot;, &quot;def test_passes():\n    assert 1 + 1 == 2\n&quot;)
+
+    result = _run_runner(root / &quot;bin&quot; / &quot;test.sh&quot;, cwd=tmp_path)
+
+    assert result.returncode == 0
+
+
+def test_runner_exits_nonzero_when_a_test_fails(tmp_path):
+    root = _make_app_root(tmp_path / &quot;app&quot;, &quot;def test_fails():\n    assert 1 + 1 == 3\n&quot;)
+
+    result = _run_runner(root / &quot;bin&quot; / &quot;test.sh&quot;, cwd=tmp_path)
+
+    assert result.returncode != 0
+
+
+def test_runner_exits_nonzero_when_one_of_many_tests_fails(tmp_path):
+    source = (
+        &quot;def test_first():\n    assert True\n\n&quot;
+        &quot;def test_second():\n    assert False\n\n&quot;
+        &quot;def test_third():\n    assert True\n&quot;
+    )
+    root = _make_app_root(tmp_path / &quot;app&quot;, source)
+
+    result = _run_runner(root / &quot;bin&quot; / &quot;test.sh&quot;, cwd=tmp_path)
+
+    assert result.returncode != 0
+
+
+def test_runner_runs_from_application_root_regardless_of_working_directory(tmp_path):
+    # Started from tmp_path, not the application root: the run only finds and passes the
+    # temporary suite if the runner changed into the application root before pytest.
+    root = _make_app_root(tmp_path / &quot;app&quot;, &quot;def test_passes():\n    assert True\n&quot;)
+    unrelated = tmp_path / &quot;unrelated&quot;
+    unrelated.mkdir()
+
+    result = _run_runner(root / &quot;bin&quot; / &quot;test.sh&quot;, cwd=unrelated)
+
+    assert result.returncode == 0
+
+
+def test_runner_exit_status_is_pytest_status_for_failing_suite(tmp_path):
+    root = _make_app_root(tmp_path / &quot;app&quot;, &quot;def test_fails():\n    assert False\n&quot;)
+
+    result = _run_runner(root / &quot;bin&quot; / &quot;test.sh&quot;, cwd=tmp_path)
+
+    # pytest reports a failed run with exit status 1; the runner must not mask it.
+    assert result.returncode == 1
+</pre></article>
+</main>
+</body>
+</html>

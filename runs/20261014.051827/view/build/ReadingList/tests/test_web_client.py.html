@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_web_client.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_web_client.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_web_client.py">Raw file</a></div></header>
+<article class="doc"><pre>from flask import Flask
+
+from app_server import testing
+
+
+def test_web_client_returns_client_for_testing_application():
+    client = testing.web_client()
+    assert isinstance(client.application, Flask)
+    assert client.application.config[&quot;TESTING&quot;] is True
+
+
+def test_web_client_answers_unregistered_path_with_404():
+    client = testing.web_client()
+    response = client.get(&quot;/unregistered-probe-path&quot;)
+    assert response.status_code == 404
+
+
+def test_web_client_fixture_delegates_to_helper(web_client):
+    assert web_client.application.config[&quot;TESTING&quot;] is True
+    assert web_client.get(&quot;/unregistered-probe-path&quot;).status_code == 404
+</pre></article>
+</main>
+</body>
+</html>

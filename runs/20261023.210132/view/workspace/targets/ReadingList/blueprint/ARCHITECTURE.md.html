@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/ARCHITECTURE.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/ARCHITECTURE.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/ARCHITECTURE.md">Raw file</a></div></header>
+<article class="doc"><h1>ARCHITECTURE: ReadingList</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Application structure and module boundaries for the ReadingList web application.</td></tr><tr><td>Depends On</td><td>—</td></tr><tr><td>Provides</td><td><code>app_server.create_app</code>, <code>app_server.testing.web_client</code></td></tr><tr><td>Consumes</td><td>—</td></tr></tbody></table></div>
+<h2>Application Structure</h2>
+<p>The application uses a Flask factory in <code>app_server.create_app</code>. Web routes are registered by the application factory. Feature modules handle request workflows and call the generated <code>persistence</code> package for storage.</p>
+<h2>Module Ownership</h2>
+<div class="scroll"><table><thead><tr><th>Boundary</th><th>Owner</th><th>Rule</th></tr></thead><tbody><tr><td>Application factory</td><td><code>app_server</code></td><td>Creates and configures the Flask application.</td></tr><tr><td>Web routes</td><td>Feature modules</td><td>Translate HTTP requests into feature operations.</td></tr><tr><td>Persistence</td><td>Generated <code>persistence</code> package</td><td>Owns database connections, schema operations, and repository calls.</td></tr><tr><td>Configuration</td><td><code>app_server</code></td><td>Resolves application settings and database configuration.</td></tr><tr><td>Templates and styling</td><td>Interface layer</td><td>Renders the server-rendered reading-list screen.</td></tr><tr><td>External services</td><td>None</td><td>No external services are required.</td></tr></tbody></table></div>
+<h2>Routes</h2>
+<div class="scroll"><table><thead><tr><th>Method</th><th>Route</th><th>Owner</th></tr></thead><tbody><tr><td>GET</td><td><code>/</code></td><td><code>FEATURE-READING-LIST.md</code></td></tr><tr><td>POST</td><td><code>/books</code></td><td><code>FEATURE-ADD-BOOK.md</code> and <code>FEATURE-VALIDATE-BOOK.md</code></td></tr><tr><td>POST</td><td><code>/books/&lt;book_id&gt;/delete</code></td><td><code>FEATURE-REMOVE-BOOK.md</code></td></tr></tbody></table></div>
+<h2>Technology Stack</h2>
+<div class="scroll"><table><thead><tr><th>Technology</th><th>Use</th></tr></thead><tbody><tr><td>Python</td><td>Application implementation and tests.</td></tr><tr><td>Flask</td><td>Web application factory, routing, and test client.</td></tr><tr><td>SQLite</td><td>Local relational persistence.</td></tr><tr><td>pytest</td><td>Automated test suite.</td></tr><tr><td>HTML/CSS</td><td>Server-rendered browser interface.</td></tr></tbody></table></div>
+<h2>Technical Decisions</h2>
+<ul><li>The primary page is served at <code>/</code>.</li><li>Book creation uses <code>POST /books</code>.</li><li>Book removal uses <code>POST /books/&lt;book_id&gt;/delete</code>.</li><li>Features access persistence only through generated repository operations.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC architecture-factory ===<br>Intent: The application exposes the selected Flask factory and testing client contracts.</p>
+<p>from flask import Flask from app_server import create_app from app_server.testing import web_client</p>
+<p>app = create_app() assert isinstance(app, Flask) client = web_client() assert client is not None === END AC architecture-factory ===</p>
+<p>=== AC architecture-testing ===<br>Intent: The application factory can be created repeatedly for isolated automated tests.</p>
+<p>from app_server import create_app</p>
+<p>first = create_app() second = create_app() assert first is not second assert first.name == second.name === END AC architecture-testing ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Raw database access remains outside feature route modules.</li><li>The application uses the declared Flask factory and testing-client contracts.</li><li>The primary workflow remains reachable from <code>/</code>.</li></ul></article>
+</main>
+</body>
+</html>

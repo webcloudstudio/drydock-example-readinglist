@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/app_server/books.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/app_server/books.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/app_server/books.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;HTTP routes for books: the reading list page, add a book, list stored books in the order added, and remove a book.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+from flask import Blueprint, abort, current_app, jsonify, redirect, render_template, request
+from werkzeug.wrappers import Response
+
+from persistence import Database
+
+from .book_service import BookNotFound, BookRejected, add_book, list_books, remove_book
+
+bp = Blueprint(&quot;books&quot;, __name__)
+
+
+def _database() -&gt; Database:
+    return current_app.extensions[&quot;database&quot;]
+
+
+def _reading_list(error: str | None = None) -&gt; str:
+    &quot;&quot;&quot;Render the reading list page: the alert region, the add form, and the books in the order added.&quot;&quot;&quot;
+    return render_template(&quot;reading_list.html&quot;, books=list_books(_database()), error=error)
+
+
+@bp.get(&quot;/&quot;)
+def index() -&gt; str:
+    &quot;&quot;&quot;Render the reading list page with every stored book in the order added.&quot;&quot;&quot;
+    return _reading_list()
+
+
+@bp.get(&quot;/books&quot;)
+def get_books() -&gt; Response:
+    &quot;&quot;&quot;Return every stored book as a JSON array of ``id``, ``title`` and ``author``, oldest first.&quot;&quot;&quot;
+    return jsonify(
+        [{&quot;id&quot;: row.id, &quot;title&quot;: row.title, &quot;author&quot;: row.author} for row in list_books(_database())]
+    )
+
+
+@bp.post(&quot;/books&quot;)
+def create_book() -&gt; Response:
+    &quot;&quot;&quot;Add a book from the ``title`` and ``author`` form fields, then redirect to the start page.
+
+    A refused submission answers 400: as JSON with ``error`` and ``field`` when the client asks
+    for ``application/json``, otherwise as the reading list page with the reason in the alert region.
+    &quot;&quot;&quot;
+    title = request.form.get(&quot;title&quot;, &quot;&quot;).strip()
+    author = request.form.get(&quot;author&quot;, &quot;&quot;).strip()
+    try:
+        add_book(_database(), title=title, author=author)
+    except BookRejected as rejected:
+        if request.accept_mimetypes.best == &quot;application/json&quot;:
+            refused = jsonify(error=rejected.reason, field=rejected.field)
+            refused.status_code = 400
+            return refused
+        return Response(
+            _reading_list(error=rejected.reason),
+            status=400,
+            mimetype=&quot;text/html&quot;,
+        )
+    return redirect(&quot;/&quot;, code=303)
+
+
+@bp.post(&quot;/books/&lt;int:book_id&gt;/delete&quot;)
+def delete_book(book_id: int) -&gt; Response:
+    &quot;&quot;&quot;Remove the book with ``book_id``, then redirect to the start page; an unknown id answers 404.&quot;&quot;&quot;
+    try:
+        remove_book(_database(), book_id)
+    except BookNotFound:
+        abort(404)
+    return redirect(&quot;/&quot;, code=303)
+</pre></article>
+</main>
+</body>
+</html>

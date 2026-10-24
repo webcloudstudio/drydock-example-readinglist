@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from DATABASE.md sha256=6e75da4739c7c041d1f9831eaa86fae8c13b9e5e592b277c9d9dd0cf188eb3bb on 2026-10-14 by drydock build agent --&gt;</p>
+<p>Table books: id INTEGER PK (autoincrement; list order ascending id), title TEXT NOT NULL, author TEXT NOT NULL. Operations (persistence.open_database(dsn) -&gt; Database; db.books.&lt;verb&gt;(...)):</p>
+<ul><li>books.create(title, author) -&gt; new id (title/author non-empty after trim, per Blueprint).</li><li>books.list() -&gt; list[Book] in ascending id order.</li><li>books.get(id) -&gt; Book | None.</li><li>books.delete(id) -&gt; rows removed (0 or 1).</li></ul>
+<p>Book row: id, title, author. Undeclared verbs (e.g. update) raise UnknownOperation.<br>Guardrail: no empty title or author stored; callers write no SQL.</p></article>
+</main>
+</body>
+</html>

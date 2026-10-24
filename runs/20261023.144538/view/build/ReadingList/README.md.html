@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/README.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/README.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/README.md">Raw file</a></div></header>
+<article class="doc"><h1>ReadingList</h1>
+<h2>Intent</h2>
+<p>A reader-facing web application for keeping an ordered list of books to read. Each book has a title and an author. Readers add, view in insertion order, and remove books. The product exists so a reader can track what they intend to read without losing track of the order they added titles.</p>
+<h2>What It Does</h2>
+<p>Let a reader add a book to the end of the reading list.</p>
+<p>Guarantee that adding a book is covered by an automated test that runs under <code>pytest -q</code>.</p>
+<p>Let a reader (and the reading list page) view every book in the order added.</p>
+<p>Guarantee that listing books in the order added is covered by an automated test that runs under <code>pytest -q</code>.</p>
+<p>The reader must never be able to add a book without an author. The submission is rejected and the reader is told why.</p>
+<p>The reader must never be able to add a book without a title. The submission is rejected and the reader is told why.</p>
+<p>Let a reader remove a book from the reading list.</p>
+<p>The Reading List guardrail &quot;Never ship a behavior without an automated test covering it&quot; applies to removal. This specification governs the project&#x27;s own pytest module <code>tests/test_remove_book.py</code>, written by the build agent beside the finished code against observed output. It exercises removal only through the public HTTP interface.</p>
+<p>The guardrails &quot;Never accept an empty title or an empty author&quot; and &quot;Never omit a rejection reason when a submission is rejected&quot; require automated coverage. This specification governs the project&#x27;s own pytest module <code>tests/test_validation.py</code>, written by the build agent beside the finished code. It exercises validation only through <code>POST /books</code> and <code>GET /books</code>.</p>
+<p>The single page where a reader adds books, sees them in the order added, sees rejection reasons, and removes books.</p>
+<h2>Setup and Running</h2>
+<p><strong>Before first run:</strong></p>
+<ul><li>Confirm the repository has the expected remote with <code>git remote -v</code>; add <code>origin</code> if the startup guard requires it.</li><li>Run <code>git status --short</code> and commit or intentionally stash local changes before deployment-oriented runs.</li></ul>
+<p><strong>Install dependencies:</strong></p>
+<pre><code>uv sync</code></pre>
+<h2>Verification</h2>
+<pre><code>bash bin/test.sh</code></pre>
+<h2>Next Steps</h2>
+<ul><li>Complete the first-run checks above.</li><li>Run <code>bash bin/test.sh</code> before making release or deployment changes.</li></ul></article>
+</main>
+</body>
+</html>

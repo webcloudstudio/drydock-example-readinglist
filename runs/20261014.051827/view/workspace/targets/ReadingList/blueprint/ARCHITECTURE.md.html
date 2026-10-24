@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/ARCHITECTURE.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/ARCHITECTURE.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/ARCHITECTURE.md">Raw file</a></div></header>
+<article class="doc"><h1>ARCHITECTURE: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261014 V1</td></tr><tr><td>Description</td><td>Application factory, test client, and project layout for the reading list web application.</td></tr><tr><td>Depends On</td><td>COMPASS.md</td></tr><tr><td>Provides</td><td>create_app, app_server.testing.web_client</td></tr><tr><td>Consumes</td><td></td></tr></tbody></table></div>
+<h2>Project Layout</h2>
+<ul><li><code>pyproject.toml</code> with committed <code>uv.lock</code>; the environment is <code>.venv</code>, created by <code>uv venv</code>.</li><li><code>app_server/__init__.py</code> exposes <code>create_app() -&gt; Flask</code>.</li><li><code>app_server/testing.py</code> exposes <code>web_client()</code>, which returns a Flask test client with <code>TESTING</code> enabled.</li><li><code>bin/test.sh</code> at the application root, written by the terminal story.</li></ul>
+<h2>Technology Stack</h2>
+<ul><li>Python: implementation language, governed by <code>python.md</code>.</li><li>Flask: web framework, governed by <code>flask.md</code>.</li><li>SQLite: local persistence through the generated <code>persistence</code> package, governed by <code>sqlite.md</code>.</li><li>pytest: test runner for the automated suite.</li><li>HTML/CSS: browser interface, styling unspecified.</li></ul>
+<h2>Module Ownership</h2>
+<div class="scroll"><table><thead><tr><th>Boundary</th><th>Owner</th><th>Notes</th></tr></thead><tbody><tr><td>Application factory</td><td><code>app_server</code></td><td>Registers blueprints and error handlers added by later stories.</td></tr><tr><td>Persistence</td><td><code>persistence</code></td><td>Generated from <code>DATABASE.md</code>; callers reach it only through services.</td></tr><tr><td>Routes</td><td><code>app_server</code> feature modules</td><td>Call <code>db.books.&lt;verb&gt;(...)</code> and never open a connection.</td></tr></tbody></table></div>
+<h2>Foundation Contract</h2>
+<ul><li>package: app_server</li><li>entry: create_app() -&gt; Flask</li><li>fixture: web_client</li><li>fixture_source: app_server/testing.py</li></ul>
+<p><code>create_app()</code> registers no routes of its own. It wires only the blueprints and error handlers that feature stories contribute.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC architecture-create-app ===<br>Intent: create_app returns a Flask application instance.</p>
+<p>from flask import Flask from app_server import create_app</p>
+<p>app = create_app() assert isinstance(app, Flask) === END AC architecture-create-app ===</p>
+<p>=== AC architecture-web-client-testing ===<br>Intent: web_client returns a test client whose application has TESTING enabled.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() assert client.application.config[&quot;TESTING&quot;] is True === END AC architecture-web-client-testing ===</p>
+<p>=== AC architecture-web-client-unregistered ===<br>Intent: web_client answers a path no story registers with 404.</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() response = client.get(&quot;/unregistered-probe-path&quot;) assert response.status_code == 404 === END AC architecture-web-client-unregistered ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The application factory must not register routes that no feature story declares.</li><li>No module outside <code>persistence</code> may import <code>sqlite3</code>.</li></ul></article>
+</main>
+</body>
+</html>

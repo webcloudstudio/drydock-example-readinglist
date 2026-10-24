@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from ARCHITECTURE.md sha256=6ffc16486a0aad1b27190c96896304f063205378eac5ea9b8ddf3ff1b7ae4b38 on 2026-10-14 by drydock build agent --&gt;</p>
+<p>Project: pyproject.toml + committed uv.lock; env .venv via <code>uv venv</code>; python &gt;=3.11. Package app_server:</p>
+<ul><li>create_app() -&gt; Flask. Registers no feature routes; feature stories add blueprints/error handlers.</li><li>app_server.testing.web_client() -&gt; FlaskClient for a fresh app with TESTING=True.</li><li>Unregistered paths answer 404.</li></ul>
+<p>Stack: Python (python.md), Flask (flask.md), SQLite via generated <code>persistence</code> (sqlite.md), pytest.<br>Guardrails: no feature routes registered in the factory; no module outside <code>persistence</code> imports sqlite3.</p></article>
+</main>
+</body>
+</html>

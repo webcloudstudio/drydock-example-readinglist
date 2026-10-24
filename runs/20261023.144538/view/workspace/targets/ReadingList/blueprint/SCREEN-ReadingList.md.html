@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/SCREEN-ReadingList.md">Raw file</a></div></header>
+<article class="doc"><h1>SCREEN: Reading List</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>The single page where a reader adds books, sees them in the order added, sees rejection reasons, and removes books.</td></tr><tr><td>Depends On</td><td>FEATURE-ListBooks.md, FEATURE-RemoveBook.md, FEATURE-RejectEmptyTitle.md, FEATURE-RejectEmptyAuthor.md, UI-GENERAL.md</td></tr><tr><td>Provides</td><td>GET /</td></tr><tr><td>Consumes</td><td>GET /books, POST /books, POST /books/{id}/delete</td></tr><tr><td>Route</td><td>/</td></tr><tr><td>Parent</td><td>—</td></tr><tr><td>Main Menu</td><td>Reading List (1)</td></tr><tr><td>Tab Order</td><td>—</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>One page for the reader to track what they intend to read, in the order they added it.</p>
+<h2>Layout</h2>
+<p>Rendered inside the shared base layout from <code>UI-GENERAL.md</code>:</p>
+<ol><li>Error region: shows the rejection reason when a submission was rejected; empty otherwise.</li><li>Add form: text inputs <code>title</code> and <code>author</code>, and a submit button, posting to <code>POST /books</code>.</li><li>Book list: an ordered list of books in insertion order. Each entry shows title and author and a remove form posting to <code>POST /books/{id}/delete</code>.</li><li>When no books exist the list area shows an empty-state message.</li></ol>
+<h2>Interactions</h2>
+<div class="scroll"><table><thead><tr><th>Interaction</th><th>Route</th><th>Result</th></tr></thead><tbody><tr><td>Open the page</td><td><code>GET /</code></td><td>Page lists every stored book in the order added</td></tr><tr><td>Submit the add form</td><td><code>POST /books</code></td><td>Valid: 303 redirect back to <code>/</code>. Rejected: 400 and the page re-rendered with the reason</td></tr><tr><td>Press remove on a book</td><td><code>POST /books/{id}/delete</code></td><td>303 redirect back to <code>/</code>; the book is gone on the next read</td></tr><tr><td>Read the list as data</td><td><code>GET /books</code></td><td>JSON array of <code>id</code>, <code>title</code>, <code>author</code> in insertion order</td></tr></tbody></table></div>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC screen-index-reachable ===<br>Intent: The reading list page at GET / answers 200 and GET /books answers 200 with a JSON array.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client</p>
+<p>client = web_client() page = client.get(&quot;/&quot;) assert page.status_code == 200 assert len(page.data) &gt; 0 listing = client.get(&quot;/books&quot;) assert listing.status_code == 200 assert isinstance(listing.get_json(), list) === END AC screen-index-reachable ===</p>
+<p>=== AC screen-shows-books-in-order ===<br>Intent: Books added through POST /books appear on GET / in the order they were added, with GET /books agreeing.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>author = &quot;ScreenOrderAuthor01&quot; titles = [&quot;ScreenOrderAlpha&quot;, &quot;ScreenOrderBravo&quot;, &quot;ScreenOrderCharlie&quot;]</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.author == author: db.books.delete(id=row.id)</p>
+<p>client = web_client() purge() try: for t in titles: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: t, &quot;author&quot;: author}) assert response.status_code == 303 html = client.get(&quot;/&quot;).get_data(as_text=True) positions = [html.find(t) for t in titles] assert all(p &gt;= 0 for p in positions) assert positions == sorted(positions) data = client.get(&quot;/books&quot;).get_json() ours = [row[&quot;title&quot;] for row in data if row[&quot;author&quot;] == author] assert ours == titles finally: purge() === END AC screen-shows-books-in-order ===</p>
+<p>=== AC screen-rejection-shown ===<br>Intent: A rejected browser submission is answered 400 with a page, stores nothing, and the page remains reachable.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>marker = &quot;ScreenRejectAuthor02&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.author == marker: db.books.delete(id=row.id)</p>
+<p>client = web_client() purge() try: response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: marker}) assert response.status_code == 400 assert len(response.data) &gt; 0 with committed_session() as db: assert len([r for r in db.books.list() if r.author == marker]) == 0 assert client.get(&quot;/&quot;).status_code == 200 finally: purge() === END AC screen-rejection-shown ===</p>
+<p>=== AC screen-remove-book ===<br>Intent: Posting to the remove route redirects with 303 and the book is absent from GET / and GET /books on the next read.<br>Suite: scoped<br>Requires: python-package=pytest; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>author = &quot;ScreenRemoveAuthor03&quot; keep_title = &quot;ScreenRemoveKeep&quot; drop_title = &quot;ScreenRemoveDrop&quot; route = &quot;/books/{id}/delete&quot;</p>
+<p>def purge(): with committed_session() as db: for row in db.books.list(): if row.author == author: db.books.delete(id=row.id)</p>
+<p>client = web_client() purge() try: assert client.post(&quot;/books&quot;, data={&quot;title&quot;: keep_title, &quot;author&quot;: author}).status_code == 303 assert client.post(&quot;/books&quot;, data={&quot;title&quot;: drop_title, &quot;author&quot;: author}).status_code == 303 rows = [r for r in client.get(&quot;/books&quot;).get_json() if r[&quot;author&quot;] == author] drop_id = [r[&quot;id&quot;] for r in rows if r[&quot;title&quot;] == drop_title][0] response = client.post(route.format(id=drop_id)) assert response.status_code == 303 after = [r[&quot;title&quot;] for r in client.get(&quot;/books&quot;).get_json() if r[&quot;author&quot;] == author] assert after == [keep_title] html = client.get(&quot;/&quot;).get_data(as_text=True) assert drop_title not in html assert keep_title in html finally: purge() === END AC screen-remove-book ===</p>
+<h2>User Acceptance</h2>
+<ul><li>The page reads clearly: the add form, the rejection reason, and the remove controls are easy to find and understand.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>The page never presents books in any order other than the order added.</li><li>A rejected submission always shows its reason.</li><li>The page never reaches the store directly; it renders data from the feature routes.</li></ul></article>
+</main>
+</body>
+</html>

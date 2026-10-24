@@ -1,0 +1,9 @@
+<requirement name="provide-posix-test-script" stories="feature-test-runner">
+st-001 requires the application to provide a POSIX-compatible bin/test.sh that exits zero when every automated test passes.
+</requirement>
+<unattached story="architecture-foundation"/>
+<unattached story="persistence-foundation"/>
+<unattached story="feature-add-book"/>
+<unattached story="feature-list-books"/>
+<unattached story="feature-remove-book"/>
+<unattached story="screen-reading-list"/>

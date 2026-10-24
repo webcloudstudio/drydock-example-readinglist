@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-2.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-2.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-2.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 2 · Service (block-2)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-14</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 3493</li><li>execution id: 20261014.052357.319Z-d192336e</li></ul>
+<h2>Stories built</h2>
+<ul><li>Accept a title and author, store the book, and reject empty fields with a named reason. (feature-add-book) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 833)</li><li>implements: FEATURE-AddBook.md (SP 1094)</li><li>context: ARCHITECTURE_compact.md (SP 261)</li><li>context: DATABASE_compact.md (SP 272)</li><li>stack: python_compact.md (SP 390)</li><li>stack: flask_compact.md (SP 525)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/books_service.py</li><li>app_server/books_views.py</li><li>app_server/settings.py</li><li>data/app.db</li><li>tests/conftest.py</li><li>tests/test_add_book.py</li><li>tests/test_app_factory.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: add-book-stores-valid (FEATURE-AddBook.md)</li></ul>
+<p>intent: A valid submission returns 201 with the stored book&#x27;s title and author. return code: 1 stderr: Traceback (most recent call last): File &quot;add-book-stores-valid.py&quot;, line 8, in &lt;module&gt; assert response.status_code == 201 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: add-book-rejects-empty-title (FEATURE-AddBook.md)</li></ul>
+<p>intent: An empty title returns 400 and names the title field. return code: 1 stderr: Traceback (most recent call last): File &quot;add-book-rejects-empty-title.py&quot;, line 7, in &lt;module&gt; assert response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: add-book-rejects-empty-author (FEATURE-AddBook.md)</li></ul>
+<p>intent: An empty author returns 400 and names the author field. return code: 1 stderr: Traceback (most recent call last): File &quot;add-book-rejects-empty-author.py&quot;, line 7, in &lt;module&gt; assert response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>RED: add-book-rejects-whitespace-title (FEATURE-AddBook.md)</li></ul>
+<p>intent: A whitespace-only title is treated as empty and returns 400. return code: 1 stderr: Traceback (most recent call last): File &quot;add-book-rejects-whitespace-title.py&quot;, line 7, in &lt;module&gt; assert response.status_code == 400 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: add-book-stores-valid (FEATURE-AddBook.md)</li></ul>
+<p>intent: A valid submission returns 201 with the stored book&#x27;s title and author. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: add-book-rejects-empty-title (FEATURE-AddBook.md)</li></ul>
+<p>intent: An empty title returns 400 and names the title field. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: add-book-rejects-empty-author (FEATURE-AddBook.md)</li></ul>
+<p>intent: An empty author returns 400 and names the author field. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: add-book-rejects-whitespace-title (FEATURE-AddBook.md)</li></ul>
+<p>intent: A whitespace-only title is treated as empty and returns 400. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>The build directory has no routes yet, and <code>create_app()</code> registers nothing. The spec doesn&#x27;t say where the store lives, and the acceptance checks call <code>web_client()</code> with no arguments, so I&#x27;ll read the DSN from an environment variable with a <code>data/app.db</code> default. I&#x27;ll write the settings module, the framework-independent service, the thin blueprint, and the factory wiring.Next, the tests. The existing factory test asserts that no routes are registered, which this feature changes, so I&#x27;ll update it. I also want the test store isolated from <code>data/</code>, so I&#x27;ll add an autouse fixture to the conftest. I need to read those files before editing them.Now I&#x27;ll run the existing suite, then the four declared acceptance checks from <code>FEATURE-AddBook.md</code>, each as its own script outside the build directory.The <code>-I</code> flag also ignores <code>PYTHONPATH</code>, so the import failed on the path, not the code. The scripts live in their own directory, so I&#x27;ll run them without <code>-I</code>.All four declared acceptance checks pass, and the project suite is green (38 tests, exit 0). I did not run <code>sources/full_test.sh</code>, because no criterion in this block invokes it.</p>
+<p><strong>Summary</strong></p>
+<p><code>POST /books</code> now accepts a title and author, stores the book through <code>db.books.create</code>, and returns 201 with <code>id</code>, <code>title</code>, and <code>author</code>. An empty, whitespace-only, missing, or non-string field returns 400 with <code>{&quot;field&quot;: &quot;title&quot;}</code> or <code>{&quot;field&quot;: &quot;author&quot;}</code>, and nothing is stored. The route is a thin Blueprint. Validation and storage live in a framework-independent service, and no module outside <code>persistence</code> imports <code>sqlite3</code>.</p>
+<p>I changed one existing test. <code>test_create_app_registers_no_feature_routes</code> asserted that no routes exist at all. This feature adds <code>/books</code>, so the assertion now expects exactly <code>/books</code> plus static. I also added an autouse fixture in <code>tests/conftest.py</code> that points tests at a temporary store.</p>
+<p><strong>Choices I made (the spec didn&#x27;t settle these)</strong></p>
+<ul><li><strong>Database location:</strong> <code>create_app()</code> reads <code>READINGLIST_DATABASE</code> and falls back to <code>data/app.db</code> in the project root. Acceptance checks run outside pytest, so they write to that <code>data/app.db</code>, which is gitignored and was already present.</li><li><strong>Trimming:</strong> title and author are trimmed before storage, matching DATABASE.md&#x27;s &quot;non-empty after trimming.&quot;</li><li><strong>Bad bodies:</strong> a non-JSON body, a JSON array, or a non-string field is rejected as a missing or empty title.</li></ul>
+<p>&lt;blueprint-decisions&gt; [{&quot;spec&quot;:&quot;FEATURE-AddBook.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Database location for create_app&quot;,&quot;decision&quot;:&quot;No spec names a DSN. create_app() reads READINGLIST_DATABASE and defaults to data/app.db under the project root. Tests redirect it to a temp store via an autouse fixture. Acceptance checks that call web_client() outside pytest write to data/app.db. Is that acceptable, or should the default become a temp store?&quot;},{&quot;spec&quot;:&quot;FEATURE-AddBook.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Trim before storing&quot;,&quot;decision&quot;:&quot;Title and author are trimmed before storage and the trimmed values are returned, following DATABASE.md&#x27;s non-empty-after-trimming rule. Is that acceptable?&quot;}] &lt;/blueprint-decisions&gt;</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/settings.py</li><li>app_server/books_service.py</li><li>app_server/books_views.py</li><li>tests/conftest.py</li><li>tests/test_app_factory.py</li><li>tests/test_add_book.py</li></ul>
+<p>SUMMARY:</p>
+<ul><li>Acceptance checks (FEATURE-AddBook.md, 4 of 4 pass): add-book-stores-valid, add-book-rejects-empty-title, add-book-rejects-empty-author, add-book-rejects-whitespace-title. Each ran as a standalone script from /tmp with the build directory on PYTHONPATH.</li><li>Project suite: <code>.venv/bin/python -m pytest -q</code> exits 0, 38 tests passed. This includes 27 new tests in tests/test_add_book.py covering the route, the round-trip read-back through <code>db.books</code>, list order, rejected submissions not being stored, and the service. Also includes the updated factory route test.</li><li><code>sources/full_test.sh</code> was not run. No criterion in this block invokes it, and <code>bin/test.sh</code> belongs to a later block.</li></ul>
+<p>RESULT: SUCCESS</p></article>
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.145511.914Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.145511.914Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.145511.914Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>I&#x27;ll start by inspecting the build directory and the staged sources.The staged `full_test.sh` is not in this step&#x27;s acceptance criteria, so I won&#x27;t run it. Next I&#x27;ll read the existing tests and the git-tracked config to match conventions.The foundation tests are the existing baseline. I&#x27;ll run them before changing anything so I can tell pre-existing failures from new ones.Baseline is green: 7 passed. Now I&#x27;ll write the implementation: a typed settings module, the base template, and the factory wiring.Now the tests. I&#x27;ll read rendered HTML back through a parser rather than substring-matching it, and I&#x27;ll cover the declared acceptance intents plus the edge cases.Now I&#x27;ll run the full suite, including the new tests.All 26 pass (7 baseline + 19 new). Next I&#x27;ll run the three declared acceptance criteria verbatim from the spec, feeding them over stdin so no scratch file lands outside the build tree.RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/__init__.py
+- app_server/settings.py
+- app_server/templates/base.html
+- tests/test_base_template.py
+- tests/test_create_app_wiring.py
+
+SUMMARY:
+- **Base layout** (`app_server/templates/base.html`): `&lt;title&gt;` in `block title` (default &quot;Reading List&quot;), `block content` inside `&lt;main&gt;`, and an error region that renders `&lt;div role=&quot;alert&quot;&gt;` only when `error` is truthy. Jinja autoescaping applies to the error text.
+- **Factory wiring** (`app_server/__init__.py`): `create_app()` sets the Jinja template folder to `app_server/templates` and stores `open_database(...)` in `app.extensions[&quot;database&quot;]`. It opens the store without connecting, so no file is created at startup. No book routes are registered.
+- **Settings** (`app_server/settings.py`): a frozen `Settings` dataclass reads `DATABASE_URL`, then `DATABASE_PATH`, then defaults to `data/app.db`. This matches the lookup in `persistence/testing.py`.
+- **Declared acceptance criteria** (`ui-base-template-loads`, `ui-base-shows-error`, `ui-base-without-error`): all three pass when run verbatim from the spec.
+- **Test suite**: `./.venv/bin/python -m pytest -q` gives 26 passed (7 existing, 19 new). The new tests read rendered HTML back through an HTML parser rather than substring-matching it. They cover escaping, the empty and `None` error cases, title override, content-block placement, the alert sitting above content, the template folder, store round-trip through the configured DSN, lazy store opening, no book routes, and settings precedence.
+- **Not run**: `sources/full_test.sh`. No criterion in this step invokes it (both ACs are `Suite: scoped`), so I left it alone.
+- **Note for a later step**: `bin/test.sh` does not exist yet. `full_test.sh` will fail until a step that owns the st-001 test runner creates it. That is outside this block.
+
+&lt;blueprint-decisions&gt;
+[{&quot;spec&quot;:&quot;UI-GENERAL.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Settings module and store configuration&quot;,&quot;decision&quot;:&quot;I added app_server/settings.py with a typed Settings dataclass to centralize the store DSN, reading DATABASE_URL, then DATABASE_PATH, then data/app.db, which mirrors persistence/testing.py. I also kept the Database handle in app.extensions[&#x27;database&#x27;] rather than as a module global. Is that acceptable, or should it change on replan?&quot;}]
+&lt;/blueprint-decisions&gt;</pre></article>
+</main>
+</body>
+</html>

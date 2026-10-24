@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/DATABASE.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/DATABASE.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/DATABASE.md">Raw file</a></div></header>
+<article class="doc"><h1>DATABASE: ReadingList</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Persistence stores and typed interfaces for the ReadingList books table.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md</td></tr><tr><td>Provides</td><td>books.create, books.list, books.get, books.delete</td></tr><tr><td>Build Order</td><td>1</td></tr></tbody></table></div>
+<h2>Persistence Boundary</h2>
+<div class="scroll"><table><thead><tr><th>Boundary</th><th>Rule</th></tr></thead><tbody><tr><td>Raw storage access</td><td>Only the generated <code>persistence/</code> package reaches the store.</td></tr><tr><td>Caller dependency</td><td>Features depend on declared access patterns and their DTOs, not on schemas.</td></tr><tr><td>Implementation</td><td>Generated from this file at the DATABASE build step; never written by hand.</td></tr></tbody></table></div>
+<h2>Access Patterns</h2>
+<p>Insertion order is preserved by the autoincrementing integer primary key <code>id</code>; listing is ordered by <code>id</code> ascending, so no position column exists.</p>
+<h3>FEATURE-BOOKS-001 — Create a book</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-AddBook.md</td></tr><tr><td>Access</td><td>write</td></tr><tr><td>Repository operation</td><td><code>books.create</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: BookCreateInput</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>title</td><td>TEXT</td><td>Non-empty, trimmed by the caller</td></tr><tr><td>author</td><td>TEXT</td><td>Non-empty, trimmed by the caller</td></tr></tbody></table></div>
+<p>Output: BookRow</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>Assigned by the store</td></tr><tr><td>title</td><td>TEXT</td><td>As stored</td></tr><tr><td>author</td><td>TEXT</td><td>As stored</td></tr></tbody></table></div>
+<h3>FEATURE-BOOKS-002 — List books in the order added</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-ListBooks.md</td></tr><tr><td>Access</td><td>read</td></tr><tr><td>Repository operation</td><td><code>books.list</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: BookListInput</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>(none)</td><td></td><td>Returns every book, ordered by id ascending</td></tr></tbody></table></div>
+<p>Output: BookRow</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>Ascending across the returned sequence</td></tr><tr><td>title</td><td>TEXT</td><td>As stored</td></tr><tr><td>author</td><td>TEXT</td><td>As stored</td></tr></tbody></table></div>
+<h3>FEATURE-BOOKS-003 — Get a book by id</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-RemoveBook.md</td></tr><tr><td>Access</td><td>read</td></tr><tr><td>Repository operation</td><td><code>books.get</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: BookGetInput</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>Book identifier</td></tr></tbody></table></div>
+<p>Output: BookRow</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>Book identifier</td></tr><tr><td>title</td><td>TEXT</td><td>As stored</td></tr><tr><td>author</td><td>TEXT</td><td>As stored</td></tr></tbody></table></div>
+<h3>FEATURE-BOOKS-004 — Delete a book</h3>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Owner</td><td>FEATURE-RemoveBook.md</td></tr><tr><td>Access</td><td>write</td></tr><tr><td>Repository operation</td><td><code>books.delete</code></td></tr><tr><td>Compatibility</td><td>unchanged</td></tr></tbody></table></div>
+<p>Input: BookDeleteInput</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>Book identifier</td></tr></tbody></table></div>
+<p>Output: BookDeleteResult</p>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER</td><td>Identifier of the removed book</td></tr></tbody></table></div>
+<h2>Schemas</h2>
+<h2><code>books</code></h2>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td>id</td><td>INTEGER PK</td><td>Autoincrementing; defines insertion order</td></tr><tr><td>title</td><td>TEXT NOT NULL</td><td>Book title</td></tr><tr><td>author</td><td>TEXT NOT NULL</td><td>Book author</td></tr></tbody></table></div>
+<h2>Migrations</h2>
+<p>Each relational change has one staged record in <code>migrations/MIGRATION-&lt;AccessPatternId&gt;.md</code>. The record carries Alembic <code>upgrade</code>/<code>downgrade</code> snippets and progresses from <code>planned</code> to <code>built</code> only when its DATABASE build story completes. Alembic records deployment application separately.</p>
+<div class="scroll"><table><thead><tr><th>Access Pattern</th><th>Revision</th><th>State</th></tr></thead><tbody></tbody></table></div>
+<h2>Config (.env)</h2>
+<div class="scroll"><table><thead><tr><th>Key</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+<h2>File Stores</h2>
+<div class="scroll"><table><thead><tr><th>Store</th><th>Root dir</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+<h2>External Services</h2>
+<div class="scroll"><table><thead><tr><th>Service</th><th>Wrapper</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+<h2>External Libraries</h2>
+<div class="scroll"><table><thead><tr><th>Library</th><th>Ownership</th><th>Distribution</th><th>Consumer Contract</th></tr></thead><tbody></tbody></table></div>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC books-create ===<br>Intent: Creating a book returns a row carrying the supplied title and author and an assigned id.<br>Suite: scoped</p>
+<p>from persistence.testing import db_session</p>
+<p>title = &quot;Create Title&quot; author = &quot;Create Author&quot; with db_session() as db: row = db.books.create(title=title, author=author) assert row.id is not None assert row.title == title assert row.author == author === END AC books-create ===</p>
+<p>=== AC books-get ===<br>Intent: A created book can be read back by id with the supplied title and author.<br>Suite: scoped</p>
+<p>from persistence.testing import db_session</p>
+<p>title = &quot;Get Title&quot; author = &quot;Get Author&quot; with db_session() as db: created = db.books.create(title=title, author=author) fetched = db.books.get(id=created.id) assert fetched is not None assert fetched.id == created.id assert fetched.title == title assert fetched.author == author === END AC books-get ===</p>
+<p>=== AC books-list-order ===<br>Intent: Listing returns books in the order they were created.<br>Suite: scoped</p>
+<p>from persistence.testing import db_session</p>
+<p>titles = [&quot;Order One&quot;, &quot;Order Two&quot;, &quot;Order Three&quot;] with db_session() as db: created_ids = [db.books.create(title=t, author=&quot;Order Author&quot;).id for t in titles] listed_ids = [row.id for row in db.books.list()] ours = [i for i in listed_ids if i in created_ids] assert ours == created_ids assert created_ids == sorted(created_ids) === END AC books-list-order ===</p>
+<p>=== AC books-delete ===<br>Intent: A deleted book is absent from the list on the next read and other books remain.<br>Suite: scoped</p>
+<p>from persistence.testing import db_session</p>
+<p>with db_session() as db: first = db.books.create(title=&quot;Delete First&quot;, author=&quot;Delete Author&quot;) second = db.books.create(title=&quot;Delete Second&quot;, author=&quot;Delete Author&quot;) db.books.delete(id=first.id) listed_ids = [row.id for row in db.books.list()] assert first.id not in listed_ids assert second.id in listed_ids === END AC books-delete ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Books are always listed in ascending id order, which is the order added.</li><li>No caller reaches the store except through the generated <code>persistence</code> package.</li></ul></article>
+</main>
+</body>
+</html>

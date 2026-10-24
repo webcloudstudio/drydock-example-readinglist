@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.150337.906Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.150337.906Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.150337.906Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>I&#x27;ll start by inspecting the build working directory and the git state.The project already has AddBook, ListBooks, and RemoveBook code. Next I&#x27;ll read the existing route, service, and test code this feature extends.The existing code already rejects an empty title with a reason and status 400. What&#x27;s missing is the JSON path (`error` plus `field`). I&#x27;ll check the persistence testing helpers and get a baseline test run before editing.Baseline is 75 passing. The plan:
+
+- Add a `field` to `BookRejected` so the route can report which field failed.
+- Return JSON `{error, field}` when the client&#x27;s preferred type is exactly `application/json`. Browser and no-header requests keep the HTML re-render.
+- Add tests in the project&#x27;s existing style and run the four declared acceptance scripts against the real store.
+
+I&#x27;ll check where `BookRejected` is used first.Only the service and the route use `BookRejected`, so adding a field is contained. I&#x27;ll make the service change first.Next, the route. It needs to choose JSON only when the client asks for exactly `application/json`, so browser and no-header requests keep the HTML response.Now the tests. I&#x27;ll follow `test_add_book.py`&#x27;s isolated-store fixture and read state back through the persistence layer. The JSON checks parse the body rather than matching text.The suite is green at 94 (75 existing plus 19 new). Next I&#x27;ll run the four declared acceptance scripts verbatim from the spec, against the configured store (`data/app.db`), passing each through stdin so no scratch file is written.All four acceptance scripts pass. I&#x27;ll confirm the working-tree changes are limited to this block&#x27;s files.Block 7 (`reject-empty-title`) is built. All 94 tests pass and the four declared acceptance scripts pass.
+
+The existing AddBook code already rejected an empty title with a reason and status 400. The gap was the JSON response, so this block adds that and the tests.
+
+Changes:
+- **`app_server/book_service.py`**: `BookRejected` now carries a `field` (`&quot;title&quot;` or `&quot;author&quot;`) alongside the reason.
+- **`app_server/books.py`**: a refused `POST /books` returns `{&quot;error&quot;: reason, &quot;field&quot;: ...}` with status 400 when the client&#x27;s preferred type is exactly `application/json`. Browser headers, `*/*`, and no `Accept` header still get the HTML page with the reason in the alert region.
+- **`tests/test_reject_empty_title.py`** (new): 19 tests covering the JSON and HTML rejection paths, whitespace and missing titles, the stored-nothing check, and the service-level field. They use the same isolated temp store as `test_add_book.py`.
+
+Choices I made that the spec didn&#x27;t settle:
+- An empty author over JSON reports `field: &quot;author&quot;`. The spec only covers the title.
+- JSON is chosen only on an exact `application/json` preference, not on `*/*`, so browsers keep getting HTML.
+
+Verification:
+- `.venv/bin/python -m pytest -q`: 94 passed (75 existing plus 19 new).
+- The four declared acceptance scripts (`reject-title-empty-json`, `reject-title-whitespace`, `reject-title-missing`, `reject-title-html`) each passed when run verbatim against the configured store, `data/app.db`. Each script purges its own marker rows.
+- I did not run `sources/full_test.sh`, because no criterion in this block invokes the staged suite.
+
+Outside this block: `COMPASS.md` requires `bin/test.sh` at the application root, and it does not exist yet. `sources/full_test.sh` will fail until a later block provides it.
+
+&lt;blueprint-decisions&gt;
+[{&quot;spec&quot;:&quot;FEATURE-RejectEmptyTitle.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;JSON rejection for an empty author and the Accept rule&quot;,&quot;decision&quot;:&quot;The spec defines the JSON body only for the title. I return field \&quot;author\&quot; for an empty author, since the same JSON shape fits, and I choose JSON only when the client&#x27;s preferred media type is exactly application/json, so */* and browser Accept headers keep the HTML response. Is that acceptable, or should author rejections omit the JSON field?&quot;}]
+&lt;/blueprint-decisions&gt;
+
+RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/book_service.py
+- app_server/books.py
+- tests/test_reject_empty_title.py
+
+SUMMARY:
+Block 7 (reject-empty-title) adds a JSON rejection contract to the existing POST /books path. Title rejection already existed as a 400 HTML re-render with a reason; this block adds `{error, field}` JSON when the client asks for application/json, and records the failing field on BookRejected. Test run: pytest 94 passed (75 existing + 19 new). Declared acceptance scripts reject-title-empty-json, reject-title-whitespace, reject-title-missing, and reject-title-html each passed when run verbatim against data/app.db. sources/full_test.sh was not invoked because no criterion in this block declares it. Note for later blocks: COMPASS requires bin/test.sh at the application root; it does not exist yet.</pre></article>
+</main>
+</body>
+</html>

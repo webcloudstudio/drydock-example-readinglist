@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/DECISIONS.json</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/DECISIONS.json</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/DECISIONS.json">Raw file</a></div></header>
+<article class="doc"><pre>[
+  {
+    &quot;id&quot;: &quot;Q-001&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: &quot;add-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Response contract for add and remove&quot;,
+    &quot;description&quot;: &quot;The sources do not state status codes. Options: JSON 201/200 responses, or form-style redirects. The UI is a browser page, so form posts that redirect fit best.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;redirect&quot;,
+        &quot;label&quot;: &quot;303 redirect to / on success; 400 on rejection; 404 on unknown id&quot;
+      },
+      {
+        &quot;value&quot;: &quot;json&quot;,
+        &quot;label&quot;: &quot;201/200 JSON bodies&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;redirect&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-002&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RemoveBook.md&quot;,
+    &quot;story&quot;: &quot;remove-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Removal route shape&quot;,
+    &quot;description&quot;: &quot;Browser forms cannot send DELETE without scripting. Options: DELETE /books/{id}, or POST /books/{id}/delete.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;post-delete&quot;,
+        &quot;label&quot;: &quot;POST /books/{id}/delete&quot;
+      },
+      {
+        &quot;value&quot;: &quot;http-delete&quot;,
+        &quot;label&quot;: &quot;DELETE /books/{id}&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;post-delete&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-003&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyTitle.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-title&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Whitespace-only title or author&quot;,
+    &quot;description&quot;: &quot;The source says empty is rejected. Whitespace-only text is treated as empty so a blank-looking entry cannot be stored; accepted values are stored trimmed.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;reject-whitespace&quot;,
+        &quot;label&quot;: &quot;Treat whitespace-only as empty&quot;
+      },
+      {
+        &quot;value&quot;: &quot;literal-empty&quot;,
+        &quot;label&quot;: &quot;Reject only zero-length values&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;reject-whitespace&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-004&quot;,
+    &quot;type&quot;: &quot;choice&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyAuthor.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-author&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;How the rejection reason is reported&quot;,
+    &quot;description&quot;: &quot;A reason must always accompany a rejection. Browser requests get the page re-rendered with the reason; requests sending Accept: application/json get a JSON body with error and field.&quot;,
+    &quot;options&quot;: [
+      {
+        &quot;value&quot;: &quot;html-and-json&quot;,
+        &quot;label&quot;: &quot;Re-rendered page, or JSON {error, field} on Accept: application/json&quot;
+      },
+      {
+        &quot;value&quot;: &quot;html-only&quot;,
+        &quot;label&quot;: &quot;Re-rendered page only&quot;
+      }
+    ],
+    &quot;system_choice&quot;: &quot;html-and-json&quot;
+  },
+  {
+    &quot;id&quot;: &quot;Q-005&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;plan&quot;,
+    &quot;blueprint&quot;: &quot;DATABASE.md&quot;,
+    &quot;story&quot;: &quot;database&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Insertion order storage&quot;,
+    &quot;description&quot;: &quot;Order added is preserved by an autoincrementing integer primary key on books, listed in ascending id order, so no separate position column is needed.&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;books(id INTEGER PK, title TEXT NOT NULL, author TEXT NOT NULL); list ordered by id ascending.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-architecture.md-db_session-fixture-import-timing&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;ARCHITECTURE.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;db_session fixture import timing&quot;,
+    &quot;description&quot;: &quot;The conftest db_session fixture imports persistence.testing inside the fixture body, because the generated persistence package does not exist until the DATABASE step. Options were a top-level import, which breaks collection now, or a lazy import, which I chose. Is that acceptable?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The conftest db_session fixture imports persistence.testing inside the fixture body, because the generated persistence package does not exist until the DATABASE step. Options were a top-level import, which breaks collection now, or a lazy import, which I chose. Is that acceptable?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-addbook.md-empty-or-absent-title/author-on-post-/books&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;material&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Empty or absent title/author on POST /books&quot;,
+    &quot;description&quot;: &quot;Rejection stories own validation, but COMPASS forbids storing empty values. I refuse with 400 and the reason rendered in the base.html alert region, and store nothing. Is that acceptable, or should the rejection stories own the response shape and this should only refuse without rendering?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Rejection stories own validation, but COMPASS forbids storing empty values. I refuse with 400 and the reason rendered in the base.html alert region, and store nothing. Is that acceptable, or should the rejection stories own the response shape and this should only refuse without rendering?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-addbooktests.md-store-used-by-the-round-trip-tests&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBookTests.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Store used by the round-trip tests&quot;,
+    &quot;description&quot;: &quot;The new tests run against the configured store (DATABASE_URL or data/app.db), as the spec&#x27;s web_client and committed_session guidance describes. Each test removes only the books it created. The existing FEATURE-AddBook tests keep their isolated temp store. Is a shared configured store acceptable, or should these tests move to an isolated store?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The new tests run against the configured store (DATABASE_URL or data/app.db), as the spec&#x27;s web_client and committed_session guidance describes. Each test removes only the books it created. The existing FEATURE-AddBook tests keep their isolated temp store. Is a shared configured store acceptable, or should these tests move to an isolated store?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-listbooks.md-ordering-enforced-in-service,-not-the-store&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;material&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-ListBooks.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Ordering enforced in service, not the store&quot;,
+    &quot;description&quot;: &quot;The generated books.list has no ORDER BY, so list_books sorts rows by id ascending in app_server/book_service.py. Options were: sort in the service, or edit the generated persistence package (rejected: generated, never hand-written). Is that acceptable, or should DATABASE.md&#x27;s generator add an ORDER BY on the list operation at replan?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The generated books.list has no ORDER BY, so list_books sorts rows by id ascending in app_server/book_service.py. Options were: sort in the service, or edit the generated persistence package (rejected: generated, never hand-written). Is that acceptable, or should DATABASE.md&#x27;s generator add an ORDER BY on the list operation at replan?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-rejectemptytitle.md-json-rejection-for-an-empty-author-and-the-accept-rule&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyTitle.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;JSON rejection for an empty author and the Accept rule&quot;,
+    &quot;description&quot;: &quot;The spec defines the JSON body only for the title. I return field \&quot;author\&quot; for an empty author, since the same JSON shape fits, and I choose JSON only when the client&#x27;s preferred media type is exactly application/json, so */* and browser Accept headers keep the HTML response. Is that acceptable, or should author rejections omit the JSON field?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The spec defines the JSON body only for the title. I return field \&quot;author\&quot; for an empty author, since the same JSON shape fits, and I choose JSON only when the client&#x27;s preferred media type is exactly application/json, so */* and browser Accept headers keep the HTML response. Is that acceptable, or should author rejections omit the JSON field?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-feature-removebooktests.md-dropped-service-level-and-store-read-tests-from-tests/test_remove_book.py&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RemoveBookTests.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Dropped service-level and store-read tests from tests/test_remove_book.py&quot;,
+    &quot;description&quot;: &quot;The earlier module called remove_book and read database.books directly, which the spec&#x27;s guardrail forbids (\&quot;Tests reach removal only through the public HTTP routes, never through the store\&quot;). I removed those four tests and rewrote the rest to use HTTP only. Is that acceptable, or should service-level coverage live in a separate module?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The earlier module called remove_book and read database.books directly, which the spec&#x27;s guardrail forbids (\&quot;Tests reach removal only through the public HTTP routes, never through the store\&quot;). I removed those four tests and rewrote the rest to use HTTP only. Is that acceptable, or should service-level coverage live in a separate module?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-screen-readinglist.md-rejected-html-submission-response&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;SCREEN-ReadingList.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Rejected HTML submission response&quot;,
+    &quot;description&quot;: &quot;The spec says a rejected submission re-renders the page with the reason. I render the full reading list page (alert region, add form, and current books) with the 400 status, instead of the bare base layout the route used before. Is that acceptable?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The spec says a rejected submission re-renders the page with the reason. I render the full reading list page (alert region, add form, and current books) with the 400 status, instead of the bare base layout the route used before. Is that acceptable?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-addbook.md-add-book-persists-in-store&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: &quot;add-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: add-book-persists-in-store&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave add-book-persists-in-store untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-addbook.md-add-book-redirects&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: &quot;add-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: add-book-redirects&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave add-book-redirects untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-addbook.md-add-book-round-trip&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-AddBook.md&quot;,
+    &quot;story&quot;: &quot;add-book&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: add-book-round-trip&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave add-book-round-trip untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-listbooks.md-list-books-matches-store&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-ListBooks.md&quot;,
+    &quot;story&quot;: &quot;list-books&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: list-books-matches-store&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave list-books-matches-store untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-listbooks.md-list-books-ok&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-ListBooks.md&quot;,
+    &quot;story&quot;: &quot;list-books&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: list-books-ok&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave list-books-ok untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-listbooks.md-list-books-order-added&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-ListBooks.md&quot;,
+    &quot;story&quot;: &quot;list-books&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: list-books-order-added&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave list-books-order-added untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-rejectemptytitle.md-reject-title-empty-json&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyTitle.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-title&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: reject-title-empty-json&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave reject-title-empty-json untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-rejectemptytitle.md-reject-title-missing&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyTitle.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-title&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: reject-title-missing&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave reject-title-missing untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-skip-feature-rejectemptytitle.md-reject-title-whitespace&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;FEATURE-RejectEmptyTitle.md&quot;,
+    &quot;story&quot;: &quot;reject-empty-title&quot;,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Acceptance skipped: reject-title-whitespace&quot;,
+    &quot;description&quot;: &quot;excluded check: ERROR malformed&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;Leave reject-title-whitespace untested until its acceptance setup is repaired; do not treat it as passed.&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-ui-general.md-settings-module-and-store-configuration&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;UI-GENERAL.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Settings module and store configuration&quot;,
+    &quot;description&quot;: &quot;I added app_server/settings.py with a typed Settings dataclass to centralize the store DSN, reading DATABASE_URL, then DATABASE_PATH, then data/app.db, which mirrors persistence/testing.py. I also kept the Database handle in app.extensions[&#x27;database&#x27;] rather than as a module global. Is that acceptable, or should it change on replan?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;I added app_server/settings.py with a typed Settings dataclass to centralize the store DSN, reading DATABASE_URL, then DATABASE_PATH, then data/app.db, which mirrors persistence/testing.py. I also kept the Database handle in app.extensions[&#x27;database&#x27;] rather than as a module global. Is that acceptable, or should it change on replan?&quot;
+  },
+  {
+    &quot;id&quot;: &quot;build-verification.md-venv-activation-under-set--u&quot;,
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;severity&quot;: &quot;low&quot;,
+    &quot;origin&quot;: &quot;build&quot;,
+    &quot;blueprint&quot;: &quot;VERIFICATION.md&quot;,
+    &quot;story&quot;: null,
+    &quot;status&quot;: &quot;recommended&quot;,
+    &quot;archived&quot;: false,
+    &quot;title&quot;: &quot;Venv activation under set -u&quot;,
+    &quot;description&quot;: &quot;The runner sources .venv/bin/activate with set -u relaxed around it, because the activate script references OSTYPE, which is unset under dash. Alternative was prepending .venv/bin to PATH without sourcing. Sourcing keeps the activation the spec describes. Is that acceptable?&quot;,
+    &quot;options&quot;: [],
+    &quot;system_choice&quot;: &quot;The runner sources .venv/bin/activate with set -u relaxed around it, because the activate script references OSTYPE, which is unset under dash. Alternative was prepending .venv/bin to PATH without sourcing. Sourcing keeps the activation the spec describes. Is that acceptable?&quot;
+  }
+]
+</pre></article>
+</main>
+</body>
+</html>

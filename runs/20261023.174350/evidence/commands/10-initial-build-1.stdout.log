@@ -1,0 +1,73 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: architecture
+git: baseline ReadingList ecd68debd6fd
+git: baseline ReadingList 84448a991759
+
+BLOCK block-1  name="Block 1 · Foundational"  calls_max=7
+  story=architecture  "Stand up the Python project tree, environment, dependency manifest, and pytest runner."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.174856.568Z-ce58b2b0
+    acceptance=3/3
+git: block-1 | python.md, ARCHITECTURE.md | call=1 | app=4a817402e528 target=417d36dcba1c
+
+  DONE  story=architecture  state=closed/implemented  execution=20261023.174856.568Z-ce58b2b0  elapsed=1m52s
+git: block-1 | python.md, ARCHITECTURE.md | step_completed | app=unchanged target=332bc5031810
+
+BLOCK block-2  name="Block 2 · Foundational"  calls_max=7
+  story=database  "Declare the books table and its repository operations."
+  story=app-shell  "Provide the Flask application factory, shared page layout, and web_client test fixture."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.175049.857Z-ba4d9a18
+    acceptance=8/8
+git: block-2 | DATABASE.md, FEATURE-AppShell.md | call=1 | app=ecf5a0c94598 target=69f96151c3c6
+
+  DONE  story=database  state=closed/implemented  execution=20261023.175049.857Z-ba4d9a18  elapsed=2m25s
+git: block-2 | DATABASE.md, FEATURE-AppShell.md | step_completed | app=unchanged target=bf1cf6196858
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-3  name="Block 3 · Service"  calls_max=7
+  story=add-book  "Add a book with a title and author and persist it."
+  story=list-books  "List books in the order they were added."
+  story=remove-book  "Remove a book so it no longer appears in the list."
+  story=reject-empty-fields  "Reject a submission with an empty title or author with a clear error."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.175350.426Z-06f129a2
+    acceptance=15/15
+git: block-3 | FEATURE-AddBook.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, FEATURE-RejectEmptyFields.md | call=1 | app=0a5669df7a3e target=1fc09f5eb9ce
+
+  DONE  story=add-book  state=closed/implemented  execution=20261023.175350.426Z-06f129a2  elapsed=9m00s
+git: block-3 | FEATURE-AddBook.md, FEATURE-ListBooks.md, FEATURE-RemoveBook.md, FEATURE-RejectEmptyFields.md | step_completed | app=unchanged target=4d20d2ea1e9d
+WARNING: flask_compact.md is stale (flask.md changed) — using full file; run drydock rigging compact --include-file /mnt/c/Users/barlo/projects/drydock/Rigging/stack/flask.md
+
+BLOCK block-4  name="Block 4 · Service"  calls_max=7
+  story=screen-reading-list  "Render the reading list page with an add form, error display, and remove buttons."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.180241.264Z-b86c6ee1
+    acceptance=5/5
+git: block-4 | SCREEN-ReadingList.md | call=1 | app=3394c428f8a8 target=e1f768f222ea
+
+  DONE  story=screen-reading-list  state=closed/implemented  execution=20261023.180241.264Z-b86c6ee1  elapsed=3m06s
+git: block-4 | SCREEN-ReadingList.md | step_completed | app=unchanged target=84492ea66169
+
+BLOCK block-5  name="Block 5 · Feature"  calls_max=7
+  story=test-runner  "Provide bin/test.sh and prove the complete suite passes end to end."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261023.180537.658Z-88e2571d
+    acceptance=4/4
+git: block-5 | FEATURE-TestRunner.md | call=1 | app=168ebbe540bb target=6df3c7a697a8
+
+  DONE  story=test-runner  state=closed/implemented  execution=20261023.180537.658Z-88e2571d  elapsed=3m06s
+git: block-5 | FEATURE-TestRunner.md | step_completed | app=unchanged target=80f231eeaeb7
+git: build complete ReadingList 555efed7a847
+git: build complete ReadingList 2dce75c31c48
+
+result: 9 built, 0 failed, 0 unchanged
+elapsed: 20 minutes 10 seconds
+Target - committed project workspace git store

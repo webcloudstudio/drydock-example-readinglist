@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompts/20261023.145032.509Z_readinglist_lineage_attribute_claude.prompt.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompts/20261023.145032.509Z_readinglist_lineage_attribute_claude.prompt.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompts/20261023.145032.509Z_readinglist_lineage_attribute_claude.prompt.md">Raw file</a></div></header>
+<article class="doc"><h1>Attribute Stories to Source Requirements</h1>
+<p>You are the lineage attribution agent. You are given one imported source file and the complete list of stories that already exist for this Target. Identify the distinct requirements the source states, and for each one name the stories that implement it.</p>
+<p>This is a matching task against a closed set. Every story you may name is listed in <code>&lt;stories&gt;</code>. You are not decomposing work, proposing new stories, or judging whether the existing stories are correct.</p>
+<h2>Method</h2>
+<ol><li>Read the source and identify each distinct requirement it states. A requirement is a thing the</li></ol>
+<p>system must do, at whatever granularity the author wrote it. One sentence may state one requirement that several stories implement — for example &quot;add a table and show it on screen&quot; is one requirement implemented by a schema story, a route story, and a view story. Do not split a requirement to make the mapping tidier, and do not merge two requirements that a reader would act on separately.</p>
+<ol><li>Give each requirement a short kebab-case name that describes it. The name is an identifier, not</li></ol>
+<p>a summary: <code>mark-book-read</code>, not <code>the-reader-can-mark-a-book-as-read</code>.</p>
+<ol><li>For each requirement, list every story that implements any part of it. A story may implement</li></ol>
+<p>more than one requirement; a requirement may need more than one story.</p>
+<ol><li>List any story that implements no requirement in the source as <code>&lt;unattached&gt;</code>. This is expected</li></ol>
+<p>and correct for foundational work — application scaffolding, configuration, shared UI framing, test harnesses — that the author never asked for by name. Do not force such a story onto an unrelated requirement.</p>
+<h2>Rules</h2>
+<ul><li>Use only story ids that appear in <code>&lt;stories&gt;</code>. Never invent one.</li><li>Every story must appear exactly once, either inside a <code>stories</code> attribute or as <code>&lt;unattached&gt;</code>.</li><li>Quote the requirement text verbatim from the source in the tag body. Do not paraphrase it.</li><li>Emit nothing but the tags below. No preamble, no commentary, no explanation.</li></ul>
+<h2>Output</h2>
+<pre><code>&lt;requirement name=&quot;add-remove-books&quot; stories=&quot;add-book,remove-book,database&quot;&gt;
+The reader can add a book with a title and author, view the books in the order added, and remove a book.
+&lt;/requirement&gt;
+&lt;requirement name=&quot;reject-empty-fields&quot; stories=&quot;validate-book&quot;&gt;
+An empty title or author is rejected with a clear error message.
+&lt;/requirement&gt;
+&lt;unattached story=&quot;architecture&quot;/&gt;
+&lt;unattached story=&quot;ui-general&quot;/&gt;</code></pre>
+<h1>Attribution job</h1>
+<p>&lt;source name=&quot;full_test.sh&quot;&gt; #!/bin/sh</p>
+<h1>full_test.sh — scoring entry point. Do not filter, skip, or reinterpret.</h1>
+<p>#</p>
+<h1><code>drydock uat</code> runs <code>sh sources/full_test.sh</code> from the completed application root and takes its</h1>
+<h1>exit code and output as the score.</h1>
+<p>#</p>
+<h1>Unlike a conformance fixture, this Target supplies no suite of its own: the source prose makes</h1>
+<h1>&quot;the application provides a POSIX-compatible bin/test.sh&quot; a product requirement (st-001), so the</h1>
+<h1>tests are part of the deliverable. This harness is therefore a dispatcher, and its whole value</h1>
+<h1>is that it is still Commander-owned. An absent bin/test.sh is a delivered product that failed to</h1>
+<h1>meet st-001, which this script reports as a failure — rather than leaving the release gate with</h1>
+<h1>no oracle at all, where an unbuilt project grades PASSED by default.</h1>
+<p>set -eu</p>
+<p>if [ ! -f bin/test.sh ]; then echo &quot;error: no bin/test.sh at the application root.&quot; &gt;&amp;2 echo &quot;st-001 requires the application to provide a POSIX-compatible bin/test.sh that exits&quot; &gt;&amp;2 echo &quot;zero when every automated test passes.&quot; &gt;&amp;2 exit 1 fi</p>
+<p>exec sh bin/test.sh &lt;/source&gt;</p>
+<p>&lt;stories&gt; &lt;story id=&quot;foundation&quot; implements=&quot;ARCHITECTURE.md&quot;&gt;Stand up the Python project root, environment, pytest runner, and application skeleton.&lt;/story&gt; &lt;story id=&quot;database&quot; implements=&quot;DATABASE.md&quot;&gt;Declare and provision the books table and its repository operations.&lt;/story&gt; &lt;story id=&quot;web-shell&quot; implements=&quot;UI-GENERAL.md&quot;&gt;Provide the shared page layout and register the web server wiring in the application factory.&lt;/story&gt; &lt;story id=&quot;add-book&quot; implements=&quot;FEATURE-AddBook.md&quot;&gt;Let a reader add a book with a title and an author.&lt;/story&gt; &lt;story id=&quot;list-books&quot; implements=&quot;FEATURE-ListBooks.md&quot;&gt;Present the stored books in the order they were added.&lt;/story&gt; &lt;story id=&quot;remove-book&quot; implements=&quot;FEATURE-RemoveBook.md&quot;&gt;Let a reader remove a book from the list.&lt;/story&gt; &lt;story id=&quot;reject-empty-title&quot; implements=&quot;FEATURE-RejectEmptyTitle.md&quot;&gt;Reject a submission whose title is empty and report the reason.&lt;/story&gt; &lt;story id=&quot;reject-empty-author&quot; implements=&quot;FEATURE-RejectEmptyAuthor.md&quot;&gt;Reject a submission whose author is empty and report the reason.&lt;/story&gt; &lt;story id=&quot;screen-reading-list&quot; implements=&quot;SCREEN-ReadingList.md&quot;&gt;Render the reading list page with the add form, rejection messages, and remove controls.&lt;/story&gt; &lt;story id=&quot;test-add-book&quot; implements=&quot;FEATURE-AddBookTests.md&quot;&gt;Provide automated pytest tests for adding a book.&lt;/story&gt; &lt;story id=&quot;test-list-books&quot; implements=&quot;FEATURE-ListBooksTests.md&quot;&gt;Provide automated pytest tests for listing books in the order added.&lt;/story&gt; &lt;story id=&quot;test-remove-book&quot; implements=&quot;FEATURE-RemoveBookTests.md&quot;&gt;Provide automated pytest tests for removing a book.&lt;/story&gt; &lt;story id=&quot;test-validation&quot; implements=&quot;FEATURE-ValidationTests.md&quot;&gt;Provide automated pytest tests for rejecting an empty title or author.&lt;/story&gt; &lt;story id=&quot;verification&quot; implements=&quot;VERIFICATION.md&quot;&gt;Provide the POSIX bin/test.sh runner and gate on the complete suite.&lt;/story&gt; &lt;/stories&gt;</p></article>
+</main>
+</body>
+</html>

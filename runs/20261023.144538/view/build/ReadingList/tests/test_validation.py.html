@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_validation.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_validation.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_validation.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Validation: an empty or whitespace-only title or author is refused with 400, a reason, and nothing stored.&quot;&quot;&quot;
+
+import os
+from pathlib import Path
+
+import pytest
+
+from persistence import open_database
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+JSON_ACCEPT = {&quot;Accept&quot;: &quot;application/json&quot;}
+SEED = {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}
+
+REJECTED_SUBMISSIONS = [
+    pytest.param(&quot;title&quot;, {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}, id=&quot;empty-title&quot;),
+    pytest.param(&quot;title&quot;, {&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}, id=&quot;spaces-title&quot;),
+    pytest.param(&quot;title&quot;, {&quot;title&quot;: &quot; \t\n &quot;, &quot;author&quot;: &quot;Frank Herbert&quot;}, id=&quot;tab-newline-title&quot;),
+    pytest.param(&quot;title&quot;, {&quot;author&quot;: &quot;Frank Herbert&quot;}, id=&quot;title-absent&quot;),
+    pytest.param(&quot;author&quot;, {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;&quot;}, id=&quot;empty-author&quot;),
+    pytest.param(&quot;author&quot;, {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;   &quot;}, id=&quot;spaces-author&quot;),
+    pytest.param(&quot;author&quot;, {&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot; \t\n &quot;}, id=&quot;tab-newline-author&quot;),
+    pytest.param(&quot;author&quot;, {&quot;title&quot;: &quot;Dune&quot;}, id=&quot;author-absent&quot;),
+]
+
+
+@pytest.fixture(autouse=True)
+def isolated_store(monkeypatch, tmp_path):
+    &quot;&quot;&quot;Give each test its own store, provisioned from schema.sql, so no test touches data/app.db.
+
+    The ``web_client`` fixture reads DATABASE_URL when it builds the application, so it
+    follows this store.
+    &quot;&quot;&quot;
+    url = f&quot;sqlite:///{tmp_path / &#x27;validation.db&#x27;}&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, url)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+    database = open_database(url)
+    try:
+        database.execute_script((PROJECT_ROOT / &quot;schema.sql&quot;).read_text())
+    finally:
+        database.close()
+    return url
+
+
+@pytest.mark.parametrize((&quot;field&quot;, &quot;form&quot;), REJECTED_SUBMISSIONS)
+def test_json_rejection_answers_400(web_client, field, form):
+    response = web_client.post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize((&quot;field&quot;, &quot;form&quot;), REJECTED_SUBMISSIONS)
+def test_json_rejection_body_has_non_empty_reason(web_client, field, form):
+    response = web_client.post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    body = response.get_json()
+    assert isinstance(body[&quot;error&quot;], str)
+    assert body[&quot;error&quot;].strip()
+
+
+@pytest.mark.parametrize((&quot;field&quot;, &quot;form&quot;), REJECTED_SUBMISSIONS)
+def test_json_rejection_names_offending_field(web_client, field, form):
+    response = web_client.post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert response.get_json()[&quot;field&quot;] == field
+
+
+@pytest.mark.parametrize((&quot;field&quot;, &quot;form&quot;), REJECTED_SUBMISSIONS)
+def test_rejected_submission_leaves_stored_list_unchanged(web_client, field, form):
+    web_client.post(&quot;/books&quot;, data=SEED)
+    before = web_client.get(&quot;/books&quot;).get_json()
+
+    web_client.post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert web_client.get(&quot;/books&quot;).get_json() == before
+    assert len(before) == 1
+
+
+@pytest.mark.parametrize((&quot;field&quot;, &quot;form&quot;), REJECTED_SUBMISSIONS)
+def test_rejected_submission_on_empty_list_stores_nothing(web_client, field, form):
+    web_client.post(&quot;/books&quot;, data=form, headers=JSON_ACCEPT)
+
+    assert web_client.get(&quot;/books&quot;).get_json() == []
+
+
+@pytest.mark.parametrize((&quot;field&quot;, &quot;form&quot;), REJECTED_SUBMISSIONS)
+def test_browser_rejection_answers_400_with_non_empty_page(web_client, field, form):
+    response = web_client.post(&quot;/books&quot;, data=form)
+
+    assert response.status_code == 400
+    assert len(response.get_data()) &gt; 0
+</pre></article>
+</main>
+</body>
+</html>

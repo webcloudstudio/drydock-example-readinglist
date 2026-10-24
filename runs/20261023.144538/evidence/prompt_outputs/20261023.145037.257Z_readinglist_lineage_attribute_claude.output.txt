@@ -1,0 +1,19 @@
+<requirement name="add-remove-books" stories="database,add-book,list-books,remove-book,screen-reading-list">
+The reader can add a book with a title and author, view the books in the order added,
+and remove a book.
+</requirement>
+<requirement name="reject-empty-fields" stories="reject-empty-title,reject-empty-author">
+An empty title or author is rejected with a clear error message.
+</requirement>
+<requirement name="automated-tests-per-behavior" stories="test-add-book,test-list-books,test-remove-book,test-validation">
+The application includes automated tests for each behavior.
+</requirement>
+<requirement name="posix-test-runner" stories="verification">
+The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete
+automated test suite from the application root. `sh bin/test.sh` exits zero only when every test
+passes. The final build story runs this command after every implementation story and preserves its
+command, exit code, standard output, and standard error as evidence.
+</requirement>
+<requirement name="web-application" stories="foundation,web-shell">
+Build a web application that keeps a list of books to read.
+</requirement>

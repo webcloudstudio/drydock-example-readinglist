@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-6.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-6.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-6.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 6 · Service (block-6)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 2236</li><li>execution id: 20261023.211318.384Z-a94affec</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide the complete POSIX automated test runner. (verification) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 601)</li><li>compass: COMPASS.md (SP 551)</li><li>implements: FEATURE-VERIFICATION.md (SP 477)</li><li>context: full_test.sh (SP 270)</li><li>context: ARCHITECTURE_compact.md (SP 129)</li><li>context: DATABASE_compact.md (SP 120)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>bin/test.sh</li><li>data/app.db</li><li>tests/test_verification_runner.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>GREEN (prepassed): verification-runner-present (FEATURE-VERIFICATION.md)</li></ul>
+<p>intent: The delivered application provides an executable test runner at the required path. return code: 0</p>
+<ul><li>GREEN (prepassed): verification-full-suite (FEATURE-VERIFICATION.md)</li></ul>
+<p>intent: The complete staged release harness runs the delivered test runner successfully. return code: 0 stdout: .............                                                            [100%]</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: verification-runner-present (FEATURE-VERIFICATION.md)</li></ul>
+<p>intent: The delivered application provides an executable test runner at the required path. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: verification-full-suite (FEATURE-VERIFICATION.md)</li></ul>
+<p>intent: The complete staged release harness runs the delivered test runner successfully. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not required return code: 0 stdout: ..................                                                       [100%]</p>
+<h2>Build summary</h2>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>bin/test.sh</li><li>tests/test_verification_runner.py</li></ul>
+<p>SUMMARY: Updated the POSIX runner and added focused workflow tests. Full suite passed: 18 tests.</p>
+<p>BLOCKERS:</p>
+<ul><li>None</li></ul></article>
+</main>
+</body>
+</html>

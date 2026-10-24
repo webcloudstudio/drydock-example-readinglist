@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/ANALYSIS.md</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/ANALYSIS.md</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/ANALYSIS.md">Raw file</a></div></header>
+<article class="doc"><h1>Blueprint Analysis: ReadingList</h1>
+<h2>Commander Expectations</h2>
+<ul><li>assert readers can maintain an ordered reading list of books through a web application.</li><li>assert every described behavior is covered by automated tests.</li><li>assert <code>sh bin/test.sh</code> is the complete release verification command.</li></ul>
+<h2>Crew</h2>
+<div class="scroll"><table><thead><tr><th>Crew</th><th>Charge</th></tr></thead><tbody><tr><td>Commander</td><td>Defines intent and decides what done means.</td></tr><tr><td>Team Lead</td><td>Confirms epic completeness and stakeholder expectations.</td></tr><tr><td>Planning Crew</td><td>Authors atomic specifications and the ordered Manifest.</td></tr><tr><td>Shipyard Crew</td><td>Builds the tickets without synchronous Commander access.</td></tr></tbody></table></div>
+<h2>Story List</h2>
+<h3>Feature: Reading List Management</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>RLB-001</td><td>View the reading list</td><td>The reader can open the primary page and see books, or a clear empty-list state, in stored order.</td></tr><tr><td>RLB-002</td><td>Add a book</td><td>Submitting a title and author stores the book and shows it in the list.</td></tr><tr><td>RLB-003</td><td>Preserve addition order</td><td>Books are presented in the order they were added.</td></tr><tr><td>RLB-004</td><td>Remove a book</td><td>Removing a book omits it from the next list read.</td></tr><tr><td>RLB-005</td><td>Reject incomplete books</td><td>An empty title or author is rejected with a clear error message.</td></tr></tbody></table></div>
+<h3>Feature: Quality Verification</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story</th><th>High-level AC</th></tr></thead><tbody><tr><td>RLB-006</td><td>Provide the complete test runner</td><td><code>bin/test.sh</code> runs all automated tests and exits zero only when every test passes.</td></tr></tbody></table></div>
+<h2>Story Guidance</h2>
+<p>Named stories planning must produce. Authoritative record: <code>STORY_GUIDANCE.json</code>.</p>
+<p>None.</p>
+<h2>Surfaced Acceptance Criteria</h2>
+<div class="scroll"><table><thead><tr><th>ID</th><th>Story ID</th><th>Criterion</th></tr></thead><tbody><tr><td>AC-001</td><td>RLB-001</td><td>The primary web entry point shall provide the reading-list workflow without requiring an undocumented route.</td></tr><tr><td>AC-002</td><td>RLB-001</td><td>While the list is loading, the interface shall communicate that state; when loading or retrieval fails, it shall show a clear error and preserve recoverability.</td></tr><tr><td>AC-003</td><td>RLB-005</td><td>Validation feedback shall identify whether the title or author is missing and shall leave the reader able to correct and resubmit.</td></tr></tbody></table></div>
+<h2>Source Inventory</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Content kind</th><th>Disposition</th><th>Reason</th></tr></thead><tbody><tr><td><code>sources/full_test.sh</code></td><td>code</td><td>analyzed</td><td>readable UTF-8</td></tr><tr><td><code>sources/reading-list.md</code></td><td>markdown</td><td>analyzed</td><td>readable UTF-8</td></tr></tbody></table></div>
+<h2>Relationship Model</h2>
+<div class="scroll"><table><thead><tr><th>Source or group</th><th>Relationship type</th><th>Related source or group</th><th>Evidence</th><th>Delivery implication</th></tr></thead><tbody><tr><td><code>sources/reading-list.md</code></td><td>instruction-to-test</td><td><code>sources/full_test.sh</code></td><td>The product prose requires automated tests and a complete test command.</td><td>Build behavior stories with focused tests, then gate release on the terminal suite story.</td></tr><tr><td><code>sources/full_test.sh</code></td><td>conformance harness</td><td><code>bin/test.sh</code></td><td>The harness dispatches to the delivered <code>bin/test.sh</code> and fails when it is absent.</td><td>Stage the harness and make the project runner executable from the application root.</td></tr><tr><td>Reading-list persistence and UI stories</td><td>dependency</td><td><code>RLB-001</code>–<code>RLB-005</code></td><td>Add, list, order, remove, and validation describe one maintained collection.</td><td>Establish the persistence boundary before wiring the web workflow.</td></tr></tbody></table></div>
+<h2>Source Roles</h2>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Role</th><th>Plan disposition</th><th>Build disposition</th></tr></thead><tbody><tr><td><code>sources/reading-list.md</code></td><td>normative specification</td><td>context</td><td>prompt-only</td></tr><tr><td><code>sources/full_test.sh</code></td><td>conformance harness</td><td>context</td><td>stage</td></tr></tbody></table></div>
+<h2>Planning Instructions</h2>
+<h3>Delivery Shape</h3>
+<p>A small server-rendered web application serves a primary reading-list page. The application accepts title/author submissions, persists books, reads them in insertion order, and removes selected books. The build also provides a POSIX-compatible test runner and focused automated tests.</p>
+<h3>Story Realization Map</h3>
+<div class="scroll"><table><thead><tr><th>Story ID</th><th>Blueprint scope</th><th>Evidence</th><th>Related files</th><th>Delivery shape</th></tr></thead><tbody><tr><td>RLB-001</td><td>Primary page and ordered list read</td><td><code>sources/reading-list.md</code></td><td>Web route, template, list repository call</td><td>capability, integration</td></tr><tr><td>RLB-002</td><td>Book creation workflow</td><td><code>sources/reading-list.md</code></td><td>Form, create route, repository, DTO</td><td>capability, integration</td></tr><tr><td>RLB-003</td><td>Ordering contract</td><td><code>sources/reading-list.md</code></td><td>Ordered repository read and test</td><td>capability, test harness</td></tr><tr><td>RLB-004</td><td>Book deletion workflow</td><td><code>sources/reading-list.md</code></td><td>Delete route, repository, UI action, test</td><td>capability, integration</td></tr><tr><td>RLB-005</td><td>Input validation and feedback</td><td><code>sources/reading-list.md</code></td><td>Boundary validation, error rendering, tests</td><td>capability, test harness</td></tr><tr><td>RLB-006</td><td>Complete automated verification</td><td><code>sources/full_test.sh</code>, <code>sources/reading-list.md</code></td><td><code>bin/test.sh</code>, test suite</td><td>acceptance contract</td></tr></tbody></table></div>
+<h3>Test and Acceptance Strategy</h3>
+<p>Stories RLB-001 through RLB-005 use focused tests for their owned behavior. RLB-006 is the sole terminal verification story and runs the complete unfiltered suite with <code>Suite: full</code>. The Sea Trials execute the staged <code>sources/full_test.sh</code>, which delegates to <code>bin/test.sh</code>.</p>
+<h3>Sequencing and Dependencies</h3>
+<p>Create the application and persistence boundary before the routes. Implement list and create behavior before ordering, removal, and validation refinements. Add focused tests with each behavior. Build <code>bin/test.sh</code> before terminal verification; the complete suite runs only after all implementation stories.</p>
+<h3>Source Conflicts and Gaps</h3>
+<p>No source conflicts remain. The unattended run selects a conventional local web deployment, Flask with Python, and SQLite-backed relational persistence. Identity is resolved as display name <code>ReadingList</code> with the short description “A web application for maintaining an ordered list of books to read.”</p>
+<h2>Analysis Notes</h2>
+<p>generated: 2026-10-23 blueprint: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/workspace/targets/ReadingList/blueprint</p>
+<p>Quality: Ready blockers: 0 questions: 0 features: 2 stories: 6 stack: Python, Flask, SQLite, SQLAlchemy, Alembic, pytest, POSIX shell display_name: ReadingList short_description: A web application for maintaining an ordered list of books to read.</p>
+<p>None.</p></article>
+</main>
+</body>
+</html>

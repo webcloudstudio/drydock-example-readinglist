@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_remove_book.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_remove_book.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_remove_book.py">Raw file</a></div></header>
+<article class="doc"><pre>import pytest
+
+from app_server import create_app
+from app_server.books_service import remove_book
+from app_server.settings import DATABASE_EXTENSION
+from persistence.schema import Book
+
+
+@pytest.fixture
+def app():
+    application = create_app()
+    application.config[&quot;TESTING&quot;] = True
+    yield application
+    application.extensions[DATABASE_EXTENSION].close()
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture
+def db(app):
+    return app.extensions[DATABASE_EXTENSION]
+
+
+def _add(client, title, author=&quot;Author&quot;):
+    return client.post(&quot;/books&quot;, json={&quot;title&quot;: title, &quot;author&quot;: author}).get_json()[&quot;id&quot;]
+
+
+def test_delete_stored_book_returns_204_with_empty_body(client):
+    book_id = _add(client, &quot;Dune&quot;)
+    response = client.delete(f&quot;/books/{book_id}&quot;)
+    assert response.status_code == 204
+    assert response.data == b&quot;&quot;
+
+
+def test_deleted_book_is_absent_from_next_list(client):
+    book_id = _add(client, &quot;Dune&quot;)
+    client.delete(f&quot;/books/{book_id}&quot;)
+    assert client.get(&quot;/books&quot;).get_json() == []
+
+
+def test_delete_removes_only_the_named_book_and_keeps_order(client):
+    first = _add(client, &quot;A&quot;)
+    middle = _add(client, &quot;B&quot;)
+    last = _add(client, &quot;C&quot;)
+    client.delete(f&quot;/books/{middle}&quot;)
+    listing = client.get(&quot;/books&quot;).get_json()
+    assert [book[&quot;id&quot;] for book in listing] == [first, last]
+
+
+def test_delete_removes_book_from_store(client, db):
+    book_id = _add(client, &quot;Dune&quot;)
+    client.delete(f&quot;/books/{book_id}&quot;)
+    assert db.books.get(id=book_id) is None
+
+
+def test_delete_missing_id_returns_404_naming_the_id(client):
+    response = client.delete(&quot;/books/999&quot;)
+    assert response.status_code == 404
+    assert response.get_json() == {&quot;id&quot;: 999}
+
+
+def test_delete_missing_id_leaves_list_unchanged(client):
+    first = _add(client, &quot;A&quot;)
+    _add(client, &quot;B&quot;)
+    before = client.get(&quot;/books&quot;).get_json()
+    assert client.delete(&quot;/books/999&quot;).status_code == 404
+    assert client.get(&quot;/books&quot;).get_json() == before
+    assert before[0][&quot;id&quot;] == first
+
+
+def test_delete_same_id_twice_returns_404_the_second_time(client):
+    book_id = _add(client, &quot;Dune&quot;)
+    assert client.delete(f&quot;/books/{book_id}&quot;).status_code == 204
+    assert client.delete(f&quot;/books/{book_id}&quot;).status_code == 404
+
+
+def test_delete_already_removed_id_leaves_remaining_books_unchanged(client):
+    keep = _add(client, &quot;Keep&quot;)
+    gone = _add(client, &quot;Gone&quot;)
+    client.delete(f&quot;/books/{gone}&quot;)
+    before = client.get(&quot;/books&quot;).get_json()
+    assert client.delete(f&quot;/books/{gone}&quot;).status_code == 404
+    assert client.get(&quot;/books&quot;).get_json() == before
+    assert [book[&quot;id&quot;] for book in before] == [keep]
+
+
+def test_delete_on_empty_store_returns_404(client):
+    assert client.delete(&quot;/books/1&quot;).status_code == 404
+
+
+def test_delete_non_integer_id_returns_404(client):
+    _add(client, &quot;Dune&quot;)
+    assert client.delete(&quot;/books/not-a-number&quot;).status_code == 404
+    assert len(client.get(&quot;/books&quot;).get_json()) == 1
+
+
+def test_delete_does_not_remove_a_book_when_id_only_differs_by_path_suffix(client):
+    book_id = _add(client, &quot;Dune&quot;)
+    assert client.delete(f&quot;/books/{book_id}/extra&quot;).status_code == 404
+    assert len(client.get(&quot;/books&quot;).get_json()) == 1
+
+
+def test_remove_book_returns_true_and_deletes_stored_book(db):
+    book_id = db.books.create(title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+    assert remove_book(db, book_id) is True
+    assert db.books.get(id=book_id) is None
+
+
+def test_remove_book_returns_false_and_changes_nothing_for_missing_id(db):
+    kept = db.books.create(title=&quot;Kept&quot;, author=&quot;Author&quot;)
+    assert remove_book(db, 999) is False
+    assert db.books.get(id=kept) == Book(id=kept, title=&quot;Kept&quot;, author=&quot;Author&quot;)
+    assert len(db.books.list()) == 1
+</pre></article>
+</main>
+</body>
+</html>

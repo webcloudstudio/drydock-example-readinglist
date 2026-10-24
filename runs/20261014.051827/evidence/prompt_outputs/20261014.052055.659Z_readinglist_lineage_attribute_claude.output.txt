@@ -1,0 +1,23 @@
+<requirement name="build-web-app" stories="architecture-foundation,persistence-foundation">
+Build a web application that keeps a list of books to read.
+</requirement>
+<requirement name="add-book" stories="feature-add-book,persistence-foundation,screen-reading-list">
+The reader can add a book with a title and author,
+</requirement>
+<requirement name="list-books-in-order" stories="feature-list-books,persistence-foundation,screen-reading-list">
+view the books in the order added,
+</requirement>
+<requirement name="remove-book" stories="feature-remove-book,persistence-foundation,screen-reading-list">
+and remove a book.
+</requirement>
+<requirement name="reject-empty-fields" stories="feature-add-book">
+An empty title or author is rejected with a clear error message.
+</requirement>
+<requirement name="tests-per-behavior" stories="feature-test-runner">
+The application includes automated tests for each behavior.
+</requirement>
+<requirement name="posix-test-gate" stories="feature-test-runner">
+The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete
+automated test suite from the application root. `sh bin/test.sh` exits zero only when every test
+passes.
+</requirement>

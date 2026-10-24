@@ -1,0 +1,199 @@
+=== BEGIN ARTIFACT ANALYSIS.md ===
+# Blueprint Analysis: ReadingList
+
+## Commander Expectations
+
+- assert readers can maintain an ordered reading list of books through a web application.
+- assert every described behavior is covered by automated tests.
+- assert `sh bin/test.sh` is the complete release verification command.
+
+## Crew
+
+| Crew | Charge |
+|---|---|
+| Commander | Defines intent and decides what done means. |
+| Team Lead | Confirms epic completeness and stakeholder expectations. |
+| Planning Crew | Authors atomic specifications and the ordered Manifest. |
+| Shipyard Crew | Builds the tickets without synchronous Commander access. |
+
+## Story List
+
+### Feature: Reading List Management
+
+| ID | Story | High-level AC |
+|---|---|---|
+| RLB-001 | View the reading list | The reader can open the primary page and see books, or a clear empty-list state, in stored order. |
+| RLB-002 | Add a book | Submitting a title and author stores the book and shows it in the list. |
+| RLB-003 | Preserve addition order | Books are presented in the order they were added. |
+| RLB-004 | Remove a book | Removing a book omits it from the next list read. |
+| RLB-005 | Reject incomplete books | An empty title or author is rejected with a clear error message. |
+
+### Feature: Quality Verification
+
+| ID | Story | High-level AC |
+|---|---|---|
+| RLB-006 | Provide the complete test runner | `bin/test.sh` runs all automated tests and exits zero only when every test passes. |
+
+## Surfaced Acceptance Criteria
+
+| ID | Story ID | Criterion |
+|---|---|---|
+| AC-001 | RLB-001 | The primary web entry point shall provide the reading-list workflow without requiring an undocumented route. |
+| AC-002 | RLB-001 | While the list is loading, the interface shall communicate that state; when loading or retrieval fails, it shall show a clear error and preserve recoverability. |
+| AC-003 | RLB-005 | Validation feedback shall identify whether the title or author is missing and shall leave the reader able to correct and resubmit. |
+
+## Relationship Model
+
+| Source or group | Relationship type | Related source or group | Evidence | Delivery implication |
+|---|---|---|---|---|
+| `sources/reading-list.md` | instruction-to-test | `sources/full_test.sh` | The product prose requires automated tests and a complete test command. | Build behavior stories with focused tests, then gate release on the terminal suite story. |
+| `sources/full_test.sh` | conformance harness | `bin/test.sh` | The harness dispatches to the delivered `bin/test.sh` and fails when it is absent. | Stage the harness and make the project runner executable from the application root. |
+| Reading-list persistence and UI stories | dependency | `RLB-001`–`RLB-005` | Add, list, order, remove, and validation describe one maintained collection. | Establish the persistence boundary before wiring the web workflow. |
+
+## Source Roles
+
+| Path | Role | Plan disposition | Build disposition |
+|---|---|---|---|
+| `sources/reading-list.md` | normative specification | context | prompt-only |
+| `sources/full_test.sh` | conformance harness | context | stage |
+
+## Planning Instructions
+
+### Delivery Shape
+
+A small server-rendered web application serves a primary reading-list page. The application accepts title/author submissions, persists books, reads them in insertion order, and removes selected books. The build also provides a POSIX-compatible test runner and focused automated tests.
+
+### Story Realization Map
+
+| Story ID | Blueprint scope | Evidence | Related files | Delivery shape |
+|---|---|---|---|---|
+| RLB-001 | Primary page and ordered list read | `sources/reading-list.md` | Web route, template, list repository call | capability, integration |
+| RLB-002 | Book creation workflow | `sources/reading-list.md` | Form, create route, repository, DTO | capability, integration |
+| RLB-003 | Ordering contract | `sources/reading-list.md` | Ordered repository read and test | capability, test harness |
+| RLB-004 | Book deletion workflow | `sources/reading-list.md` | Delete route, repository, UI action, test | capability, integration |
+| RLB-005 | Input validation and feedback | `sources/reading-list.md` | Boundary validation, error rendering, tests | capability, test harness |
+| RLB-006 | Complete automated verification | `sources/full_test.sh`, `sources/reading-list.md` | `bin/test.sh`, test suite | acceptance contract |
+
+### Test and Acceptance Strategy
+
+Stories RLB-001 through RLB-005 use focused tests for their owned behavior. RLB-006 is the sole terminal verification story and runs the complete unfiltered suite with `Suite: full`. The Sea Trials execute the staged `sources/full_test.sh`, which delegates to `bin/test.sh`.
+
+### Sequencing and Dependencies
+
+Create the application and persistence boundary before the routes. Implement list and create behavior before ordering, removal, and validation refinements. Add focused tests with each behavior. Build `bin/test.sh` before terminal verification; the complete suite runs only after all implementation stories.
+
+### Source Conflicts and Gaps
+
+No source conflicts remain. The unattended run selects a conventional local web deployment, Flask with Python, and SQLite-backed relational persistence. Identity is resolved as display name `ReadingList` with the short description “A web application for maintaining an ordered list of books to read.”
+
+## Analysis Notes
+
+generated: 2026-10-23
+blueprint: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.210132/workspace/targets/ReadingList/blueprint
+
+Quality: Ready
+  blockers: 0
+  questions: 0
+  features: 2
+  stories: 6
+  stack: Python, Flask, SQLite, SQLAlchemy, Alembic, pytest, POSIX shell
+  display_name: ReadingList
+  short_description: A web application for maintaining an ordered list of books to read.
+
+None.
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT SEA_TRIALS.md ===
+# Sea Trials: ReadingList
+
+## st-001: Test suite passes
+
+Type: technical
+Required: yes
+Criterion: The application shall provide a POSIX-compatible `bin/test.sh` that exits zero when every automated test passes.
+Verification: proof
+Pattern: ubiquitous
+Command: ["sh", "sources/full_test.sh"]
+
+## st-002: A book can be added
+
+Type: behavioral
+Required: yes
+Criterion: When a reader submits a title and an author, the application shall store the book and show it in the list.
+Verification: proof
+Pattern: event
+
+## st-003: Books appear in the order added
+
+Type: behavioral
+Required: yes
+Criterion: The application shall present books in the order they were added.
+Verification: proof
+Pattern: ubiquitous
+
+## st-004: A book can be removed
+
+Type: behavioral
+Required: yes
+Criterion: When a reader removes a book, the application shall omit it from the list on the next read.
+Verification: proof
+Pattern: event
+
+## st-005: Empty fields are rejected
+
+Type: behavioral
+Required: yes
+Criterion: If a submission carries an empty title or an empty author, then the application shall reject it and report the reason.
+Verification: proof
+Pattern: unwanted
+
+## st-006: Every behavior is covered by a test
+
+Type: technical
+Required: yes
+Criterion: The application shall carry automated tests for adding a book, listing books in the order added, removing a book, and rejecting an empty title or author.
+Verification: proof
+Pattern: ubiquitous
+
+## Questions
+
+- None.
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT TECHNOLOGY_STACK.md ===
+# Technology Stack
+
+| Technology | Rigging | Notes |
+|---|---|---|
+| Python | `python.md` | Runtime and application language. |
+| Flask | `flask.md` | Conventional lightweight web server and application framework selected for the web product. |
+| SQLite | `sqlite.md` | Local relational persistence for development and automated tests. |
+| SQLAlchemy | `sqlalchemy.md` | Typed persistence boundary; repository contracts: `RLB-001` list books, `RLB-002` create book, `RLB-003` ordered read, `RLB-004` delete book; web consumers use `rebuild` sensitivity. |
+| Alembic | `alembic.md` | Schema lifecycle for the relational store. |
+| pytest | — | Conventional automated test runner for focused behavior tests. |
+| POSIX shell | `cli.md` | Provides the required portable `bin/test.sh` entry point. |
+=== END ARTIFACT ===
+
+=== BEGIN ARTIFACT COMPASS.md ===
+# COMPASS: ReadingList
+
+## Compass
+
+ReadingList is a small web application for readers who want to maintain a personal list of books to read. A reader can add books with titles and authors, view them in insertion order, and remove them. The application must be easy to exercise through its primary web page and fully verifiable through its supplied test runner.
+
+## Constraints
+
+- The delivered `bin/test.sh` must be POSIX-compatible.
+- `sh bin/test.sh` is the complete automated test command.
+- The test runner must exit zero only when every automated test passes.
+- Use local relational persistence suitable for repeatable automated tests.
+- Preserve the order in which books are added.
+
+## Guardrails
+
+- Never store or display a book with an empty title or author.
+- Always report a clear reason when validation rejects a submission.
+- Never silently reorder books.
+- After removal, do not show the removed book on the next read.
+- Keep every described behavior covered by automated tests.
+=== END ARTIFACT ===

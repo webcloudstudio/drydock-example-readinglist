@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/VERIFICATION.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/VERIFICATION.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/VERIFICATION.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Verification</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>The POSIX-compatible bin/test.sh runner and the terminal full-suite gate that proves every automated test passes.</td></tr><tr><td>Depends On</td><td>ARCHITECTURE.md, FEATURE-AddBookTests.md, FEATURE-ListBooksTests.md, FEATURE-RemoveBookTests.md, FEATURE-ValidationTests.md, SCREEN-ReadingList.md</td></tr><tr><td>Provides</td><td>bin/test.sh</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>The application root provides <code>bin/test.sh</code>, a POSIX <code>sh</code> script that runs the complete automated test suite from the application root. <code>sh bin/test.sh</code> exits zero only when every test passes. This is the terminal story: it runs after every implementation and test story, runs the whole suite through the Commander-owned dispatcher <code>sources/full_test.sh</code>, and preserves the command, exit code, standard output, and standard error as evidence.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Runner Behavior</h2>
+<ul><li><code>bin/test.sh</code> is written in POSIX <code>sh</code>, with no bash-only syntax.</li><li>It changes to the application root (the parent of <code>bin/</code>) so it runs correctly from any working directory.</li><li>It activates <code>.venv</code> when present, then runs <code>pytest -q</code> over the entire suite with no filter, skip, or selection.</li><li>Its exit status is that of <code>pytest -q</code>; it never masks a failure.</li></ul>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC runner-is-posix-script ===<br>Intent: bin/test.sh exists at the application root and parses as POSIX sh.<br>Requires: executable=sh; scope=test</p>
+<p>import subprocess from pathlib import Path</p>
+<p>runner = Path(&quot;bin/test.sh&quot;) assert runner.is_file() result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, str(runner)], capture_output=True, text=True) print(result.stdout) print(result.stderr) assert result.returncode == 0 === END AC runner-is-posix-script ===</p>
+<p>=== AC suite-files-present ===<br>Intent: Every behavior has its pytest module in the application&#x27;s test suite.</p>
+<p>from pathlib import Path</p>
+<p>import app_server</p>
+<p>modules = [ &quot;tests/test_add_book.py&quot;, &quot;tests/test_list_books.py&quot;, &quot;tests/test_remove_book.py&quot;, &quot;tests/test_validation.py&quot;, ] missing = [m for m in modules if not Path(m).is_file()] print(f&quot;missing modules: {missing}&quot;) assert missing == [] === END AC suite-files-present ===</p>
+<p>=== AC full-suite-gate ===<br>Intent: The complete suite, run through the staged dispatcher from the application root, exits zero.<br>Suite: full<br>Requires: executable=sh; scope=test</p>
+<p>import os import subprocess import sys</p>
+<p>import app_server</p>
+<p>result = subprocess.run( [&quot;sh&quot;, &quot;sources/full_test.sh&quot;], capture_output=True, text=True, env={**os.environ}, ) print(result.stdout) print(result.stderr, file=sys.stderr) assert result.returncode == 0 === END AC full-suite-gate ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li><code>bin/test.sh</code> never filters, skips, or reinterprets tests and never exits zero while any test fails.</li><li>The full suite runs only in this terminal story; earlier stories run their own scoped slices.</li></ul></article>
+</main>
+</body>
+</html>

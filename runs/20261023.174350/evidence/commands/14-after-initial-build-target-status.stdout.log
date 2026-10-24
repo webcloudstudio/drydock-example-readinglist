@@ -1,0 +1,21 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Drydock status
+
+  Target          /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261023.174350/workspace/targets/ReadingList
+  Name            ReadingList
+  Description     A web application for keeping a personal list of books to read, with add, ordered view, and remove.
+  Phase           Loop
+  State           9 closed/implemented
+  Metadata        built · complete
+  Sources         2 imported · 9 authored blueprint files
+  Analysis        Ready · 9 stories · 0 questions · 0 blockers
+  Blueprint       ✓  0 errors · 0 warnings
+  Plan            9 closed/implemented
+  Frontier        (none)
+  Workflow        5 steps
+                  Initialize         complete at 2026-10-23T17:43:53.036+00:00
+                  Import             complete at 2026-10-23T17:43:59.712+00:00
+                  Analyze            complete at 2026-10-23T17:44:20.150+00:00
+                  Plan               complete at 2026-10-23T17:47:58.330+00:00
+                  Build              complete at 2026-10-23T18:08:33.158+00:00
+  Next step       drydock refit ReadingList BOTH <Scope> <Change>

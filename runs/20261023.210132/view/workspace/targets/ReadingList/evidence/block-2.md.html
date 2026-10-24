@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-2.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-2.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-2.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 2 · Foundational (block-2)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-23</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 7501</li><li>execution id: -</li></ul>
+<h2>Stories built</h2>
+<ul><li>Provide relational persistence for ordered books. (database) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>stack: python_compact.md (SP 601)</li><li>compass: COMPASS.md (SP 551)</li><li>implements: DATABASE.md (SP 1361)</li><li>stack: persistence.md (SP 2816)</li><li>stack: sqlite.md (SP 2109)</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: database-books-create (DATABASE.md)</li></ul>
+<p>intent: The books create operation returns the declared book row with the supplied values. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: database-books-list (DATABASE.md)</li></ul>
+<p>intent: The books list operation returns books in insertion order. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<ul><li>RED: database-books-delete (DATABASE.md)</li></ul>
+<p>intent: The books delete operation returns the selected identifier and removes that book from subsequent reads. error: foundation not built: <code>persistence</code> is the package the database foundation (postgres.md, sqlite.md) builds, and the build directory has no <code>persistence/</code>. The criterion exercises the built application, so it was not run.</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: database-books-create (DATABASE.md)</li></ul>
+<p>intent: The books create operation returns the declared book row with the supplied values. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not requested return code: 0</p>
+<ul><li>PASS: database-books-list (DATABASE.md)</li></ul>
+<p>intent: The books list operation returns books in insertion order. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not requested return code: 0</p>
+<ul><li>PASS: database-books-delete (DATABASE.md)</li></ul>
+<p>intent: The books delete operation returns the selected identifier and removes that book from subsequent reads. target interpreter: /mnt/c/Users/barlo/projects/drydock/.venv/bin/python provisioning: not requested return code: 0</p>
+<h2>Build summary</h2>
+<p>(no summary returned)</p></article>
+</main>
+</body>
+</html>

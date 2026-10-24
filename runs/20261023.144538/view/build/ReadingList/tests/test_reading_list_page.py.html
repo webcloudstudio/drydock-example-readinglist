@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_reading_list_page.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_reading_list_page.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_reading_list_page.py">Raw file</a></div></header>
+<article class="doc"><pre>&quot;&quot;&quot;Reading list page: GET / renders the add form, the books in the order added, and the remove controls.&quot;&quot;&quot;
+
+from html.parser import HTMLParser
+from pathlib import Path
+
+import pytest
+
+from app_server import create_app
+from app_server.book_service import add_book, remove_book
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+JSON_ACCEPT = {&quot;Accept&quot;: &quot;application/json&quot;}
+
+
+@pytest.fixture
+def app(monkeypatch, tmp_path):
+    &quot;&quot;&quot;A fresh application over its own store, so no test touches the configured data/app.db.&quot;&quot;&quot;
+    store = tmp_path / &quot;reading-list-page.db&quot;
+    monkeypatch.setenv(&quot;DATABASE_URL&quot;, f&quot;sqlite:///{store}&quot;)
+    monkeypatch.delenv(&quot;DATABASE_PATH&quot;, raising=False)
+    application = create_app()
+    application.extensions[&quot;database&quot;].execute_script((PROJECT_ROOT / &quot;schema.sql&quot;).read_text())
+    return application
+
+
+class _Page(HTMLParser):
+    &quot;&quot;&quot;Collects the forms, the list items, and the text of every role=&quot;alert&quot; element.&quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.forms: list[dict] = []
+        self.inputs: list[dict] = []
+        self.items: list[dict] = []
+        self.alerts: list[str] = []
+        self.buttons: list[str] = []
+        self._form: dict | None = None
+        self._item: dict | None = None
+        self._alert_depth = 0
+        self._alert_text: list[str] = []
+        self._button_text: list[str] | None = None
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if self._alert_depth:
+            self._alert_depth += 1
+        elif attributes.get(&quot;role&quot;) == &quot;alert&quot;:
+            self._alert_depth = 1
+            self._alert_text = []
+        if tag == &quot;form&quot;:
+            self._form = {&quot;method&quot;: attributes.get(&quot;method&quot;), &quot;action&quot;: attributes.get(&quot;action&quot;), &quot;inputs&quot;: []}
+            self.forms.append(self._form)
+        elif tag == &quot;input&quot;:
+            self.inputs.append(attributes)
+            if self._form is not None:
+                self._form[&quot;inputs&quot;].append(attributes)
+        elif tag == &quot;li&quot;:
+            self._item = {&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;, &quot;action&quot;: None}
+            self.items.append(self._item)
+        elif tag == &quot;button&quot;:
+            self._button_text = []
+        elif tag == &quot;span&quot; and self._item is not None:
+            self._item[&quot;_field&quot;] = attributes.get(&quot;class&quot;)
+        if tag == &quot;form&quot; and self._item is not None:
+            self._item[&quot;action&quot;] = attributes.get(&quot;action&quot;)
+
+    def handle_endtag(self, tag):
+        if self._alert_depth:
+            self._alert_depth -= 1
+            if self._alert_depth == 0:
+                self.alerts.append(&quot;&quot;.join(self._alert_text))
+        if tag == &quot;form&quot;:
+            self._form = None
+        elif tag == &quot;li&quot;:
+            self._item = None
+        elif tag == &quot;button&quot; and self._button_text is not None:
+            self.buttons.append(&quot;&quot;.join(self._button_text).strip())
+            self._button_text = None
+
+    def handle_data(self, data):
+        if self._alert_depth:
+            self._alert_text.append(data)
+        if self._button_text is not None:
+            self._button_text.append(data)
+        if self._item is not None and self._item.get(&quot;_field&quot;):
+            field = self._item.pop(&quot;_field&quot;)
+            self._item[field] += data.strip()
+            self._item[&quot;_field&quot;] = None
+
+
+def _parse(html: str) -&gt; _Page:
+    page = _Page()
+    page.feed(html)
+    page.close()
+    return page
+
+
+def _listed_titles(page: _Page) -&gt; list[str]:
+    return [item[&quot;title&quot;] for item in page.items]
+
+
+def test_index_answers_200_with_html(app):
+    response = app.test_client().get(&quot;/&quot;)
+
+    assert response.status_code == 200
+    assert response.mimetype == &quot;text/html&quot;
+
+
+def test_index_on_empty_store_shows_empty_state_and_no_list_items(app):
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert page.items == []
+    assert page.alerts == []
+
+
+def test_index_lists_books_in_the_order_added(app):
+    database = app.extensions[&quot;database&quot;]
+    for title in [&quot;First&quot;, &quot;Second&quot;, &quot;Third&quot;]:
+        add_book(database, title=title, author=&quot;Order Author&quot;)
+
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert _listed_titles(page) == [&quot;First&quot;, &quot;Second&quot;, &quot;Third&quot;]
+
+
+def test_index_shows_each_book_author(app):
+    add_book(app.extensions[&quot;database&quot;], title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert [item[&quot;author&quot;] for item in page.items] == [&quot;Frank Herbert&quot;]
+
+
+def test_index_lists_one_book_when_exactly_one_is_stored(app):
+    add_book(app.extensions[&quot;database&quot;], title=&quot;Only&quot;, author=&quot;Solo&quot;)
+
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert _listed_titles(page) == [&quot;Only&quot;]
+
+
+def test_index_shows_a_book_added_through_post(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    page = _parse(client.get(&quot;/&quot;).get_data(as_text=True))
+
+    assert _listed_titles(page) == [&quot;Dune&quot;]
+
+
+def test_index_has_add_form_posting_title_and_author_to_books(app):
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    add_forms = [form for form in page.forms if form[&quot;action&quot;] == &quot;/books&quot;]
+    assert len(add_forms) == 1
+    assert add_forms[0][&quot;method&quot;] == &quot;post&quot;
+    names = {attributes.get(&quot;name&quot;) for attributes in add_forms[0][&quot;inputs&quot;]}
+    assert {&quot;title&quot;, &quot;author&quot;} &lt;= names
+    assert &quot;Add book&quot; in page.buttons
+
+
+def test_index_has_one_remove_form_per_book_posting_to_its_delete_route(app):
+    database = app.extensions[&quot;database&quot;]
+    first = add_book(database, title=&quot;First&quot;, author=&quot;A&quot;).id
+    second = add_book(database, title=&quot;Second&quot;, author=&quot;B&quot;).id
+
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    remove_actions = [item[&quot;action&quot;] for item in page.items]
+    assert remove_actions == [f&quot;/books/{first}/delete&quot;, f&quot;/books/{second}/delete&quot;]
+
+
+def test_index_remove_control_is_a_post_form(app):
+    add_book(app.extensions[&quot;database&quot;], title=&quot;Dune&quot;, author=&quot;Frank Herbert&quot;)
+
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    remove_forms = [form for form in page.forms if form[&quot;action&quot;] and form[&quot;action&quot;].endswith(&quot;/delete&quot;)]
+    assert len(remove_forms) == 1
+    assert remove_forms[0][&quot;method&quot;] == &quot;post&quot;
+    assert &quot;Remove&quot; in page.buttons
+
+
+def test_index_has_no_remove_control_when_no_books_exist(app):
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert [form for form in page.forms if form[&quot;action&quot;] and form[&quot;action&quot;].endswith(&quot;/delete&quot;)] == []
+
+
+def test_index_after_removal_no_longer_lists_the_removed_book(app):
+    database = app.extensions[&quot;database&quot;]
+    keep = add_book(database, title=&quot;Keep&quot;, author=&quot;A&quot;).id
+    drop = add_book(database, title=&quot;Drop&quot;, author=&quot;B&quot;).id
+    remove_book(database, drop)
+
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert _listed_titles(page) == [&quot;Keep&quot;]
+    assert [item[&quot;action&quot;] for item in page.items] == [f&quot;/books/{keep}/delete&quot;]
+
+
+def test_index_escapes_book_titles(app):
+    add_book(app.extensions[&quot;database&quot;], title=&quot;&lt;b&gt;bold&lt;/b&gt;&quot;, author=&quot;A&quot;)
+
+    html = app.test_client().get(&quot;/&quot;).get_data(as_text=True)
+
+    assert &quot;&lt;b&gt;bold&lt;/b&gt;&quot; not in html
+    assert _listed_titles(_parse(html)) == [&quot;&lt;b&gt;bold&lt;/b&gt;&quot;]
+
+
+def test_rejected_html_submission_rerenders_page_with_reason_and_stored_books(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot;Frank Herbert&quot;})
+
+    response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Nobody&quot;})
+    page = _parse(response.get_data(as_text=True))
+
+    assert response.status_code == 400
+    assert response.mimetype == &quot;text/html&quot;
+    assert page.alerts == [&quot;rejected: title is empty&quot;]
+    assert _listed_titles(page) == [&quot;Dune&quot;]
+    assert any(form[&quot;action&quot;] == &quot;/books&quot; for form in page.forms)
+
+
+def test_rejected_author_submission_shows_author_reason_on_page(app):
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Dune&quot;, &quot;author&quot;: &quot; &quot;})
+
+    assert _parse(response.get_data(as_text=True)).alerts == [&quot;rejected: author is empty&quot;]
+
+
+def test_index_has_no_alert_when_nothing_was_rejected(app):
+    page = _parse(app.test_client().get(&quot;/&quot;).get_data(as_text=True))
+
+    assert page.alerts == []
+
+
+def test_index_keeps_working_after_rejection(app):
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Nobody&quot;})
+
+    response = client.get(&quot;/&quot;)
+
+    assert response.status_code == 200
+    assert _parse(response.get_data(as_text=True)).alerts == []
+
+
+def test_rejected_json_submission_still_answers_json_not_page(app):
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Nobody&quot;}, headers=JSON_ACCEPT
+    )
+
+    assert response.mimetype == &quot;application/json&quot;
+    assert response.get_json()[&quot;field&quot;] == &quot;title&quot;
+</pre></article>
+</main>
+</body>
+</html>

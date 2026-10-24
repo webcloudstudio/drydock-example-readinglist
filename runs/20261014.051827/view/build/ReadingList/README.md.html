@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/README.md</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/README.md</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../build/ReadingList/README.md">Raw file</a></div></header>
+<article class="doc"><h1>ReadingList</h1>
+<h2>Intent</h2>
+<p>A small web application that keeps a reader&#x27;s list of books to read. A reader adds a book with a title and author, views the books in the order added, and removes books. It exists so the reader can track what to read next without losing order or accepting incomplete entries.</p>
+<h2>What It Does</h2>
+<p>A reader adds a book with a title and an author. An empty title or author is rejected with a clear error.</p>
+<p>A reader views the books in the order they were added.</p>
+<p>A reader removes a book from the list.</p>
+<p>The reader&#x27;s project must provide one command that runs every automated test and reports success only when all of them pass.</p>
+<p>The reading list page where a reader adds, views, and removes books.</p>
+<h2>Setup and Running</h2>
+<p><strong>Before first run:</strong></p>
+<ul><li>Confirm the repository has the expected remote with <code>git remote -v</code>; add <code>origin</code> if the startup guard requires it.</li><li>Run <code>git status --short</code> and commit or intentionally stash local changes before deployment-oriented runs.</li></ul>
+<p><strong>Install dependencies:</strong></p>
+<pre><code>uv sync</code></pre>
+<h2>Verification</h2>
+<pre><code>bash bin/test.sh</code></pre>
+<h2>Next Steps</h2>
+<ul><li>Complete the first-run checks above.</li><li>Run <code>bash bin/test.sh</code> before making release or deployment changes.</li></ul></article>
+</main>
+</body>
+</html>

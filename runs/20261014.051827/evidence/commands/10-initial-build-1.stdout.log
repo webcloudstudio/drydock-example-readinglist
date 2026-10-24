@@ -1,0 +1,69 @@
+Drydock 0.2.0  Copyright (c) 2026 Web Cloud Studio. All rights reserved.
+Build: ReadingList
+scope: entire project
+frontier: architecture-foundation, persistence-foundation
+git: baseline ReadingList 30434930e8da
+git: baseline ReadingList a77fa85c83f1
+
+BLOCK block-1  name="Block 1 · Foundational"  calls_max=7
+  story=architecture-foundation  "Stand up the Python project tree, environment, test runner, and Flask application factory."
+  story=persistence-foundation  "Declare the reading-list store and generate the persistence package from DATABASE.md."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261014.052142.874Z-07926177
+    acceptance=3/3
+git: block-1 | ARCHITECTURE.md, DATABASE.md | call=1 | app=97f88d6e0dbd target=96d7f5efb706
+
+  DONE  story=architecture-foundation  state=closed/verified  execution=20261014.052142.874Z-07926177  elapsed=2m03s
+git: block-1 | ARCHITECTURE.md, DATABASE.md | step_completed | app=unchanged target=cbeee717c6f2
+
+BLOCK block-2  name="Block 2 · Service"  calls_max=7
+  story=feature-add-book  "Accept a title and author, store the book, and reject empty fields with a named reason."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261014.052357.319Z-d192336e
+    acceptance=4/4
+git: block-2 | FEATURE-AddBook.md | call=1 | app=3732183be4fc target=5191a27f6088
+
+  DONE  story=feature-add-book  state=closed/verified  execution=20261014.052357.319Z-d192336e  elapsed=2m25s
+git: block-2 | FEATURE-AddBook.md | step_completed | app=unchanged target=585e0478ae20
+
+BLOCK block-3  name="Block 3 · Service"  calls_max=7
+  story=feature-list-books  "List stored books in the order they were added."
+  story=feature-remove-book  "Remove a book and omit it from the next read; report a missing id without altering the list."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261014.052631.587Z-34851033
+    acceptance=4/4
+git: block-3 | FEATURE-ListBooks.md, FEATURE-RemoveBook.md | call=1 | app=f7548e405743 target=61e3a4323521
+
+  DONE  story=feature-list-books  state=closed/verified  execution=20261014.052631.587Z-34851033  elapsed=2m06s
+git: block-3 | FEATURE-ListBooks.md, FEATURE-RemoveBook.md | step_completed | app=unchanged target=df090a6b623b
+
+BLOCK block-4  name="Block 4 · Service"  calls_max=7
+  story=screen-reading-list  "Serve the reading list page that adds, lists, and removes books."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261014.052833.846Z-f9f2c800
+    acceptance=2/2
+git: block-4 | SCREEN-ReadingList.md | call=1 | app=a8afe6ee95a4 target=deb32a356c5c
+
+  DONE  story=screen-reading-list  state=closed/verified  execution=20261014.052833.846Z-f9f2c800  elapsed=2m20s
+git: block-4 | SCREEN-ReadingList.md | step_completed | app=unchanged target=07645939ff59
+
+BLOCK block-5  name="Block 5 · Feature"  calls_max=7
+  story=feature-test-runner  "Provide POSIX bin/test.sh that runs the complete automated suite and is the terminal verification gate."
+
+  [call 1/7]  kind=initial  llm=claude/claude-haiku-5-5
+    result=ok  rc=0  execution=20261014.053057.570Z-4b066be4
+    acceptance=2/2
+git: block-5 | FEATURE-TestRunner.md | call=1 | app=85e97d1aff71 target=0891742c1062
+
+  DONE  story=feature-test-runner  state=closed/verified  execution=20261014.053057.570Z-4b066be4  elapsed=2m09s
+git: block-5 | FEATURE-TestRunner.md | step_completed | app=unchanged target=9fffd0dec315
+git: build complete ReadingList 289d3f9a46c7
+git: build complete ReadingList 5f310874be1d
+
+result: 7 built, 0 failed, 0 unchanged
+elapsed: 11 minutes 25 seconds
+Target - committed project workspace git store

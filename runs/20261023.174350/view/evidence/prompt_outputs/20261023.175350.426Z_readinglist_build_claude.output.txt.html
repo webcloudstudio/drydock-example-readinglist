@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.175350.426Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.175350.426Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.175350.426Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>Block 3 is the four book stories: the service layer, the `/books` routes, and their tests. `bin/test.sh` belongs to a later story, so I&#x27;ll leave it alone. Before writing anything, I&#x27;ll confirm the existing suite runs in this environment.Baseline is 25 passing. No new dependencies are needed, so I&#x27;ll write the service layer first.I split the Flask import across two lines in the routes file. I&#x27;ll merge it, then wire the blueprint into the factory.The app-shell test asserts that only `/health` is registered, which this block changes by design. I&#x27;ll update it to the expected route set, then add an isolated-store fixture to conftest so the HTTP tests can cover an empty list and reopening the store.The fixtures are in place. I&#x27;ll add a `fresh_db` handle fixture, then write the service-level and HTTP-level tests. Each test reads state back through the public interface.I wrote the first list-order test sloppily (a confusing title set and a `[-3:]` slice). The store is fresh, so the assertion can be exact. I&#x27;ll fix that and drop an unused fixture parameter.All test modules are written. Now I&#x27;ll run the full suite.All 75 pass. Next I&#x27;ll run the declared acceptance criteria from the four feature specs. I&#x27;m extracting them to a scratch directory outside the build tree and running each against the project.My extraction kept the `Intent:`/`Requires:`/`Suite:` header lines, which are not Python. I&#x27;ll strip those and re-run.`-I` also ignores `PYTHONPATH`, so the import failed. I&#x27;ll keep `-I` and put the project root on `sys.path` from a small driver instead.All 15 declared criteria pass. Last step is confirming that only the intended files changed and that nothing under `sources/` was touched.RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/__init__.py
+- app_server/routes/books.py
+- app_server/services/__init__.py
+- app_server/services/books.py
+- tests/conftest.py
+- tests/test_app_shell.py
+- tests/test_add_book.py
+- tests/test_list_books.py
+- tests/test_remove_book.py
+- tests/test_reject_empty_fields.py
+- tests/test_books_service.py
+
+SUMMARY:
+Block 3 implements the four book stories on top of the block 1–2 foundation.
+
+- **Service layer** (`app_server/services/books.py`): `add_book`, `list_books`, `remove_book`, and `validate_book_input`. The service imports no Flask. `add_book` validates before any store call and stores the title and author exactly as supplied. `remove_book` calls `books.get` first and returns False without changing anything for an unknown id.
+- **Routes** (`app_server/routes/books.py`, registered in `create_app`): `POST /books` returns 201 with `{id, title, author}`, or 400 with `{&quot;error&quot;: ...}`. `GET /books` returns the array in id order, with `[]` when empty. `DELETE /books/&lt;int:book_id&gt;` returns 204 with an empty body, or 404 with an error body. A non-integer id does not match the route.
+- **Validation**: a missing, non-string, or whitespace-only title or author raises `ValueError` naming the field. Both fields are named when both are blank. A non-JSON body is treated as an empty submission and gets 400.
+- **Tests**: 50 new tests, using a per-test temporary store with the generated schema applied. The configured `data/app.db` is never written by the tests. The HTTP tests cover the empty list, the response fields, read-back, order across reopening the store, removal persisting across reopening, and repeat or unknown removal.
+- **Existing test changed**: `test_factory_registers_only_the_health_route` is now `test_factory_registers_only_the_declared_routes`, and it expects `/health`, `/books`, and `/books/&lt;int:book_id&gt;`. The old assertion would fail by design once the book routes are registered.
+- **Shared fixtures**: `conftest.py` gained `store_path`, `fresh_app`, `fresh_client`, and `fresh_db`.
+
+Results:
+- `.venv/bin/python -m pytest -q`: 75 passed, 0 failed (baseline was 25 before this block).
+- The 15 declared acceptance criteria from FEATURE-AddBook, ListBooks, RemoveBook, and RejectEmptyFields: 15 passed. I ran them manually from the spec text with the project root on the path. They clean up their own records, and the configured store was left with 0 books.
+
+Choices I made that you may want to change:
+- Validation error wording: a single blank field gives &quot;title must be non-empty text&quot;, and both give &quot;title and author must be non-empty text&quot;.
+- The 404 body for an unknown id is `{&quot;error&quot;: &quot;no book with id N&quot;}`.
+- `bin/test.sh` is not built here. It belongs to the test-runner story, which is outside this block.
+
+BLOCKERS:
+- None.
+
+&lt;blueprint-decisions&gt;
+[{&quot;spec&quot;:&quot;FEATURE-RejectEmptyFields.md&quot;,&quot;severity&quot;:&quot;Low&quot;,&quot;subject&quot;:&quot;Validation error message format&quot;,&quot;decision&quot;:&quot;Missing, non-string, or whitespace-only fields produce &#x27;title must be non-empty text&#x27; (or &#x27;title and author must be non-empty text&#x27; when both fail). This names the field and is human-readable, as the spec requires. Acceptable, or should the wording change on replan?&quot;}]
+&lt;/blueprint-decisions&gt;</pre></article>
+</main>
+</body>
+</html>

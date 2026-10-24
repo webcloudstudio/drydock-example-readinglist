@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_architecture.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_architecture.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_architecture.py">Raw file</a></div></header>
+<article class="doc"><pre>from flask import Flask
+
+from app_server import create_app
+from app_server.testing import web_client
+
+
+def test_factory_exposes_flask_application_and_testing_client():
+    app = create_app()
+
+    assert isinstance(app, Flask)
+    assert web_client() is not None
+
+
+def test_factory_creates_independent_applications():
+    first = create_app()
+    second = create_app()
+
+    assert first is not second
+    assert first.name == second.name
+
+
+def test_factory_registers_declared_route_boundaries():
+    app = create_app()
+    routes = {
+        (rule.rule, tuple(sorted(rule.methods - {&quot;HEAD&quot;, &quot;OPTIONS&quot;})))
+        for rule in app.url_map.iter_rules()
+    }
+
+    assert (&quot;/&quot;, (&quot;GET&quot;,)) in routes
+    assert (&quot;/books&quot;, (&quot;POST&quot;,)) in routes
+    assert (&quot;/books/&lt;int:book_id&gt;/delete&quot;, (&quot;POST&quot;,)) in routes
+
+
+def test_primary_page_has_accessible_form_and_empty_state():
+    app = create_app()
+    app.config.update(TESTING=True)
+    response = app.test_client().get(&quot;/&quot;)
+    assert response.status_code == 200
+    assert b&quot;Books to read&quot; in response.data
+    assert b&#x27;for=&quot;title&quot;&#x27; in response.data
+    assert b&#x27;for=&quot;author&quot;&#x27; in response.data
+    assert b&quot;Your reading list&quot; in response.data
+
+
+def test_add_book_preserves_values_and_insertion_order():
+    app = create_app()
+    app.config.update(TESTING=True)
+    client = app.test_client()
+    try:
+        first = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Project First Book&quot;, &quot;author&quot;: &quot;A. One&quot;})
+        second = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Project Second Book&quot;, &quot;author&quot;: &quot;B. Two&quot;})
+        page = client.get(&quot;/&quot;)
+        assert first.status_code == 302
+        assert second.status_code == 302
+        assert page.data.index(b&quot;Project First Book&quot;) &lt; page.data.index(b&quot;Project Second Book&quot;)
+    finally:
+        _delete_titles(&quot;Project First Book&quot;, &quot;Project Second Book&quot;)
+
+
+def test_invalid_book_submission_preserves_values_and_reports_fields():
+    app = create_app()
+    app.config.update(TESTING=True)
+    response = app.test_client().post(&quot;/books&quot;, data={&quot;title&quot;: &quot;  &quot;, &quot;author&quot;: &quot;Reader&quot;})
+    assert response.status_code == 400
+    assert b&#x27;value=&quot;  &quot;&#x27; in response.data
+    assert b&quot;Title is required.&quot; in response.data
+
+
+def test_invalid_author_submission_reports_author_field():
+    app = create_app()
+    app.config.update(TESTING=True)
+    response = app.test_client().post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Validation Title&quot;, &quot;author&quot;: &quot;  &quot;}
+    )
+    assert response.status_code == 400
+    assert b&#x27;value=&quot;Validation Title&quot;&#x27; in response.data
+    assert b&quot;Author is required.&quot; in response.data
+
+
+def test_invalid_submission_can_be_corrected():
+    app = create_app()
+    app.config.update(TESTING=True)
+    client = app.test_client()
+    invalid = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;Correctable Author&quot;})
+    valid = client.post(
+        &quot;/books&quot;, data={&quot;title&quot;: &quot;Project Corrected Title&quot;, &quot;author&quot;: &quot;Corrected Author&quot;}
+    )
+    assert invalid.status_code == 400
+    assert valid.status_code == 302
+    assert b&quot;Project Corrected Title&quot; in client.get(&quot;/&quot;).data
+    _delete_titles(&quot;Project Corrected Title&quot;)
+
+
+def test_remove_book_hides_it_from_next_read():
+    app = create_app()
+    app.config.update(TESTING=True)
+    client = app.test_client()
+    client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;Project Temporary Book&quot;, &quot;author&quot;: &quot;Reader&quot;})
+    from persistence import open_database
+    database = open_database(&quot;data/app.db&quot;)
+    try:
+        book_id = next(
+            book.id for book in database.books.list() if book.title == &quot;Project Temporary Book&quot;
+        )
+    finally:
+        database.close()
+    removed = client.post(f&quot;/books/{book_id}/delete&quot;)
+    page = client.get(&quot;/&quot;)
+    assert removed.status_code == 302
+    assert b&quot;Project Temporary Book&quot; not in page.data
+
+
+def _delete_titles(*titles):
+    from persistence import open_database
+
+    database = open_database(&quot;data/app.db&quot;)
+    try:
+        for book in database.books.list():
+            if book.title in titles:
+                database.books.delete(id=book.id)
+    finally:
+        database.close()
+</pre></article>
+</main>
+</body>
+</html>

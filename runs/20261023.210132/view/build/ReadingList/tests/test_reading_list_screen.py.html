@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>build/ReadingList/tests/test_reading_list_screen.py</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>build/ReadingList/tests/test_reading_list_screen.py</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../build/ReadingList/tests/test_reading_list_screen.py">Raw file</a></div></header>
+<article class="doc"><pre>from __future__ import annotations
+
+from app_server import create_app
+from persistence import open_database
+
+
+def _client():
+    app = create_app()
+    app.config.update(TESTING=True)
+    return app.test_client()
+
+
+def _remove_titles(*titles: str) -&gt; None:
+    database = open_database(&quot;data/app.db&quot;)
+    try:
+        for book in database.books.list():
+            if book.title in titles:
+                database.books.delete(id=book.id)
+    finally:
+        database.close()
+
+
+def test_screen_renders_empty_state_and_add_form(monkeypatch):
+    from app_server.features.reading_list import routes
+
+    monkeypatch.setattr(routes, &quot;_read_books&quot;, lambda: [])
+    client = _client()
+    response = client.get(&quot;/&quot;)
+
+    assert response.status_code == 200
+    body = response.get_data(as_text=True)
+    assert &#x27;name=&quot;title&quot;&#x27; in body
+    assert &#x27;name=&quot;author&quot;&#x27; in body
+    assert &quot;Your reading list&quot; in body
+    assert &quot;Your list is empty&quot; in body
+
+
+def test_screen_rejects_blank_fields_without_creating_a_book():
+    title = &quot;   &quot;
+    author = &quot;   &quot;
+    client = _client()
+
+    response = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+
+    assert response.status_code == 400
+    body = response.get_data(as_text=True)
+    assert &#x27;aria-invalid=&quot;true&quot;&#x27; in body
+    assert &quot;Title is required.&quot; in body
+    assert &quot;Author is required.&quot; in body
+    database = open_database(&quot;data/app.db&quot;)
+    try:
+        assert all(book.title != title and book.author != author for book in database.books.list())
+    finally:
+        database.close()
+
+
+def test_screen_lists_books_in_insertion_order_and_exposes_each_removal_control():
+    titles = (&quot;Screen Order First&quot;, &quot;Screen Order Second&quot;)
+    try:
+        client = _client()
+        assert client.post(&quot;/books&quot;, data={&quot;title&quot;: titles[0], &quot;author&quot;: &quot;First Author&quot;}).status_code == 302
+        assert client.post(&quot;/books&quot;, data={&quot;title&quot;: titles[1], &quot;author&quot;: &quot;Second Author&quot;}).status_code == 302
+
+        body = client.get(&quot;/&quot;).get_data(as_text=True)
+        assert body.index(titles[0]) &lt; body.index(titles[1])
+        assert &#x27;aria-label=&quot;Remove Screen Order First&quot;&#x27; in body
+        assert &#x27;aria-label=&quot;Remove Screen Order Second&quot;&#x27; in body
+    finally:
+        _remove_titles(*titles)
+
+
+def test_screen_removal_redirects_to_list_without_removed_book():
+    title = &quot;Screen Removal Control&quot;
+    try:
+        client = _client()
+        assert client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: &quot;Removal Author&quot;}).status_code == 302
+        database = open_database(&quot;data/app.db&quot;)
+        try:
+            book_id = next(book.id for book in database.books.list() if book.title == title)
+        finally:
+            database.close()
+
+        removed = client.post(f&quot;/books/{book_id}/delete&quot;)
+
+        assert removed.status_code == 302
+        assert title not in client.get(&quot;/&quot;).get_data(as_text=True)
+    finally:
+        _remove_titles(title)
+</pre></article>
+</main>
+</body>
+</html>

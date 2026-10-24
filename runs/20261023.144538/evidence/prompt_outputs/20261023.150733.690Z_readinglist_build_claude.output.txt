@@ -1,0 +1,25 @@
+The page route `GET /` doesn't exist yet, and the rejection path renders only `base.html`. Before changing anything, I'll get a baseline test run.Baseline is 117 passing. Now I'll add the `GET /` route, the page template, and make the HTML rejection path re-render the full reading list page (per the spec's "page re-rendered with the reason").One existing wiring test pins the endpoint set exactly. Let me read it before deciding how to update it.That test's intent is "only the book routes exist." The `GET /` page is a new route this step is required to add, so I'll extend the expected set to include it and say so in the summary. Next, the new tests for the page.Running the full suite now.All 134 tests pass. Next I'll run the four declared acceptance criteria for this step, with each one in its own script kept outside the build directory.All four declared criteria pass. I'll remove one redundant assertion loop in my new test file, re-run the suite, and check the changed-file list.RESULT: SUCCESS
+
+FILES CHANGED:
+- app_server/books.py
+- app_server/templates/reading_list.html
+- tests/test_reading_list_page.py
+- tests/test_create_app_wiring.py
+
+SUMMARY:
+- **`GET /`** now renders the reading list page. It lists books in insertion order (via `list_books`, which sorts by id), shows an empty-state message when there are none, and has one remove form per book posting to `/books/{id}/delete`.
+- **Add form** posts `title` and `author` to `POST /books`.
+- **Rejections:** the HTML 400 path now re-renders the full reading list page with the reason in the alert region, instead of the bare base layout. The JSON 400 path is unchanged.
+- **Template:** `reading_list.html` extends the shared `base.html`, so the alert region is inherited.
+- **Wiring test:** `test_create_app_registers_only_book_routes_beside_static` pins the exact endpoint set, so I added `books.index` to its expected set. This is the one existing test I changed; no declared acceptance criterion was touched.
+- **New tests:** `tests/test_reading_list_page.py` (23 tests) parses the rendered HTML and checks forms, list items, alerts, ordering, escaping, and post-rejection rendering.
+- **Declared acceptance criteria (`Suite: scoped`):** all four pass when run as standalone scripts (`screen-index-reachable`, `screen-shows-books-in-order`, `screen-rejection-shown`, `screen-remove-book`). The scripts live in `/tmp/drydock-acs/`, outside the build directory.
+- **Project suite:** `pytest -q` gives 134 passed (117 before, plus the new tests). I did not run `sources/full_test.sh`, since no criterion in this step invokes it.
+- **Not done:** no git commit, per the build instructions.
+
+BLOCKERS:
+- None.
+
+<blueprint-decisions>
+[{"spec":"SCREEN-ReadingList.md","severity":"Low","subject":"Rejected HTML submission response","decision":"The spec says a rejected submission re-renders the page with the reason. I render the full reading list page (alert region, add form, and current books) with the 400 status, instead of the bare base layout the route used before. Is that acceptable?"}]
+</blueprint-decisions>

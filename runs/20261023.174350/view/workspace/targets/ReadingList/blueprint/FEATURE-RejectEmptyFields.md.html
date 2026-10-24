@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/FEATURE-RejectEmptyFields.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/FEATURE-RejectEmptyFields.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/FEATURE-RejectEmptyFields.md">Raw file</a></div></header>
+<article class="doc"><h1>FEATURE: Reject Empty Fields</h1>
+<div class="scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Version</td><td>20261023 V1</td></tr><tr><td>Description</td><td>Reject a submission whose title or author is empty with a clear error and store nothing.</td></tr><tr><td>Depends On</td><td>FEATURE-AddBook.md</td></tr><tr><td>Provides</td><td>validate_book_input</td></tr><tr><td>Consumes</td><td>POST /books</td></tr></tbody></table></div>
+<h2>Purpose</h2>
+<p>Guarantee the application never accepts an empty title or empty author. Rejection reports a clear, human-readable error naming the offending field.</p>
+<h2>Trigger</h2>
+<p>A submission to <code>POST /books</code> (or the page form route) carries a missing, empty, or whitespace-only title or author.</p>
+<h2>Sequence</h2>
+<ol><li>The service calls <code>validate_book_input(title, author)</code> in <code>app_server.services.books</code> before any store call.</li><li>A value that is missing, not a string, or empty after stripping surrounding whitespace raises <code>ValueError</code> whose message names the field (<code>title</code> or <code>author</code>).</li><li><code>POST /books</code> converts the error to status 400 with JSON <code>{&quot;error&quot;: &lt;message&gt;}</code>.</li><li>Nothing is stored; the book list is unchanged.</li></ol>
+<h2>Routes</h2>
+<p>This feature adds no route of its own; it governs <code>POST /books</code> provided by FEATURE-AddBook.md.</p>
+<h2>Reads</h2>
+<p>None.</p>
+<h2>Writes</h2>
+<p>None. A rejected submission writes nothing.</p>
+<h2>Database Interface</h2>
+<ul><li>None — persistence is owned by FEATURE-AddBook.md.</li></ul>
+<h2>Tests</h2>
+<p>The build writes pytest tests for empty title, empty author, both empty, missing keys, and whitespace-only values, asserting status 400 and that the list is unchanged.</p>
+<h2>Programmatic Acceptance</h2>
+<p>=== AC reject-empty-title ===<br>Intent: POST /books with an empty title answers 400 and stores nothing.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() with committed_session() as db: before = len(list(db.books.list())) response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;ac-reject-author&quot;}) assert response.status_code == 400 assert isinstance(response.get_json()[&quot;error&quot;], str) with committed_session() as db: after = len(list(db.books.list())) assert after == before === END AC reject-empty-title ===</p>
+<p>=== AC reject-empty-author ===<br>Intent: POST /books with an empty author answers 400 and stores nothing.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() with committed_session() as db: before = len(list(db.books.list())) response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;ac-reject-title&quot;, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 assert isinstance(response.get_json()[&quot;error&quot;], str) with committed_session() as db: after = len(list(db.books.list())) assert after == before === END AC reject-empty-author ===</p>
+<p>=== AC reject-both-empty ===<br>Intent: POST /books with both fields empty answers 400 and stores nothing.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() with committed_session() as db: before = len(list(db.books.list())) response = client.post(&quot;/books&quot;, json={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;}) assert response.status_code == 400 with committed_session() as db: after = len(list(db.books.list())) assert after == before === END AC reject-both-empty ===</p>
+<p>=== AC reject-whitespace-and-missing ===<br>Intent: Whitespace-only and missing fields are rejected with 400 and nothing is stored.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>client = web_client() payloads = [ {&quot;title&quot;: &quot;   &quot;, &quot;author&quot;: &quot;ac-reject-ws-author&quot;}, {&quot;title&quot;: &quot;ac-reject-ws-title&quot;, &quot;author&quot;: &quot;   &quot;}, {&quot;author&quot;: &quot;ac-reject-missing-author&quot;}, {&quot;title&quot;: &quot;ac-reject-missing-title&quot;}, ] with committed_session() as db: before = len(list(db.books.list())) for payload in payloads: response = client.post(&quot;/books&quot;, json=payload) assert response.status_code == 400 with committed_session() as db: after = len(list(db.books.list())) assert after == before === END AC reject-whitespace-and-missing ===</p>
+<p>=== AC reject-validator ===<br>Intent: validate_book_input raises ValueError for an empty title or author.</p>
+<p>from app_server.services.books import validate_book_input</p>
+<p>for title, author in [(&quot;&quot;, &quot;ac-validator-author&quot;), (&quot;ac-validator-title&quot;, &quot;&quot;), (&quot;&quot;, &quot;&quot;)]: try: validate_book_input(title, author) except ValueError: continue raise AssertionError(&quot;empty input was accepted&quot;) === END AC reject-validator ===</p>
+<p>=== AC reject-valid-still-accepted ===<br>Intent: A submission with both fields present is still accepted with 201 after validation is in place.<br>Requires: python-package=flask; scope=test</p>
+<p>from app_server.testing import web_client from persistence.testing import committed_session</p>
+<p>created_id = None try: response = web_client().post( &quot;/books&quot;, json={&quot;title&quot;: &quot;ac-reject-valid-title&quot;, &quot;author&quot;: &quot;ac-reject-valid-author&quot;} ) assert response.status_code == 201 created_id = response.get_json()[&quot;id&quot;] finally: if created_id is not None: with committed_session() as db: db.books.delete(id=created_id) === END AC reject-valid-still-accepted ===</p>
+<h2>User Acceptance</h2>
+<ul><li>None.</li></ul>
+<h2>Guardrails</h2>
+<ul><li>Never accept an empty title or an empty author.</li><li>A rejected submission stores nothing.</li><li>The error message names the offending field and is human-readable.</li></ul></article>
+</main>
+</body>
+</html>

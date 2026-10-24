@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.144937.969Z_readinglist_plan_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.144937.969Z_readinglist_plan_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.144937.969Z_readinglist_plan_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>=== BEGIN ARTIFACT FEATURE-RemoveBookTests.md ===
+# FEATURE: Remove Book Tests
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Automated pytest tests that prove removing a book omits it on the next read, preserves the order of the rest, and answers 404 for an unknown id. |
+| Depends On | FEATURE-RemoveBook.md, FEATURE-AddBook.md, FEATURE-ListBooks.md, ARCHITECTURE.md |
+| Provides | tests/test_remove_book.py |
+| Consumes | POST /books/{id}/delete, POST /books, GET /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The Reading List guardrail &quot;Never ship a behavior without an automated test covering it&quot; applies to removal. This specification governs the project&#x27;s own pytest module `tests/test_remove_book.py`, written by the build agent beside the finished code against observed output. It exercises removal only through the public HTTP interface.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-RemoveBook.md.
+
+## Test Module
+
+`tests/test_remove_book.py` uses the `web_client` fixture from `tests/conftest.py` and covers one behavior per test, each named for the behavior:
+
+| Behavior | Expectation |
+|----------|-------------|
+| Removed book is omitted | After `POST /books/{id}/delete` answers 303, `GET /books` no longer lists that id. |
+| Other books remain | Removing one of several books leaves the others listed. |
+| Remaining order preserved | The remaining books keep their relative order of addition. |
+| Unknown id | `POST /books/{id}/delete` for an id that does not exist answers 404. |
+| Repeat removal | Removing the same id twice answers 303 then 404. |
+
+Each test creates the books it needs through `POST /books`, reads ids back from `GET /books`, and removes the books it created before finishing, so tests do not depend on each other&#x27;s residue.
+
+## Programmatic Acceptance
+
+=== AC remove-tests-module-passes ===
+Intent: The remove-book pytest module exists and every test in it passes against the built application.
+Suite: scoped
+Requires: executable=python3; scope=test
+
+import subprocess
+import sys
+from pathlib import Path
+
+import app_server
+
+module = Path(&quot;tests/test_remove_book.py&quot;)
+assert module.is_file()
+result = subprocess.run(
+    [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;-q&quot;, str(module)],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr, file=sys.stderr)
+assert result.returncode == 0
+=== END AC remove-tests-module-passes ===
+
+=== AC remove-omits-on-next-read ===
+Intent: A removed book is absent from GET /books on the next read.
+
+from app_server.testing import web_client
+
+client = web_client()
+marker = &quot;AC-rmtests-omit&quot;
+
+
+def owned():
+    return [b for b in client.get(&quot;/books&quot;).get_json() if b[&quot;title&quot;].startswith(marker)]
+
+
+def cleanup():
+    for b in owned():
+        client.post(f&quot;/books/{b[&#x27;id&#x27;]}/delete&quot;)
+
+
+cleanup()
+try:
+    title = marker + &quot;-one&quot;
+    author = &quot;Remove Author&quot;
+    created = client.post(&quot;/books&quot;, data={&quot;title&quot;: title, &quot;author&quot;: author})
+    assert created.status_code == 303
+    found = owned()
+    assert len(found) == 1
+    book_id = found[0][&quot;id&quot;]
+    removed = client.post(f&quot;/books/{book_id}/delete&quot;)
+    assert removed.status_code == 303
+    assert book_id not in [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()]
+finally:
+    cleanup()
+=== END AC remove-omits-on-next-read ===
+
+=== AC remove-preserves-order ===
+Intent: Removing the middle book leaves the other two listed in the order they were added.
+
+from app_server.testing import web_client
+
+client = web_client()
+marker = &quot;AC-rmtests-order&quot;
+
+
+def owned():
+    return [b for b in client.get(&quot;/books&quot;).get_json() if b[&quot;title&quot;].startswith(marker)]
+
+
+def cleanup():
+    for b in owned():
+        client.post(f&quot;/books/{b[&#x27;id&#x27;]}/delete&quot;)
+
+
+cleanup()
+try:
+    titles = [marker + &quot;-a&quot;, marker + &quot;-b&quot;, marker + &quot;-c&quot;]
+    for t in titles:
+        assert client.post(&quot;/books&quot;, data={&quot;title&quot;: t, &quot;author&quot;: &quot;Order Author&quot;}).status_code == 303
+    before = owned()
+    assert [b[&quot;title&quot;] for b in before] == titles
+    middle = before[1]
+    assert client.post(f&quot;/books/{middle[&#x27;id&#x27;]}/delete&quot;).status_code == 303
+    after = owned()
+    assert [b[&quot;id&quot;] for b in after] == [before[0][&quot;id&quot;], before[2][&quot;id&quot;]]
+finally:
+    cleanup()
+=== END AC remove-preserves-order ===
+
+=== AC remove-unknown-id-404 ===
+Intent: Removing an id that does not exist answers 404.
+
+from app_server.testing import web_client
+
+client = web_client()
+existing = [b[&quot;id&quot;] for b in client.get(&quot;/books&quot;).get_json()]
+unknown_id = max(existing, default=0) + 100000
+assert unknown_id not in existing
+response = client.post(f&quot;/books/{unknown_id}/delete&quot;)
+assert response.status_code == 404
+=== END AC remove-unknown-id-404 ===
+
+=== AC remove-twice-second-404 ===
+Intent: Removing the same book twice succeeds once and then answers 404.
+
+from app_server.testing import web_client
+
+client = web_client()
+marker = &quot;AC-rmtests-twice&quot;
+
+
+def owned():
+    return [b for b in client.get(&quot;/books&quot;).get_json() if b[&quot;title&quot;].startswith(marker)]
+
+
+def cleanup():
+    for b in owned():
+        client.post(f&quot;/books/{b[&#x27;id&#x27;]}/delete&quot;)
+
+
+cleanup()
+try:
+    assert client.post(&quot;/books&quot;, data={&quot;title&quot;: marker, &quot;author&quot;: &quot;Twice Author&quot;}).status_code == 303
+    found = owned()
+    assert len(found) == 1
+    book_id = found[0][&quot;id&quot;]
+    assert client.post(f&quot;/books/{book_id}/delete&quot;).status_code == 303
+    assert client.post(f&quot;/books/{book_id}/delete&quot;).status_code == 404
+finally:
+    cleanup()
+=== END AC remove-twice-second-404 ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Tests reach removal only through the public HTTP routes, never through the store.
+- Tests create and remove only the books they own and never reset the store.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-ValidationTests.md ===
+# FEATURE: Validation Tests
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Automated pytest tests that prove an empty or whitespace-only title or author is rejected with status 400, a reported reason, and nothing stored. |
+| Depends On | FEATURE-RejectEmptyTitle.md, FEATURE-RejectEmptyAuthor.md, FEATURE-AddBook.md, ARCHITECTURE.md |
+| Provides | tests/test_validation.py |
+| Consumes | POST /books, GET /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The guardrails &quot;Never accept an empty title or an empty author&quot; and &quot;Never omit a rejection reason when a submission is rejected&quot; require automated coverage. This specification governs the project&#x27;s own pytest module `tests/test_validation.py`, written by the build agent beside the finished code. It exercises validation only through `POST /books` and `GET /books`.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Test Module
+
+`tests/test_validation.py` uses the `web_client` fixture and covers one behavior per test:
+
+| Behavior | Expectation |
+|----------|-------------|
+| Empty title rejected | Status 400, a non-empty `error`, and `field` naming the title. |
+| Whitespace-only title rejected | Same as an empty title. |
+| Missing title rejected | Same as an empty title. |
+| Empty author rejected | Status 400, a non-empty `error`, and `field` naming the author. |
+| Whitespace-only author rejected | Same as an empty author. |
+| Missing author rejected | Same as an empty author. |
+| Nothing stored on rejection | The list from `GET /books` is unchanged after a rejected submission. |
+| Browser rejection shows reason | Without `Accept: application/json` the answer is 400 and the page body is non-empty. |
+
+## Programmatic Acceptance
+
+=== AC validation-tests-module-passes ===
+Intent: The validation pytest module exists and every test in it passes against the built application.
+Suite: scoped
+Requires: executable=python3; scope=test
+
+import subprocess
+import sys
+from pathlib import Path
+
+import app_server
+
+module = Path(&quot;tests/test_validation.py&quot;)
+assert module.is_file()
+result = subprocess.run(
+    [sys.executable, &quot;-m&quot;, &quot;pytest&quot;, &quot;-q&quot;, str(module)],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr, file=sys.stderr)
+assert result.returncode == 0
+=== END AC validation-tests-module-passes ===
+
+=== AC validation-empty-title-rejected ===
+Intent: An empty title is rejected with 400, a non-empty reason, the title field named, and nothing stored.
+
+from app_server.testing import web_client
+
+client = web_client()
+field = &quot;title&quot;
+other = &quot;author&quot;
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(
+    &quot;/books&quot;,
+    data={field: &quot;&quot;, other: &quot;Valid Author&quot;},
+    headers={&quot;Accept&quot;: &quot;application/json&quot;},
+)
+assert response.status_code == 400
+body = response.get_json()
+assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip()
+assert body[&quot;field&quot;] == field
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-empty-title-rejected ===
+
+=== AC validation-blank-title-rejected ===
+Intent: A whitespace-only title is rejected with 400 and a non-empty reason, and nothing is stored.
+
+from app_server.testing import web_client
+
+client = web_client()
+field = &quot;title&quot;
+blank = &quot;   &quot;
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(
+    &quot;/books&quot;,
+    data={field: blank, &quot;author&quot;: &quot;Valid Author&quot;},
+    headers={&quot;Accept&quot;: &quot;application/json&quot;},
+)
+assert response.status_code == 400
+body = response.get_json()
+assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip()
+assert body[&quot;field&quot;] == field
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-blank-title-rejected ===
+
+=== AC validation-missing-title-rejected ===
+Intent: A submission with no title field is rejected with 400 and a non-empty reason.
+
+from app_server.testing import web_client
+
+client = web_client()
+field = &quot;title&quot;
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(
+    &quot;/books&quot;,
+    data={&quot;author&quot;: &quot;Valid Author&quot;},
+    headers={&quot;Accept&quot;: &quot;application/json&quot;},
+)
+assert response.status_code == 400
+body = response.get_json()
+assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip()
+assert body[&quot;field&quot;] == field
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-missing-title-rejected ===
+
+=== AC validation-empty-author-rejected ===
+Intent: An empty author is rejected with 400, a non-empty reason, the author field named, and nothing stored.
+
+from app_server.testing import web_client
+
+client = web_client()
+field = &quot;author&quot;
+other = &quot;title&quot;
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(
+    &quot;/books&quot;,
+    data={field: &quot;&quot;, other: &quot;Valid Title&quot;},
+    headers={&quot;Accept&quot;: &quot;application/json&quot;},
+)
+assert response.status_code == 400
+body = response.get_json()
+assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip()
+assert body[&quot;field&quot;] == field
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-empty-author-rejected ===
+
+=== AC validation-blank-author-rejected ===
+Intent: A whitespace-only author is rejected with 400 and a non-empty reason, and nothing is stored.
+
+from app_server.testing import web_client
+
+client = web_client()
+field = &quot;author&quot;
+blank = &quot;   &quot;
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(
+    &quot;/books&quot;,
+    data={&quot;title&quot;: &quot;Valid Title&quot;, field: blank},
+    headers={&quot;Accept&quot;: &quot;application/json&quot;},
+)
+assert response.status_code == 400
+body = response.get_json()
+assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip()
+assert body[&quot;field&quot;] == field
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-blank-author-rejected ===
+
+=== AC validation-missing-author-rejected ===
+Intent: A submission with no author field is rejected with 400 and a non-empty reason.
+
+from app_server.testing import web_client
+
+client = web_client()
+field = &quot;author&quot;
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(
+    &quot;/books&quot;,
+    data={&quot;title&quot;: &quot;Valid Title&quot;},
+    headers={&quot;Accept&quot;: &quot;application/json&quot;},
+)
+assert response.status_code == 400
+body = response.get_json()
+assert isinstance(body[&quot;error&quot;], str) and body[&quot;error&quot;].strip()
+assert body[&quot;field&quot;] == field
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-missing-author-rejected ===
+
+=== AC validation-browser-rejection-has-body ===
+Intent: A rejected browser submission answers 400 with a non-empty page that reports the rejection.
+
+from app_server.testing import web_client
+
+client = web_client()
+before = client.get(&quot;/books&quot;).get_json()
+response = client.post(&quot;/books&quot;, data={&quot;title&quot;: &quot;&quot;, &quot;author&quot;: &quot;&quot;})
+assert response.status_code == 400
+assert len(response.get_data()) &gt; 0
+assert client.get(&quot;/books&quot;).get_json() == before
+=== END AC validation-browser-rejection-has-body ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Tests assert the status code, the presence of a non-empty reason, and the named field, never the wording of the reason.
+- A rejected submission never changes the stored list.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT VERIFICATION.md ===
+# FEATURE: Verification
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | The POSIX-compatible bin/test.sh runner and the terminal full-suite gate that proves every automated test passes. |
+| Depends On | ARCHITECTURE.md, FEATURE-AddBookTests.md, FEATURE-ListBooksTests.md, FEATURE-RemoveBookTests.md, FEATURE-ValidationTests.md, SCREEN-ReadingList.md |
+| Provides | bin/test.sh |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The application root provides `bin/test.sh`, a POSIX `sh` script that runs the complete automated test suite from the application root. `sh bin/test.sh` exits zero only when every test passes. This is the terminal story: it runs after every implementation and test story, runs the whole suite through the Commander-owned dispatcher `sources/full_test.sh`, and preserves the command, exit code, standard output, and standard error as evidence.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Runner Behavior
+
+- `bin/test.sh` is written in POSIX `sh`, with no bash-only syntax.
+- It changes to the application root (the parent of `bin/`) so it runs correctly from any working directory.
+- It activates `.venv` when present, then runs `pytest -q` over the entire suite with no filter, skip, or selection.
+- Its exit status is that of `pytest -q`; it never masks a failure.
+
+## Programmatic Acceptance
+
+=== AC runner-is-posix-script ===
+Intent: bin/test.sh exists at the application root and parses as POSIX sh.
+Requires: executable=sh; scope=test
+
+import subprocess
+from pathlib import Path
+
+runner = Path(&quot;bin/test.sh&quot;)
+assert runner.is_file()
+result = subprocess.run([&quot;sh&quot;, &quot;-n&quot;, str(runner)], capture_output=True, text=True)
+print(result.stdout)
+print(result.stderr)
+assert result.returncode == 0
+=== END AC runner-is-posix-script ===
+
+=== AC suite-files-present ===
+Intent: Every behavior has its pytest module in the application&#x27;s test suite.
+
+from pathlib import Path
+
+import app_server
+
+modules = [
+    &quot;tests/test_add_book.py&quot;,
+    &quot;tests/test_list_books.py&quot;,
+    &quot;tests/test_remove_book.py&quot;,
+    &quot;tests/test_validation.py&quot;,
+]
+missing = [m for m in modules if not Path(m).is_file()]
+print(f&quot;missing modules: {missing}&quot;)
+assert missing == []
+=== END AC suite-files-present ===
+
+=== AC full-suite-gate ===
+Intent: The complete suite, run through the staged dispatcher from the application root, exits zero.
+Suite: full
+Requires: executable=sh; scope=test
+
+import os
+import subprocess
+import sys
+
+import app_server
+
+result = subprocess.run(
+    [&quot;sh&quot;, &quot;sources/full_test.sh&quot;],
+    capture_output=True,
+    text=True,
+    env={**os.environ},
+)
+print(result.stdout)
+print(result.stderr, file=sys.stderr)
+assert result.returncode == 0
+=== END AC full-suite-gate ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- `bin/test.sh` never filters, skips, or reinterprets tests and never exits zero while any test fails.
+- The full suite runs only in this terminal story; earlier stories run their own scoped slices.
+=== END ARTIFACT ===</pre></article>
+</main>
+</body>
+</html>

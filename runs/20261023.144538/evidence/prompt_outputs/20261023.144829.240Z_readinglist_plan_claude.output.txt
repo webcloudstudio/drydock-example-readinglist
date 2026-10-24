@@ -1,0 +1,856 @@
+=== BEGIN ARTIFACT FEATURE-RejectEmptyTitle.md ===
+# FEATURE: Reject Empty Title
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | A book submission whose title is empty is rejected with a reported reason and nothing is stored. |
+| Depends On | FEATURE-AddBook.md, UI-GENERAL.md |
+| Provides | None |
+| Consumes | POST /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The reader must never be able to add a book without a title. The submission is rejected and the reader is told why.
+
+## Trigger
+
+A reader submits `POST /books` where the `title` form field is missing, empty, or whitespace-only.
+
+## Sequence
+
+1. `POST /books` receives form fields `title` and `author`.
+2. The title is trimmed. If the trimmed title is empty, validation fails. Title is checked before author, so when both are empty the rejection names `title`.
+3. The route answers status 400 and stores nothing.
+4. If the request carries `Accept: application/json`, the body is JSON with `error` (a non-empty reason string) and `field` equal to `title`.
+5. Otherwise the page is re-rendered in the shared layout's error region with the reason shown, still with status 400.
+
+## Routes
+
+| Route | Behavior |
+|-------|----------|
+| `POST /books` | Extended by this feature with title validation; valid submissions remain owned by FEATURE-AddBook.md |
+
+## Reads
+
+None.
+
+## Writes
+
+None. A rejected submission writes nothing.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC reject-title-empty-json ===
+Intent: An empty title on POST /books answers 400 with a non-empty reason naming the title field and stores nothing.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejTitleEmptyAuthor01"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.author == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post(
+        "/books",
+        data={"title": "", "author": marker},
+        headers={"Accept": "application/json"},
+    )
+    assert response.status_code == 400
+    body = response.get_json()
+    assert isinstance(body["error"], str)
+    assert body["error"].strip()
+    assert body["field"] == "title"
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-title-empty-json ===
+
+=== AC reject-title-whitespace ===
+Intent: A whitespace-only title is treated as empty, rejected with 400, and nothing is stored.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejTitleBlankAuthor02"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.author == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post(
+        "/books",
+        data={"title": "   ", "author": marker},
+        headers={"Accept": "application/json"},
+    )
+    assert response.status_code == 400
+    body = response.get_json()
+    assert body["error"].strip()
+    assert body["field"] == "title"
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-title-whitespace ===
+
+=== AC reject-title-missing ===
+Intent: A POST /books with no title field at all is rejected with 400 and nothing is stored.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejTitleMissingAuthor03"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.author == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post(
+        "/books",
+        data={"author": marker},
+        headers={"Accept": "application/json"},
+    )
+    assert response.status_code == 400
+    body = response.get_json()
+    assert body["error"].strip()
+    assert body["field"] == "title"
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-title-missing ===
+
+=== AC reject-title-html ===
+Intent: A browser submission with an empty title is answered 400 with a re-rendered page and nothing is stored.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejTitleHtmlAuthor04"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.author == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post("/books", data={"title": "", "author": marker})
+    assert response.status_code == 400
+    assert len(response.data) > 0
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-title-html ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Never accept an empty title.
+- Never reject a submission without a non-empty reason.
+- Never store a book from a rejected submission.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-RejectEmptyAuthor.md ===
+# FEATURE: Reject Empty Author
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | A book submission whose author is empty is rejected with a reported reason and nothing is stored. |
+| Depends On | FEATURE-AddBook.md, UI-GENERAL.md |
+| Provides | None |
+| Consumes | POST /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+The reader must never be able to add a book without an author. The submission is rejected and the reader is told why.
+
+## Trigger
+
+A reader submits `POST /books` where the `author` form field is missing, empty, or whitespace-only.
+
+## Sequence
+
+1. `POST /books` receives form fields `title` and `author`.
+2. The author is trimmed. If the trimmed author is empty, validation fails. Title is checked first, so this rejection names `author` only when the title is valid.
+3. The route answers status 400 and stores nothing.
+4. If the request carries `Accept: application/json`, the body is JSON with `error` (a non-empty reason string) and `field` equal to `author`.
+5. Otherwise the page is re-rendered in the shared layout's error region with the reason shown, still with status 400.
+
+## Routes
+
+| Route | Behavior |
+|-------|----------|
+| `POST /books` | Extended by this feature with author validation; valid submissions remain owned by FEATURE-AddBook.md |
+
+## Reads
+
+None.
+
+## Writes
+
+None. A rejected submission writes nothing.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC reject-author-empty-json ===
+Intent: An empty author on POST /books answers 400 with a non-empty reason naming the author field and stores nothing.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejAuthorEmptyTitle01"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.title == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.title == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post(
+        "/books",
+        data={"title": marker, "author": ""},
+        headers={"Accept": "application/json"},
+    )
+    assert response.status_code == 400
+    body = response.get_json()
+    assert isinstance(body["error"], str)
+    assert body["error"].strip()
+    assert body["field"] == "author"
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-author-empty-json ===
+
+=== AC reject-author-whitespace ===
+Intent: A whitespace-only author is treated as empty, rejected with 400, and nothing is stored.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejAuthorBlankTitle02"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.title == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.title == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post(
+        "/books",
+        data={"title": marker, "author": "   "},
+        headers={"Accept": "application/json"},
+    )
+    assert response.status_code == 400
+    body = response.get_json()
+    assert body["error"].strip()
+    assert body["field"] == "author"
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-author-whitespace ===
+
+=== AC reject-author-missing ===
+Intent: A POST /books with no author field at all is rejected with 400 and nothing is stored.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejAuthorMissingTitle03"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.title == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.title == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post(
+        "/books",
+        data={"title": marker},
+        headers={"Accept": "application/json"},
+    )
+    assert response.status_code == 400
+    body = response.get_json()
+    assert body["error"].strip()
+    assert body["field"] == "author"
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-author-missing ===
+
+=== AC reject-author-html ===
+Intent: A browser submission with an empty author is answered 400 with a re-rendered page and nothing is stored.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "RejAuthorHtmlTitle04"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.title == marker:
+                db.books.delete(id=row.id)
+
+
+def stored():
+    with committed_session() as db:
+        return [row for row in db.books.list() if row.title == marker]
+
+
+client = web_client()
+purge()
+try:
+    response = client.post("/books", data={"title": marker, "author": ""})
+    assert response.status_code == 400
+    assert len(response.data) > 0
+    assert len(stored()) == 0
+finally:
+    purge()
+=== END AC reject-author-html ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Never accept an empty author.
+- Never reject a submission without a non-empty reason.
+- Never store a book from a rejected submission.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT SCREEN-ReadingList.md ===
+# SCREEN: Reading List
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | The single page where a reader adds books, sees them in the order added, sees rejection reasons, and removes books. |
+| Depends On | FEATURE-ListBooks.md, FEATURE-RemoveBook.md, FEATURE-RejectEmptyTitle.md, FEATURE-RejectEmptyAuthor.md, UI-GENERAL.md |
+| Provides | GET / |
+| Consumes | GET /books, POST /books, POST /books/{id}/delete |
+| Route | / |
+| Parent | — |
+| Main Menu | Reading List (1) |
+| Tab Order | — |
+
+## Questions
+
+- None.
+
+## Purpose
+
+One page for the reader to track what they intend to read, in the order they added it.
+
+## Layout
+
+Rendered inside the shared base layout from `UI-GENERAL.md`:
+
+1. Error region: shows the rejection reason when a submission was rejected; empty otherwise.
+2. Add form: text inputs `title` and `author`, and a submit button, posting to `POST /books`.
+3. Book list: an ordered list of books in insertion order. Each entry shows title and author and a remove form posting to `POST /books/{id}/delete`.
+4. When no books exist the list area shows an empty-state message.
+
+## Interactions
+
+| Interaction | Route | Result |
+|-------------|-------|--------|
+| Open the page | `GET /` | Page lists every stored book in the order added |
+| Submit the add form | `POST /books` | Valid: 303 redirect back to `/`. Rejected: 400 and the page re-rendered with the reason |
+| Press remove on a book | `POST /books/{id}/delete` | 303 redirect back to `/`; the book is gone on the next read |
+| Read the list as data | `GET /books` | JSON array of `id`, `title`, `author` in insertion order |
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC screen-index-reachable ===
+Intent: The reading list page at GET / answers 200 and GET /books answers 200 with a JSON array.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+
+client = web_client()
+page = client.get("/")
+assert page.status_code == 200
+assert len(page.data) > 0
+listing = client.get("/books")
+assert listing.status_code == 200
+assert isinstance(listing.get_json(), list)
+=== END AC screen-index-reachable ===
+
+=== AC screen-shows-books-in-order ===
+Intent: Books added through POST /books appear on GET / in the order they were added, with GET /books agreeing.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+author = "ScreenOrderAuthor01"
+titles = ["ScreenOrderAlpha", "ScreenOrderBravo", "ScreenOrderCharlie"]
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == author:
+                db.books.delete(id=row.id)
+
+
+client = web_client()
+purge()
+try:
+    for t in titles:
+        response = client.post("/books", data={"title": t, "author": author})
+        assert response.status_code == 303
+    html = client.get("/").get_data(as_text=True)
+    positions = [html.find(t) for t in titles]
+    assert all(p >= 0 for p in positions)
+    assert positions == sorted(positions)
+    data = client.get("/books").get_json()
+    ours = [row["title"] for row in data if row["author"] == author]
+    assert ours == titles
+finally:
+    purge()
+=== END AC screen-shows-books-in-order ===
+
+=== AC screen-rejection-shown ===
+Intent: A rejected browser submission is answered 400 with a page, stores nothing, and the page remains reachable.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+marker = "ScreenRejectAuthor02"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == marker:
+                db.books.delete(id=row.id)
+
+
+client = web_client()
+purge()
+try:
+    response = client.post("/books", data={"title": "", "author": marker})
+    assert response.status_code == 400
+    assert len(response.data) > 0
+    with committed_session() as db:
+        assert len([r for r in db.books.list() if r.author == marker]) == 0
+    assert client.get("/").status_code == 200
+finally:
+    purge()
+=== END AC screen-rejection-shown ===
+
+=== AC screen-remove-book ===
+Intent: Posting to the remove route redirects with 303 and the book is absent from GET / and GET /books on the next read.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+author = "ScreenRemoveAuthor03"
+keep_title = "ScreenRemoveKeep"
+drop_title = "ScreenRemoveDrop"
+route = "/books/{id}/delete"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == author:
+                db.books.delete(id=row.id)
+
+
+client = web_client()
+purge()
+try:
+    assert client.post("/books", data={"title": keep_title, "author": author}).status_code == 303
+    assert client.post("/books", data={"title": drop_title, "author": author}).status_code == 303
+    rows = [r for r in client.get("/books").get_json() if r["author"] == author]
+    drop_id = [r["id"] for r in rows if r["title"] == drop_title][0]
+    response = client.post(route.format(id=drop_id))
+    assert response.status_code == 303
+    after = [r["title"] for r in client.get("/books").get_json() if r["author"] == author]
+    assert after == [keep_title]
+    html = client.get("/").get_data(as_text=True)
+    assert drop_title not in html
+    assert keep_title in html
+finally:
+    purge()
+=== END AC screen-remove-book ===
+
+## User Acceptance
+
+- The page reads clearly: the add form, the rejection reason, and the remove controls are easy to find and understand.
+
+## Guardrails
+
+- The page never presents books in any order other than the order added.
+- A rejected submission always shows its reason.
+- The page never reaches the store directly; it renders data from the feature routes.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-AddBookTests.md ===
+# FEATURE: Add Book Tests
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Automated pytest tests that prove a reader can add a book and read it back with its title and author. |
+| Depends On | FEATURE-AddBook.md |
+| Provides | None |
+| Consumes | POST /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+Guarantee that adding a book is covered by an automated test that runs under `pytest -q`.
+
+## Deliverable
+
+`tests/test_add_book.py`, using the `web_client` fixture from `tests/conftest.py`. The file contains pytest tests covering at least:
+
+- a valid `POST /books` is answered 303;
+- the added book appears in `GET /books` with the title and author that were submitted;
+- adding two books keeps both, in the order added.
+
+Each test uses criterion-owned unique titles and removes the books it created so tests do not depend on each other's residue.
+
+## Reads
+
+`GET /books`.
+
+## Writes
+
+`POST /books`.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-AddBook.md.
+
+## Programmatic Acceptance
+
+=== AC add-tests-file-defines-tests ===
+Intent: tests/test_add_book.py exists, parses, defines at least three test functions, and exercises the books route.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+import ast
+from pathlib import Path
+
+path = Path("tests/test_add_book.py")
+assert path.is_file()
+source = path.read_text(encoding="utf-8")
+tree = ast.parse(source)
+names = [
+    node.name
+    for node in ast.walk(tree)
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith("test_")
+]
+assert len(names) >= 3
+assert "/books" in source
+=== END AC add-tests-file-defines-tests ===
+
+=== AC add-tests-pass ===
+Intent: The add-book test file passes when run with pytest from the application root.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+import subprocess
+import sys
+
+result = subprocess.run(
+    [sys.executable, "-m", "pytest", "-q", "tests/test_add_book.py"],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr, file=sys.stderr)
+assert result.returncode == 0
+=== END AC add-tests-pass ===
+
+=== AC add-roundtrip-behavior ===
+Intent: Adding a book through POST /books is readable back through GET /books with the supplied title and author.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+title = "AddTestsRoundTripTitle"
+author = "AddTestsRoundTripAuthor"
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.title == title and row.author == author:
+                db.books.delete(id=row.id)
+
+
+client = web_client()
+purge()
+try:
+    response = client.post("/books", data={"title": title, "author": author})
+    assert response.status_code == 303
+    rows = [r for r in client.get("/books").get_json() if r["title"] == title]
+    assert len(rows) == 1
+    assert rows[0]["author"] == author
+finally:
+    purge()
+=== END AC add-roundtrip-behavior ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Tests assert observable state (status codes and parsed responses), not printed text.
+- Tests remove only the books they created.
+=== END ARTIFACT ===
+=== BEGIN ARTIFACT FEATURE-ListBooksTests.md ===
+# FEATURE: List Books Tests
+
+| Field | Value |
+|-------|-------|
+| Version | 20261023 V1 |
+| Description | Automated pytest tests that prove books are listed in the order they were added. |
+| Depends On | FEATURE-ListBooks.md |
+| Provides | None |
+| Consumes | GET /books |
+
+## Questions
+
+- None.
+
+## Purpose
+
+Guarantee that listing books in the order added is covered by an automated test that runs under `pytest -q`.
+
+## Deliverable
+
+`tests/test_list_books.py`, using the `web_client` fixture from `tests/conftest.py`. The file contains pytest tests covering at least:
+
+- an empty store returns an empty JSON array from `GET /books` (the test isolates its own data from any residue);
+- a single added book is returned with `id`, `title`, and `author`;
+- several books added in sequence are returned in the order added, with ascending ids.
+
+Each test uses unique titles and removes the books it created.
+
+## Reads
+
+`GET /books`.
+
+## Writes
+
+`POST /books`, as test setup only.
+
+## Database Interface
+
+- None — persistence is owned by FEATURE-ListBooks.md.
+
+## Programmatic Acceptance
+
+=== AC list-tests-file-defines-tests ===
+Intent: tests/test_list_books.py exists, parses, defines at least three test functions, and exercises the books route.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+import ast
+from pathlib import Path
+
+path = Path("tests/test_list_books.py")
+assert path.is_file()
+source = path.read_text(encoding="utf-8")
+tree = ast.parse(source)
+names = [
+    node.name
+    for node in ast.walk(tree)
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith("test_")
+]
+assert len(names) >= 3
+assert "/books" in source
+=== END AC list-tests-file-defines-tests ===
+
+=== AC list-tests-pass ===
+Intent: The list-books test file passes when run with pytest from the application root.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+import subprocess
+import sys
+
+result = subprocess.run(
+    [sys.executable, "-m", "pytest", "-q", "tests/test_list_books.py"],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)
+print(result.stderr, file=sys.stderr)
+assert result.returncode == 0
+=== END AC list-tests-pass ===
+
+=== AC list-order-behavior ===
+Intent: Books added in sequence are returned by GET /books in the order added.
+Suite: scoped
+Requires: python-package=pytest; scope=test
+
+from app_server.testing import web_client
+from persistence.testing import committed_session
+
+author = "ListTestsOrderAuthor"
+titles = ["ListTestsFirst", "ListTestsSecond", "ListTestsThird"]
+
+
+def purge():
+    with committed_session() as db:
+        for row in db.books.list():
+            if row.author == author:
+                db.books.delete(id=row.id)
+
+
+client = web_client()
+purge()
+try:
+    for t in titles:
+        assert client.post("/books", data={"title": t, "author": author}).status_code == 303
+    rows = [r for r in client.get("/books").get_json() if r["author"] == author]
+    assert [r["title"] for r in rows] == titles
+    ids = [r["id"] for r in rows]
+    assert ids == sorted(ids)
+finally:
+    purge()
+=== END AC list-order-behavior ===
+
+## User Acceptance
+
+- None.
+
+## Guardrails
+
+- Tests never assume the store is empty; they filter to the books they created.
+- Tests assert observable state (parsed responses), not printed text.
+=== END ARTIFACT ===

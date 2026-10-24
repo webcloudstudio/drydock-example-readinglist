@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>evidence/prompt_outputs/20261023.151653.150Z_readinglist_build_claude.output.txt</title>
+<link rel="stylesheet" href="../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>evidence/prompt_outputs/20261023.151653.150Z_readinglist_build_claude.output.txt</h1><div class="filenav"><a href="../../../index.html">&larr; Report</a><a href="../../../evidence/prompt_outputs/20261023.151653.150Z_readinglist_build_claude.output.txt">Raw file</a></div></header>
+<article class="doc"><pre>I&#x27;ll start by inspecting the build directory and the staged sources.The build directory already has the application. Next I&#x27;ll read the existing tests, the app code, and the test runner so the new module follows their conventions.The sibling `test_reject_empty_author.py` isolates each test in its own SQLite store and applies `schema.sql`. Before I decide between that and the spec&#x27;s `web_client` fixture, I&#x27;ll check how settings resolve the store and whether the schema is auto-applied.The spec&#x27;s `web_client` fixture reads `DATABASE_URL` when it creates the app, so I can keep the sibling isolation pattern and still use that fixture. Each test gets its own provisioned SQLite file, so rejections never touch `data/app.db`. I&#x27;ll write the module now.Now I&#x27;ll run the new module through the project&#x27;s venv, then the full project suite to confirm nothing else broke.All 48 new tests pass, and the full suite passes at 185. Next I&#x27;ll run each declared acceptance criterion from the spec as a standalone script, the way the harness does, with the module-level script copies kept in a scratch directory outside the build tree.All eight criteria exit 0. Last, I&#x27;ll confirm which files changed in the build tree.RESULT: SUCCESS
+
+FILES CHANGED:
+- tests/test_validation.py
+
+SUMMARY:
+Added `tests/test_validation.py`, which covers the FEATURE-ValidationTests spec. It runs eight rejected submissions (empty, whitespace-only, and missing title; empty, whitespace-only, and missing author) through `POST /books`. Each test reads its outcome back through the public interface (the HTTP status, the parsed JSON body, and `GET /books`). The tests check the status code, a non-empty `error`, the named `field`, that the stored list is unchanged after a rejection, and that a browser-style rejection returns 400 with a non-empty page.
+
+Choices I made:
+- Each test gets its own SQLite store, provisioned from `schema.sql`, following the sibling reject-empty modules. The `web_client` fixture reads `DATABASE_URL` at creation, so it uses that store and never touches `data/app.db`.
+- The &quot;stored list unchanged&quot; check seeds one book first, so a rejection that wrongly stored a row would be caught.
+- Assertions check status, presence of a reason, and field name, never the reason&#x27;s wording, per the spec&#x27;s guardrail.
+
+Verification:
+- `.venv/bin/python -m pytest -q tests/test_validation.py`: 48 passed, exit 0.
+- `.venv/bin/python -m pytest -q` (full project suite): 185 passed, exit 0.
+- All eight declared acceptance criteria from the spec, run as standalone scripts with the project venv: each exits 0.
+- `git status` shows only `tests/test_validation.py` as new. I did not run `git add` or commit.
+
+BLOCKERS:
+- None.</pre></article>
+</main>
+</body>
+</html>

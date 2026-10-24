@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/blueprint/ARCHITECTURE_compact.md">Raw file</a></div></header>
+<article class="doc"><p>&lt;!-- Compacted from ARCHITECTURE.md sha256=b6aaa721727d6d785b4ddbf830818102584f78446b4f2e57ba1bfddb1dfa554a on 2026-10-23 by drydock build agent --&gt;</p>
+<p>Provides <code>app_server.create_app()</code> and <code>app_server.testing.web_client()</code>. The factory composes feature-owned Flask Blueprints; feature routes own HTTP workflows, while generated <code>persistence</code> owns storage. Required routes: <code>GET /</code>, <code>POST /books</code>, and <code>POST /books/&lt;book_id&gt;/delete</code>. Configuration belongs to <code>app_server</code>; the primary workflow is reachable at <code>/</code>.</p></article>
+</main>
+</body>
+</html>

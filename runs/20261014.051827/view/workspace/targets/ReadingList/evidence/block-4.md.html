@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/evidence/block-4.md</title>
+<link rel="stylesheet" href="../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/evidence/block-4.md</h1><div class="filenav"><a href="../../../../../index.html">&larr; Report</a><a href="../../../../../workspace/targets/ReadingList/evidence/block-4.md">Raw file</a></div></header>
+<article class="doc"><h1>Evidence: Block 4 · Service (block-4)</h1>
+<ul><li>block type: block</li><li>date: 2026-10-14</li><li>resulting state: closed/verified</li><li>story points (combined assembled cost): 2810</li><li>execution id: 20261014.052833.846Z-f9f2c800</li></ul>
+<h2>Stories built</h2>
+<ul><li>Serve the reading list page that adds, lists, and removes books. (screen-reading-list) [story]</li></ul>
+<h2>Stacked context</h2>
+<ul><li>compass: COMPASS.md (SP 833)</li><li>implements: SCREEN-ReadingList.md (SP 986)</li><li>stack: python_compact.md (SP 390)</li><li>stack: flask_compact.md (SP 525)</li></ul>
+<h2>Build directory changes</h2>
+<ul><li>app_server/<strong>init</strong>.py</li><li>app_server/pages.py</li><li>app_server/templates/reading_list.html</li><li>tests/test_app_factory.py</li><li>tests/test_reading_list_page.py</li></ul>
+<h2>Pre-build acceptance observation</h2>
+<ul><li>RED: screen-get-root (SCREEN-ReadingList.md)</li></ul>
+<p>intent: GET / returns status 200 with an HTML page. return code: 1 stderr: Traceback (most recent call last): File &quot;screen-get-root.py&quot;, line 5, in &lt;module&gt; assert response.status_code == 200 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ AssertionError</p>
+<ul><li>GREEN (prepassed): screen-add-list-remove (SCREEN-ReadingList.md)</li></ul>
+<p>intent: The routes the page calls add, list, and remove a book, and an unknown id returns 404. return code: 0</p>
+<h2>Post-build programmatic acceptance</h2>
+<ul><li>PASS: screen-get-root (SCREEN-ReadingList.md)</li></ul>
+<p>intent: GET / returns status 200 with an HTML page. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<ul><li>PASS: screen-add-list-remove (SCREEN-ReadingList.md)</li></ul>
+<p>intent: The routes the page calls add, list, and remove a book, and an unknown id returns 404. target interpreter: /mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/build/ReadingList/.venv/bin/python provisioning: not required return code: 0</p>
+<h2>Build summary</h2>
+<p>I&#x27;ll start by inspecting the build directory and the prior blocks&#x27; output.The routes for books already exist, so this block only adds <code>GET /</code> and the page. Before changing anything, I&#x27;ll get a baseline run of the existing suite and check the toolchain.Baseline is 58 passing. My plan:</p>
+<ul><li>Add <code>app_server/pages.py</code>, a blueprint serving <code>GET /</code> via a Jinja template (autoescape stays on).</li><li>Add <code>app_server/templates/reading_list.html</code> with the form, error slots, ordered list, and inline script. The script builds list items with <code>textContent</code>, so titles are never parsed as HTML.</li><li>Register the blueprint in the factory.</li><li>Update the existing route-set test, since <code>/</code> is now a declared route.</li><li>Add tests that parse the HTML and read back the status codes.Next, I&#x27;ll register the blueprint and update the route-set test, since <code>/</code> is now a declared route.Now the tests. They parse the HTML with the stdlib parser and check the page&#x27;s structure and the routes it consumes through status codes and parsed JSON.I&#x27;ll tidy two tests: drop the substring check (the before/after equality already covers it) and rename the submit test to match what it asserts.Now the full suite, then the two declared acceptance criteria. I&#x27;ll run the criteria from a script in <code>/tmp</code> against a temporary store so nothing lands in <code>data/app.db</code>.Pytest exits 0 and both criteria pass. The page&#x27;s script is the one part no test executes, so I&#x27;ll at least syntax-check it if Node is available.The reading list page is in place: <code>GET /</code> serves HTML and the page calls the existing book routes. The declared acceptance criteria pass, and the full pytest suite is green.</li></ul>
+<p>Two notes on this step:</p>
+<ul><li>I changed one existing project test, <code>test_create_app_registers_only_the_page_and_book_routes_besides_static</code>. It asserted the route set without <code>/</code>, and <code>/</code> is now a declared route. It is not one of the declared acceptance criteria.</li><li>The page&#x27;s inline script is only syntax-checked (Node&#x27;s <code>--check</code>). Nothing exercises it in a browser, so the add/remove behaviour in the page is unverified beyond reading the code.</li></ul>
+<p>I did not create <code>bin/test.sh</code>. COMPASS requires it, but it belongs to a later build step.</p>
+<p>RESULT: SUCCESS</p>
+<p>FILES CHANGED:</p>
+<ul><li>app_server/pages.py</li><li>app_server/templates/reading_list.html</li><li>app_server/<strong>init</strong>.py</li><li>tests/test_reading_list_page.py</li><li>tests/test_app_factory.py</li></ul>
+<p>SUMMARY:</p>
+<ul><li><code>app_server/pages.py</code>: new <code>pages</code> blueprint with <code>GET /</code> rendering <code>reading_list.html</code>. The route is registered in <code>create_app()</code> ahead of the book blueprint.</li><li><code>app_server/templates/reading_list.html</code>: the form (title and author text inputs, one submit control, an error span beside each field), an ordered list <code>#books</code>, and an inline script. The script:<ul><li>loads <code>GET /books</code> on page load and renders the list in the order returned;</li><li>submits <code>POST /books</code>, and on 201 resets the form and reloads the list, or on 400 shows the error beside the field named in the response;</li><li>blocks empty or whitespace-only title or author client-side, before any request is sent;</li><li>removes via <code>DELETE /books/{id}</code> and reloads on 204;</li><li>builds list items with <code>textContent</code>, so stored titles are never interpreted as HTML.</li></ul></li><li><code>tests/test_reading_list_page.py</code>: 16 tests. They parse the HTML with the stdlib parser and check the form, inputs, error slots, the ordered list, and the response to <code>POST /</code> (405). They also cover the page&#x27;s three routes through status codes and parsed JSON, including ordering and the 400 and 404 paths.</li><li><code>tests/test_app_factory.py</code>: the route-set assertion now includes <code>/</code>.</li><li>Declared acceptance criteria <code>screen-get-root</code> and <code>screen-add-list-remove</code> were run from a scratch script against a temporary store. Both pass; the scratch script was removed afterwards.</li><li>Pytest: exit 0 after the change (the baseline was 58 passing before the new tests were added). No files in <code>sources/</code> were touched.</li></ul>
+<p>Choices I made:</p>
+<ul><li>The page uses a JS-driven list (no server-rendered books), which the spec&#x27;s &quot;page calls the routes&quot; implies.</li><li>Whitespace-only input is rejected client-side as well as by the server.</li><li>The client-side error text is &quot;title must not be empty.&quot; and similar.</li></ul>
+<p>BLOCKERS:</p>
+<ul><li>None for this block. <code>sh sources/full_test.sh</code> will still report a missing <code>bin/test.sh</code> until the story that creates it is built.</li></ul></article>
+</main>
+</body>
+</html>

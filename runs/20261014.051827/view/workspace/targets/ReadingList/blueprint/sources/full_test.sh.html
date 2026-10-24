@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/blueprint/sources/full_test.sh</title>
+<link rel="stylesheet" href="../../../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/blueprint/sources/full_test.sh</h1><div class="filenav"><a href="../../../../../../index.html">&larr; Report</a><a href="../../../../../../workspace/targets/ReadingList/blueprint/sources/full_test.sh">Raw file</a></div></header>
+<article class="doc"><pre>#!/bin/sh
+# full_test.sh — scoring entry point. Do not filter, skip, or reinterpret.
+#
+# `drydock uat` runs `sh sources/full_test.sh` from the completed application root and takes its
+# exit code and output as the score.
+#
+# Unlike a conformance fixture, this Target supplies no suite of its own: the source prose makes
+# &quot;the application provides a POSIX-compatible bin/test.sh&quot; a product requirement (st-001), so the
+# tests are part of the deliverable. This harness is therefore a dispatcher, and its whole value
+# is that it is still Commander-owned. An absent bin/test.sh is a delivered product that failed to
+# meet st-001, which this script reports as a failure — rather than leaving the release gate with
+# no oracle at all, where an unbuilt project grades PASSED by default.
+set -eu
+
+if [ ! -f bin/test.sh ]; then
+    echo &quot;error: no bin/test.sh at the application root.&quot; &gt;&amp;2
+    echo &quot;st-001 requires the application to provide a POSIX-compatible bin/test.sh that exits&quot; &gt;&amp;2
+    echo &quot;zero when every automated test passes.&quot; &gt;&amp;2
+    exit 1
+fi
+
+exec sh bin/test.sh
+</pre></article>
+</main>
+</body>
+</html>

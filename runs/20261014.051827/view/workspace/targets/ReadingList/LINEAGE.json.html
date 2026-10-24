@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>workspace/targets/ReadingList/LINEAGE.json</title>
+<link rel="stylesheet" href="../../../../assets/kit.css">
+</head>
+<body>
+<main>
+<header class="fileheader"><div class="kind">Run artifact</div><h1>workspace/targets/ReadingList/LINEAGE.json</h1><div class="filenav"><a href="../../../../index.html">&larr; Report</a><a href="../../../../workspace/targets/ReadingList/LINEAGE.json">Raw file</a></div></header>
+<article class="doc"><pre>{
+  &quot;version&quot;: 1,
+  &quot;import&quot;: {
+    &quot;root&quot;: &quot;/mnt/c/Users/barlo/projects/drydock/uat/ReadingList/runs/20261014.051827/sources&quot;,
+    &quot;format&quot;: &quot;markdown&quot;
+  },
+  &quot;sources&quot;: {
+    &quot;full_test.sh&quot;: {
+      &quot;state&quot;: &quot;current&quot;,
+      &quot;versions&quot;: [
+        {
+          &quot;commit&quot;: &quot;9425e68&quot;,
+          &quot;date&quot;: &quot;2026-10-14&quot;,
+          &quot;hash&quot;: &quot;d4b7169755d1b5e6bf7a2a8a452d916a27904219951cacaf9cf1edb7f50f7aa2&quot;,
+          &quot;release&quot;: &quot;&quot;,
+          &quot;state&quot;: &quot;consumed&quot;,
+          &quot;via&quot;: &quot;plan&quot;,
+          &quot;ticket&quot;: null,
+          &quot;requirements&quot;: [
+            {
+              &quot;name&quot;: &quot;provide-posix-test-script&quot;,
+              &quot;text&quot;: &quot;st-001 requires the application to provide a POSIX-compatible bin/test.sh that exits zero when every automated test passes.&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-test-runner&quot;
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    &quot;reading-list.md&quot;: {
+      &quot;state&quot;: &quot;current&quot;,
+      &quot;versions&quot;: [
+        {
+          &quot;commit&quot;: &quot;9425e68&quot;,
+          &quot;date&quot;: &quot;2026-10-14&quot;,
+          &quot;hash&quot;: &quot;1b61badf71d1b0f24f23ba0873e4fed00b20b5ff927d05b4a4eede34aa515a58&quot;,
+          &quot;release&quot;: &quot;&quot;,
+          &quot;state&quot;: &quot;consumed&quot;,
+          &quot;via&quot;: &quot;plan&quot;,
+          &quot;ticket&quot;: null,
+          &quot;requirements&quot;: [
+            {
+              &quot;name&quot;: &quot;build-web-app&quot;,
+              &quot;text&quot;: &quot;Build a web application that keeps a list of books to read.&quot;,
+              &quot;stories&quot;: [
+                &quot;architecture-foundation&quot;,
+                &quot;persistence-foundation&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;add-book&quot;,
+              &quot;text&quot;: &quot;The reader can add a book with a title and author,&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-add-book&quot;,
+                &quot;persistence-foundation&quot;,
+                &quot;screen-reading-list&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;list-books-in-order&quot;,
+              &quot;text&quot;: &quot;view the books in the order added,&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-list-books&quot;,
+                &quot;persistence-foundation&quot;,
+                &quot;screen-reading-list&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;remove-book&quot;,
+              &quot;text&quot;: &quot;and remove a book.&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-remove-book&quot;,
+                &quot;persistence-foundation&quot;,
+                &quot;screen-reading-list&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;reject-empty-fields&quot;,
+              &quot;text&quot;: &quot;An empty title or author is rejected with a clear error message.&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-add-book&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;tests-per-behavior&quot;,
+              &quot;text&quot;: &quot;The application includes automated tests for each behavior.&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-test-runner&quot;
+              ]
+            },
+            {
+              &quot;name&quot;: &quot;posix-test-gate&quot;,
+              &quot;text&quot;: &quot;The completed application provides a POSIX-compatible `bin/test.sh` that runs the complete\nautomated test suite from the application root. `sh bin/test.sh` exits zero only when every test\npasses.&quot;,
+              &quot;stories&quot;: [
+                &quot;feature-test-runner&quot;
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+</pre></article>
+</main>
+</body>
+</html>
